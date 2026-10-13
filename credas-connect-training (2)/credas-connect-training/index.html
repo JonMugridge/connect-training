@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Credas Connect training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nav:#2D2E3F;--nav-2:#3A3C51;--gold:#F0A93C;--gold-d:#C9821C;--gold-l:#FCEBD0;--green:#1EC28B;
+  --page:#F3F3F5;--card:#FFFFFF;--ink:#1E1F2B;--muted:#686B78;--line:#E2E3E7;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--page:#1B1C25;--card:#272936;--ink:#ECEDF2;--muted:#A2A5B3;--line:#3A3C4C;--gold-l:#4A3A22}}
+:root[data-theme="dark"]{--page:#1B1C25;--card:#272936;--ink:#ECEDF2;--muted:#A2A5B3;--line:#3A3C4C;--gold-l:#4A3A22}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+button,a{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+.top{background:var(--nav);color:#fff;height:60px;display:flex;align-items:center;padding:0 clamp(18px,4vw,56px)}
+.logo{display:flex;align-items:center;padding-right:16px;margin-right:18px;border-right:1px solid #ffffff66;height:24px}
+.logo svg{flex:none}
+.top .area{color:var(--gold);font-weight:700;font-size:13px}
+
+main{max-width:1080px;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(18px,4vw,40px) 64px}
+.crumbs{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:18px;min-height:20px}
+.crumbs a{color:var(--muted);text-decoration:none;font-weight:500}
+.crumbs a:hover{color:var(--ink);text-decoration:underline}
+.crumbs .sep{opacity:.5}
+.crumbs b{color:var(--ink);font-weight:600}
+
+h1{font-size:clamp(28px,4vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 12px;font-weight:800}
+.lede{font-size:16px;color:var(--muted);max-width:60ch;margin:0 0 36px}
+
+/* folders */
+.folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:34px 24px}
+.folder{position:relative;border:0;background:none;padding:0;text-align:left;cursor:pointer;display:flex;flex-direction:column;width:100%;padding-top:18px;height:100%}
+.folder .tab{position:absolute;top:0;left:0;height:24px;width:46%;background:var(--fc);border-radius:9px 12px 0 0;clip-path:polygon(0 0,82% 0,100% 100%,0 100%)}
+.folder .body{flex:1;position:relative;background:var(--fc);color:#fff;border-radius:0 12px 12px 12px;min-height:178px;padding:22px 22px 18px;display:flex;flex-direction:column;transition:transform .18s ease,box-shadow .18s ease;box-shadow:0 1px 0 #00000014}
+.folder .sheet{position:absolute;left:14px;right:14px;top:6px;height:60px;background:#fff;border-radius:6px;opacity:.95;transition:transform .2s ease}
+.folder .sheet+.sheet{left:22px;right:22px;top:12px;opacity:.75}
+.folder .front{position:absolute;inset:26px 0 0 0;background:var(--fc);border-radius:10px 12px 12px 12px;z-index:1}
+.folder .content{position:relative;z-index:2;display:flex;flex-direction:column;height:100%;flex:1;margin-top:18px}
+.folder h2{margin:0 0 6px;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.folder p{margin:0 0 16px;font-size:13px;line-height:1.45;color:#ffffffcc;max-width:30ch}
+.folder .count{margin-top:auto;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600}
+.folder .count i{width:8px;height:8px;border-radius:50%;background:var(--green);font-style:normal}
+.folder:hover .body,.folder:focus-visible .body{transform:translateY(-3px);box-shadow:0 12px 24px -10px #2D2E3F80}
+.folder:hover .sheet{transform:translateY(-8px)}
+.folder:focus-visible{outline:none}
+.folder:focus-visible .body{outline:3px solid var(--gold);outline-offset:3px}
+.folder.soon{--fc:#8E909C}
+.folder.soon .count i{background:#ffffff80}
+.folder.ready{--fc:var(--nav)}
+.folder.ready .tab::after{content:"";position:absolute;left:14px;top:9px;width:22px;height:4px;border-radius:2px;background:var(--gold)}
+
+/* opened module */
+.module{display:none}
+.module.show{display:block;animation:open .25s ease}
+@keyframes open{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.module.show{animation:none}.folder .body,.folder .sheet{transition:none}}
+.mhead{display:flex;gap:18px;align-items:flex-start;margin-bottom:28px}
+.mhead .ico{flex:none;width:56px;height:46px;position:relative;margin-top:4px}
+.mhead .ico span{position:absolute;inset:8px 0 0 0;background:var(--nav);border-radius:0 7px 7px 7px}
+.mhead .ico span::before{content:"";position:absolute;top:-8px;left:0;width:45%;height:9px;background:var(--nav);border-radius:5px 7px 0 0}
+.mhead .ico span::after{content:"";position:absolute;left:8px;top:-3px;width:14px;height:3px;border-radius:2px;background:var(--gold)}
+.mhead h1{margin-bottom:6px}
+.mhead .lede{margin:0}
+.files{list-style:none;margin:0;padding:0;background:var(--card);border-radius:12px;border:1px solid var(--line);overflow:hidden}
+.file{display:grid;grid-template-columns:44px 1fr auto;gap:16px;align-items:center;padding:20px 22px;border-top:1px solid var(--line)}
+.file:first-child{border-top:0}
+.file .num{width:36px;height:36px;border-radius:50%;background:var(--gold-l);color:var(--gold-d);display:grid;place-items:center;font-weight:800;font-size:14px}
+.file h3{margin:0 0 3px;font-size:16px;font-weight:700}
+.file p{margin:0 0 6px;color:var(--muted);font-size:13.5px;max-width:62ch}
+.file .facts{display:flex;flex-wrap:wrap;gap:6px}
+.file .facts span{font-size:11.5px;font-weight:600;background:var(--page);border-radius:999px;padding:3px 10px;color:var(--muted)}
+.file .facts .stepsBtn{display:inline-flex;align-items:center;gap:6px;border:0;cursor:pointer;font-size:11.5px;font-weight:600;background:var(--gold-l);color:var(--gold-d);border-radius:999px;padding:3px 10px}
+.file .facts .stepsBtn:hover{filter:brightness(.97);text-decoration:underline}
+.file .facts .stepsBtn svg{transition:transform .15s}
+.file .facts .stepsBtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.stepsPanel{grid-column:2/-1;margin-top:-4px}
+.sgroups{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.sg{background:var(--page);border-radius:8px;padding:12px 14px}
+.sg b{display:block;font-size:12.5px;margin-bottom:6px}
+.sg ol{margin:0;padding-left:20px;font-size:12.5px;color:var(--muted);line-height:1.6}
+.start{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;background:var(--nav);color:#fff;padding:10px 20px;font-weight:600;font-size:13.5px;text-decoration:none;white-space:nowrap}
+.start:hover{background:var(--nav-2)}
+.file.soon .num{background:var(--page);color:var(--muted)}
+.file.soon h3{color:var(--muted)}
+.soonTag{font-size:12px;font-weight:600;color:var(--muted);background:var(--page);border-radius:999px;padding:7px 14px;white-space:nowrap}
+.back{display:inline-flex;align-items:center;gap:8px;margin-top:22px;border:0;background:none;color:var(--muted);font-weight:600;font-size:13.5px;cursor:pointer;padding:6px 0}
+.back:hover{color:var(--ink)}
+@media (max-width:620px){.stepsPanel{grid-column:1/-1}.file{grid-template-columns:36px 1fr;padding:18px}.file .num{width:30px;height:30px;font-size:12px}.file .act{grid-column:2}}
+.devnote{display:none;background:#FCEBD0;color:#5a4214;border-radius:8px;padding:10px 14px;font-size:13px;margin:-16px 0 26px}
+@media (max-width:700px){.devnote{display:block}}
+.prog{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:-12px 0 30px;font-size:14px}
+.prog b{font-size:15px}
+.prog .pbar{flex:1;min-width:160px;height:8px;border-radius:4px;background:var(--page);overflow:hidden}
+.prog .pbar i{display:block;height:100%;background:var(--green);transition:width .3s}
+.prog button{border:0;background:none;color:var(--muted);font-size:12.5px;text-decoration:underline;cursor:pointer}
+.prog[hidden]{display:none}
+.folder .done{margin-left:auto;background:#ffffff26;border-radius:999px;padding:2px 9px;font-size:11.5px}
+.file .doneTag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#11815C;background:#E6F8F1;border-radius:999px;padding:6px 12px;white-space:nowrap}
+.file.isdone .num{background:#1EC28B;color:#fff}
+.file .act{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.foot{margin-top:44px;color:var(--muted);font-size:12.5px;max-width:64ch}
+</style>
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
+<script>
+/* Keep an Azure SAS token (or any query string) on links between pages */
+(function(){var q=location.search;if(!q||q.length<2)return;
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href");
+ if(!h||/^(https?:|mailto:|#|javascript:)/i.test(h)||!/\.html(#|$)/i.test(h))return;
+ var i=h.indexOf("#"),base=i<0?h:h.slice(0,i),hash=i<0?"":h.slice(i);if(base.indexOf("?")>=0)return;
+ e.preventDefault();var url=base+q+hash;if(a.target==="_blank")window.open(url,"_blank");else location.href=url;},true);})();
+</script>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><svg viewBox="0 0 148.15 60" height="31" width="77" role="img" aria-label="Credas" xmlns="http://www.w3.org/2000/svg"> <path fill="#f9ba2c" d="M30.29,56.16c-4.83,0-9.55-1.35-13.62-3.91-.38-.24-.5-.75-.25-1.13.24-.38.75-.49,1.13-.25,3.81,2.39,8.22,3.66,12.75,3.66,1.96,0,3.91-.24,5.79-.71.44-.11.88.16.99.6.11.44-.16.88-.6.99-2.01.5-4.09.75-6.19.75"/> <path fill="#f9ba2c" d="M13.18,49.33c-.2,0-.41-.07-.56-.23-1.11-1.05-2.12-2.21-3.03-3.44-.27-.36-.19-.87.17-1.14.37-.27.87-.19,1.14.17.85,1.15,1.8,2.24,2.83,3.23.33.31.34.83.03,1.15-.16.17-.38.25-.59.25"/> <path fill="#f9ba2c" d="M7.52,41.22c-.31,0-.61-.18-.75-.49-1.4-3.23-2.11-6.66-2.11-10.2,0-6.46,2.41-12.63,6.79-17.38,4.35-4.71,10.25-7.62,16.62-8.17.45-.03.85.29.89.74s-.29.85-.74.89C15.91,7.67,6.29,18.17,6.29,30.52c0,3.32.67,6.53,1.97,9.55.18.41,0,.89-.43,1.07-.11.05-.21.07-.33.07"/> <path fill="#f9ba2c" d="M46.94,12.94c-.19,0-.39-.07-.55-.21-4.05-3.67-9.26-5.85-14.7-6.17-.45-.03-.79-.41-.77-.87.03-.45.41-.79.87-.77,5.81.33,11.38,2.67,15.7,6.59.33.31.36.82.05,1.15-.16.18-.39.27-.61.27"/> <path fill="#f9ba2c" d="M40.71,53.87c-.31,0-.6-.17-.74-.47-.19-.41-.01-.89.39-1.08,2.27-1.06,4.35-2.45,6.19-4.15l-3.6-3.6c-.32-.32-.32-.83,0-1.15s.83-.32,1.15,0l4.19,4.19c.15.15.24.36.24.58s-.09.43-.24.58c-2.12,2.09-4.56,3.79-7.25,5.04-.11.05-.23.08-.35.08"/> <path fill="#f9ba2c" d="M30.29,44.25c-7.57,0-13.73-6.15-13.73-13.72s6.15-13.73,13.73-13.73c3.71,0,7.19,1.46,9.79,4.11.31.32.31.84,0,1.15s-.84.31-1.15,0c-2.29-2.33-5.36-3.63-8.63-3.63-6.67,0-12.09,5.42-12.09,12.09s5.42,12.09,12.09,12.09c.57,0,1.15-.04,1.71-.12.45-.06.86.25.92.69s-.25.86-.69.93c-.64.09-1.29.13-1.94.13"/> <path fill="#f9ba2c" d="M36.1,42.86c-.3,0-.59-.17-.73-.45-.21-.4-.04-.89.36-1.1,1.11-.56,2.12-1.28,3.01-2.15.32-.31.84-.31,1.15.01s.31.84-.01,1.15c-1.01.99-2.15,1.81-3.41,2.44-.12.06-.25.09-.37.09"/> <path fill="#f9ba2c" d="M18.76,20.4c-.2,0-.41-.07-.56-.23-.33-.31-.34-.83-.03-1.15,1.14-1.2,2.45-2.22,3.87-3.03.39-.22.89-.08,1.11.31.22.39.09.89-.31,1.11-1.29.73-2.47,1.65-3.49,2.74-.16.17-.38.25-.59.25"/> <path fill="#f9ba2c" d="M41.61,20.19c-.21,0-.42-.08-.58-.25-2.85-2.9-6.67-4.49-10.73-4.49-.98,0-1.97.09-2.92.29-.44.09-.87-.2-.96-.65-.09-.44.2-.87.65-.96,1.06-.21,2.15-.31,3.24-.31,4.51,0,8.73,1.77,11.9,4.98.31.32.31.84,0,1.15-.16.16-.37.23-.57.23"/> <path fill="#f9ba2c" d="M30.29,47.23c-.45,0-.82-.37-.82-.82s.37-.82.82-.82c3.97,0,7.72-1.53,10.55-4.31.32-.31.84-.31,1.15,0s.31.84,0,1.15c-3.14,3.09-7.29,4.78-11.7,4.78"/> <path fill="#f9ba2c" d="M25.3,46.43c-.08,0-.17-.01-.25-.04-1.49-.49-2.91-1.2-4.22-2.1-.37-.25-.47-.77-.21-1.14.25-.37.77-.47,1.14-.21,1.17.81,2.45,1.45,3.8,1.89.43.14.66.6.52,1.03-.11.35-.43.56-.78.56"/> <path fill="#f9ba2c" d="M17.8,41.16c-.24,0-.48-.11-.65-.31-2.34-2.97-3.57-6.54-3.57-10.33,0-2.69.65-5.37,1.9-7.74.21-.4.7-.55,1.1-.35s.55.7.35,1.1c-1.12,2.14-1.71,4.55-1.71,6.98,0,3.41,1.11,6.63,3.22,9.31.28.35.22.87-.13,1.15-.15.12-.33.17-.51.17"/> <path fill="#f9ba2c" d="M12.2,36.7c-.35,0-.68-.23-.79-.59-.53-1.81-.81-3.69-.81-5.59,0-3.24.81-6.46,2.33-9.3.21-.39.71-.55,1.11-.33s.55.71.33,1.11c-1.39,2.6-2.13,5.55-2.13,8.52,0,1.74.25,3.47.74,5.13.13.43-.12.89-.55,1.01-.08.02-.15.03-.23.03"/> <path fill="#f9ba2c" d="M16.45,18.51c-.2,0-.4-.07-.55-.21-.33-.31-.35-.83-.04-1.15,3.71-4.01,8.97-6.3,14.44-6.3s10.27,2.08,14.01,5.85c.32.32.31.84,0,1.15-.32.32-.84.31-1.15,0-3.42-3.46-7.97-5.37-12.84-5.37s-9.83,2.11-13.24,5.77c-.16.17-.38.26-.6.26"/> <path fill="#f9ba2c" d="M30.29,50.21c-7.33,0-14-4.03-17.42-10.51-.21-.4-.06-.89.34-1.11s.89-.06,1.11.34c3.13,5.95,9.25,9.64,15.98,9.64,4.77,0,9.26-1.84,12.66-5.19.32-.31.84-.31,1.15,0s.31.84,0,1.15c-3.71,3.65-8.61,5.65-13.8,5.65"/> <path fill="#f9ba2c" d="M30.29,53.18c-4.3,0-8.49-1.21-12.11-3.5-.38-.24-.49-.75-.25-1.13s.75-.49,1.13-.25c3.36,2.13,7.24,3.25,11.23,3.25,1.67,0,3.33-.19,4.94-.58.44-.11.88.17.99.6.11.44-.17.88-.6.99-1.73.42-3.52.63-5.32.63"/> <path fill="#f9ba2c" d="M15.13,47.07c-.21,0-.41-.08-.57-.23-4.47-4.31-6.93-10.11-6.93-16.31,0-3.97,1.04-7.87,3.01-11.29.23-.39.73-.53,1.12-.3.39.23.53.73.3,1.12-1.83,3.17-2.79,6.79-2.79,10.47,0,5.76,2.29,11.13,6.43,15.14.33.31.33.83.02,1.15-.16.17-.37.25-.59.25"/> <path fill="#f9ba2c" d="M14.14,16.63c-.2,0-.39-.07-.55-.21-.33-.31-.35-.82-.05-1.15,4.29-4.71,10.39-7.41,16.76-7.41,1.65,0,3.29.18,4.88.53.44.09.72.53.62.97-.09.44-.53.72-.97.62-1.48-.33-3-.49-4.53-.49-5.9,0-11.57,2.5-15.54,6.87-.16.17-.39.27-.61.27"/> <path fill="#f9ba2c" d="M44.83,15.04c-.19,0-.39-.07-.55-.21-1.59-1.42-3.38-2.59-5.32-3.47-.41-.19-.59-.67-.41-1.09s.67-.59,1.09-.41c2.09.95,4.01,2.21,5.73,3.74.34.3.37.82.07,1.15-.16.18-.39.27-.61.27"/> <path fill="#f9ba2c" d="M39.41,51.19c-.31,0-.6-.17-.74-.48-.19-.41,0-.89.4-1.09,1.39-.64,2.71-1.44,3.94-2.37.36-.27.87-.21,1.15.15.27.36.21.87-.15,1.15-1.32,1.01-2.75,1.86-4.25,2.55-.11.05-.23.07-.34.07"/> <path fill="#f9ba2c" d="M22.7,58.09c-.07,0-.15,0-.22-.03C10.22,54.59,1.67,43.26,1.67,30.52c0-3.14.51-6.23,1.5-9.17.15-.43.61-.65,1.04-.51.43.15.65.61.51,1.04-.94,2.78-1.42,5.69-1.42,8.65,0,12.02,8.07,22.7,19.61,25.96.43.13.69.57.56,1.01-.1.36-.43.59-.79.59"/> <path fill="#f9ba2c" d="M5.69,18.38c-.13,0-.26-.03-.38-.09-.4-.21-.55-.71-.34-1.11C9.94,7.76,19.64,1.91,30.29,1.91c4.09,0,8.05.85,11.76,2.52.41.19.59.67.41,1.08s-.67.59-1.08.41c-3.49-1.58-7.22-2.37-11.08-2.37-10.03,0-19.18,5.52-23.88,14.4-.15.28-.43.44-.73.44"/> <path fill="#f9ba2c" d="M50.03,11.77c-.21,0-.42-.08-.58-.24-.97-.97-2.01-1.87-3.11-2.69-.36-.27-.44-.78-.17-1.14s.78-.44,1.14-.17c1.17.87,2.27,1.83,3.29,2.85.32.32.31.84,0,1.15-.16.16-.37.23-.57.23"/> <path fill="#f9ba2c" d="M30.29,59.14c-1.19,0-2.38-.07-3.54-.21-.45-.05-.77-.47-.71-.91.05-.45.47-.77.91-.71,1.09.13,2.22.21,3.34.21,7.15,0,13.89-2.77,18.98-7.8.32-.31.84-.31,1.15,0s.31.84,0,1.15c-5.39,5.33-12.54,8.27-20.12,8.27"/> <path fill="#f9ba2c" d="M40.25,53.93c-.25,0-.5-.04-.74-.13-.58-.2-1.05-.61-1.33-1.16-.56-1.14-.09-2.53,1.05-3.09l.73,1.47c-.33.17-.47.56-.31.89.08.16.21.28.39.33.17.06.35.05.51-.03l.73,1.47c-.32.16-.67.24-1.01.24"/> <path fill="#f9ba2c" d="M14.06,49.57c-.65,0-1.31-.27-1.75-.81l1.25-1.06c.24.28.66.31.94.08.28-.24.31-.66.08-.94l1.25-1.06c.82.97.7,2.43-.27,3.25-.43.37-.96.55-1.49.55"/> <path fill="#f9ba2c" d="M45.86,15.47c-.59,0-1.14-.22-1.57-.62l1.12-1.19c.13.12.3.18.48.18s.35-.08.47-.21c.12-.13.19-.3.18-.48,0-.18-.08-.35-.21-.47l1.11-1.19c.45.42.71.99.73,1.61.02.61-.2,1.2-.62,1.65s-.99.71-1.61.73h-.08"/> <path fill="#f9ba2c" d="M15.41,18.92c-.52,0-1.02-.17-1.43-.51-.48-.39-.79-.93-.85-1.54s.11-1.21.49-1.69l1.27,1.02c-.11.14-.16.31-.14.49s.11.34.25.45c.14.11.31.16.49.14.17-.02.33-.11.45-.25l1.28,1.02c-.39.48-.93.79-1.55.85-.09,0-.17.01-.26.01"/> <path fill="#f9ba2c" d="M16.89,23.6l-1.45-.77c.17-.33.05-.73-.27-.91-.33-.17-.73-.05-.91.27l-1.45-.77c.6-1.12,1.99-1.54,3.11-.95,1.12.6,1.55,2,.95,3.11"/> <path fill="#fff" d="M51.41,24.04c0-3.51.44-5.85,1.33-7.01.88-1.16,2.14-1.74,3.77-1.74s2.79.4,3.5,1.2c.51.58.83,1.16.99,1.73.36,1.34.55,3.35.55,6.01v2.5h-2.49v-2.8c0-2.43-.13-4.07-.39-4.89s-.64-1.35-1.12-1.57c-.27-.12-.57-.18-.91-.18-1.05,0-1.77.53-2.17,1.6s-.6,2.74-.6,5.02v11.64c0,2.8.17,4.73.53,5.81.35,1.07,1.05,1.61,2.11,1.61s1.74-.53,2.07-1.6.49-3,.49-5.8v-2.32h2.47v2.31c0,2.53-.14,4.36-.43,5.48-.29,1.11-.61,1.91-.97,2.39-.77,1.03-1.96,1.55-3.57,1.55s-2.83-.51-3.64-1.53c-1-1.25-1.5-3.87-1.5-7.85v-11.55h0"/> <path fill="#fff" d="M72.72,22.66c0-1.46-.07-2.53-.21-3.21-.13-.68-.37-1.14-.69-1.39-.33-.24-.83-.36-1.54-.36h-2.75v11.01h2.57c.83,0,1.41-.14,1.71-.43.31-.29.53-.76.69-1.43.15-.67.23-1.99.23-3.98v-.21h0M65.09,15.66h4.93c1.99,0,3.32.42,3.99,1.25.51.63.83,1.39.96,2.3.13.91.21,2.22.21,3.95s-.2,3.13-.6,4.23-1.09,1.77-2.07,2.03c.39.07.71.18.97.35s.5.46.71.87c.65,1.26.97,4.37.97,9.33,0,2.05.02,3.23.05,3.55.04.31.14.7.31,1.15h-2.43c-.17-.33-.28-.95-.31-1.87-.03-.91-.05-2.38-.05-4.39v-3.19c0-2.02-.13-3.31-.37-3.85-.25-.55-.98-.83-2.2-.83l-2.6-.17v14.3h-2.45V15.66h0Z"/> <polyline fill="#fff" points="79.01 15.66 86.66 15.66 86.66 17.57 81.45 17.57 81.45 28.9 86.35 28.9 86.35 30.9 81.45 30.9 81.45 42.71 86.61 42.71 86.61 44.66 79.01 44.66 79.01 15.66"/> <path fill="#fff" d="M97.44,23.66c0-2.11-.24-3.63-.73-4.56-.48-.93-1.24-1.4-2.27-1.4h-2.17v24.84h2.03c1.36,0,2.25-.62,2.67-1.86.33-1.02.49-2.55.49-4.58l-.02-12.44h0M89.82,15.66h4.47c2.61,0,4.26,1.07,4.97,3.19.42,1.24.63,2.93.63,5.07v12.42c.01,3.02-.41,5.16-1.27,6.41-.86,1.26-2.33,1.89-4.43,1.89h-4.37V15.66h0Z"/> <path fill="#fff" d="M110.61,36.74l-2.67-16.41h-.03l-2.45,16.41h5.16M106.61,15.66h2.5l5.15,29h-2.37l-.95-5.88h-5.8l-.87,5.88h-2.32l4.67-29h0Z"/> <path fill="#fff" d="M116.4,20.11c.17-1.57.63-2.77,1.39-3.59.76-.82,1.96-1.23,3.59-1.23s2.75.41,3.39,1.22c.35.44.63.88.83,1.32.42.89.63,3.01.65,6.36v1.63h-2.52v-1.81c0-2.55-.09-4.09-.25-4.63-.17-.54-.33-.95-.51-1.22-.32-.51-.89-.76-1.71-.76-1.67,0-2.51,1.55-2.51,4.67,0,1.09.11,1.83.31,2.21.21.39.37.69.47.91.1.22.81.98,2.1,2.27l1.58,1.6c2.34,2.41,3.51,5.17,3.51,8.28s-.45,5.17-1.35,6.15c-.89.99-2.22,1.49-3.98,1.49-2.7,0-4.25-1.63-4.66-4.89-.14-1.1-.21-2.45-.21-4.05v-3.01h2.51v2.97c0,2.61.17,4.41.52,5.41.35.99,1.05,1.49,2.11,1.49s1.74-.32,2.03-.96.45-1.42.48-2.33c.03-.91.04-1.89.04-2.93,0-2.15-.85-4.05-2.55-5.71l-1.68-1.6c-1.47-1.44-2.45-2.65-2.95-3.63s-.74-1.98-.74-3,.04-1.88.11-2.59"/> <path fill="#fff" d="M52.42,53.81l2.13-5.85h.87l2.15,5.85h-.79l-1.24-3.47c-.07-.21-.17-.48-.27-.8-.1-.32-.22-.73-.37-1.23h.14c-.14.5-.27.91-.37,1.24s-.19.59-.25.79l-1.21,3.47h-.8ZM53.49,52.18v-.65h3.01v.65h-3.01Z"/> <path fill="#fff" d="M62.6,53.91c-.42,0-.79-.07-1.1-.21s-.55-.33-.73-.57c-.17-.25-.27-.53-.3-.86h.77c.02.22.09.4.22.55.13.14.29.25.49.32s.41.11.64.11c.27,0,.5-.04.71-.13.21-.09.38-.21.5-.37.13-.16.19-.34.19-.55,0-.19-.05-.34-.16-.46s-.25-.21-.42-.29c-.17-.07-.37-.14-.58-.2l-.71-.2c-.47-.13-.84-.33-1.1-.57s-.39-.57-.39-.95c0-.33.09-.62.27-.87.18-.25.42-.44.72-.57.31-.13.65-.21,1.02-.21s.73.07,1.02.21c.29.13.53.32.7.55s.26.5.27.79h-.73c-.03-.29-.17-.51-.41-.66s-.53-.23-.88-.23c-.25,0-.47.04-.66.13-.19.08-.34.19-.44.34s-.16.31-.16.49c0,.21.07.37.19.49.13.13.28.22.45.29.17.07.33.13.47.16l.59.16c.16.04.33.1.52.17s.37.17.55.29.31.27.43.46.17.42.17.69c0,.32-.08.61-.25.87-.17.25-.41.46-.73.61-.31.15-.7.22-1.15.22h.01Z"/> <path fill="#fff" d="M65.81,53.81v-4.39h.69v.98h-.05c.06-.24.15-.43.29-.59s.28-.27.45-.35.35-.12.55-.12c.32,0,.58.1.77.29s.33.45.38.77h-.09c.05-.22.15-.41.29-.57s.31-.28.51-.37c.2-.09.41-.13.65-.13.25,0,.49.05.69.17s.37.27.5.5c.13.22.19.51.19.85v2.96h-.71v-2.94c0-.31-.09-.55-.27-.68s-.39-.21-.62-.21c-.2,0-.37.04-.51.13-.14.08-.25.19-.33.34s-.11.31-.11.49v2.87h-.71v-3.01c0-.25-.08-.44-.25-.59s-.37-.22-.62-.22c-.17,0-.33.04-.48.12-.15.08-.27.2-.36.35s-.14.35-.14.59v2.77h-.71,0Z"/> <path fill="#fff" d="M74.09,53.91c-.28,0-.53-.05-.75-.16s-.41-.26-.54-.46-.2-.45-.2-.73c0-.25.05-.45.15-.61s.23-.28.4-.37.35-.16.55-.2.41-.08.61-.11c.26-.03.47-.06.64-.08s.29-.05.37-.09.12-.12.12-.23v-.03c0-.18-.03-.34-.1-.47-.07-.13-.17-.23-.31-.29s-.31-.1-.51-.1-.39.03-.54.1-.27.15-.36.25-.16.2-.21.3l-.68-.22c.11-.27.27-.47.45-.63s.4-.26.63-.32.46-.09.69-.09c.15,0,.31.02.5.05s.37.11.54.21c.17.11.32.26.43.47s.17.48.17.82v2.89h-.69v-.59h-.05c-.05.1-.13.21-.24.31-.11.11-.25.2-.43.27s-.39.11-.63.11h-.01ZM74.21,53.29c.26,0,.48-.05.67-.15s.32-.23.41-.4.14-.33.14-.51v-.61s-.09.07-.19.09-.21.05-.33.07-.25.04-.36.05c-.11.01-.21.03-.28.03-.17.02-.33.06-.48.11s-.27.13-.35.23-.13.23-.13.4c0,.15.04.28.12.38s.19.18.32.23.29.08.47.08h0Z"/> <path fill="#fff" d="M77.37,53.81v-4.39h.69v.67h.05c.08-.22.23-.4.43-.54.21-.13.45-.2.71-.2h.19c.07,0,.13,0,.17,0v.71s-.07-.01-.16-.03-.17-.01-.27-.01c-.21,0-.4.05-.56.13-.17.09-.3.21-.39.36s-.14.33-.14.53v2.75h-.71Z"/> <path fill="#fff" d="M82.25,49.42v.61h-2.27v-.61h2.27ZM80.65,48.38h.71v4.29c0,.2.04.34.12.43.08.09.21.13.4.13.05,0,.1,0,.17-.01.07-.01.13-.02.19-.03l.15.59c-.07.03-.16.05-.25.06-.09.01-.19.02-.28.02-.38,0-.67-.1-.89-.3s-.32-.48-.32-.84v-4.35h0Z"/> <path fill="#fff" d="M85.11,53.91c-.42,0-.79-.07-1.1-.21s-.55-.33-.73-.57-.27-.53-.3-.86h.77c.02.22.09.4.22.55s.29.25.49.32.41.11.64.11c.27,0,.5-.04.71-.13s.38-.21.5-.37.19-.34.19-.55c0-.19-.05-.34-.16-.46s-.25-.21-.42-.29-.37-.14-.58-.2l-.71-.2c-.47-.13-.84-.33-1.1-.57s-.39-.57-.39-.95c0-.33.09-.62.27-.87.18-.25.42-.44.72-.57s.65-.21,1.02-.21.73.07,1.02.21.53.32.7.55c.17.23.26.5.27.79h-.73c-.03-.29-.17-.51-.41-.66-.24-.15-.53-.23-.88-.23-.25,0-.47.04-.66.13-.19.08-.34.19-.44.34-.11.14-.16.31-.16.49,0,.21.07.37.19.49.13.13.28.22.45.29.17.07.33.13.47.16l.59.16c.16.04.33.1.52.17s.37.17.55.29c.17.12.31.27.43.46s.17.42.17.69c0,.32-.08.61-.25.87s-.41.46-.73.61-.7.22-1.15.22h.01Z"/> <path fill="#fff" d="M90.17,53.91c-.43,0-.79-.09-1.1-.28-.31-.19-.55-.45-.71-.79-.17-.34-.25-.73-.25-1.18s.08-.85.25-1.19.39-.61.69-.81c.3-.19.65-.29,1.04-.29.23,0,.46.04.69.11.23.08.43.2.62.37s.33.4.44.68.17.62.17,1.03v.29h-3.41v-.59h3.03l-.33.22c0-.29-.05-.55-.13-.77-.09-.22-.23-.4-.4-.53-.18-.13-.4-.19-.67-.19s-.49.07-.68.19-.33.3-.43.51-.15.43-.15.67v.39c0,.33.06.6.17.83s.27.4.47.51.44.17.71.17c.17,0,.33-.03.47-.07s.27-.13.37-.23c.1-.1.18-.23.23-.37l.69.19c-.07.22-.18.41-.35.58s-.36.3-.6.39-.51.14-.81.14h0Z"/> <path fill="#fff" d="M94.32,53.91c-.28,0-.53-.05-.75-.16s-.41-.26-.54-.46-.2-.45-.2-.73c0-.25.05-.45.15-.61s.23-.28.4-.37.35-.16.55-.2.41-.08.61-.11c.26-.03.47-.06.64-.08s.29-.05.37-.09.12-.12.12-.23v-.03c0-.18-.03-.34-.1-.47-.07-.13-.17-.23-.31-.29s-.31-.1-.51-.1-.39.03-.54.1-.27.15-.36.25-.16.2-.21.3l-.68-.22c.11-.27.27-.47.45-.63s.4-.26.63-.32.46-.09.69-.09c.15,0,.31.02.5.05s.37.11.54.21c.17.11.32.26.43.47s.17.48.17.82v2.89h-.69v-.59h-.05c-.05.1-.13.21-.24.31-.11.11-.25.2-.43.27s-.39.11-.63.11h-.01ZM94.44,53.29c.26,0,.48-.05.67-.15s.32-.23.41-.4.14-.33.14-.51v-.61s-.09.07-.19.09-.21.05-.33.07-.25.04-.36.05c-.11.01-.21.03-.28.03-.17.02-.33.06-.48.11s-.27.13-.35.23-.13.23-.13.4c0,.15.04.28.12.38s.19.18.32.23.29.08.47.08h0Z"/> <path fill="#fff" d="M97.6,53.81v-4.39h.69v.67h.05c.08-.22.23-.4.43-.54.21-.13.45-.2.71-.2h.19c.07,0,.13,0,.17,0v.71s-.07-.01-.16-.03-.17-.01-.27-.01c-.21,0-.4.05-.56.13-.17.09-.3.21-.39.36s-.14.33-.14.53v2.75h-.71Z"/> <path fill="#fff" d="M102.28,53.91c-.4,0-.75-.09-1.05-.28-.3-.19-.53-.45-.7-.79s-.25-.73-.25-1.19.08-.86.25-1.2.4-.61.7-.79.65-.28,1.05-.28c.21,0,.41.03.6.08s.36.13.51.24c.15.11.29.23.4.38s.2.32.26.51l-.68.19c-.03-.11-.08-.21-.15-.31s-.15-.17-.24-.25c-.09-.07-.2-.13-.32-.16s-.25-.06-.39-.06c-.29,0-.53.07-.72.23-.19.15-.33.35-.42.6s-.14.52-.14.81.05.55.14.8c.09.25.23.45.42.6s.43.23.72.23c.15,0,.28-.02.41-.06s.23-.09.33-.17.17-.16.24-.26.11-.21.15-.33l.67.19c-.06.2-.14.37-.26.53-.11.15-.25.29-.41.39s-.33.19-.52.25c-.19.06-.39.09-.61.09h0Z"/> <path fill="#fff" d="M105.8,51.18v2.63h-.71v-5.85h.71v2.53h-.12c.13-.41.33-.69.57-.87s.54-.25.87-.25c.29,0,.55.06.78.18s.4.31.52.55c.13.25.19.55.19.93v2.79h-.71v-2.73c0-.34-.09-.6-.27-.79-.17-.19-.42-.29-.73-.29-.21,0-.4.05-.57.14s-.3.23-.39.4-.15.39-.15.64h0Z"/> <path fill="#fff" d="M114.57,53.89c-.5,0-.95-.12-1.34-.36s-.7-.59-.92-1.04c-.23-.45-.33-.98-.33-1.6s.11-1.15.33-1.61c.22-.45.53-.79.92-1.04.39-.25.84-.37,1.34-.37.29,0,.57.04.84.13.27.09.5.21.71.38s.39.37.53.61.23.51.29.81h-.75c-.04-.2-.11-.38-.21-.53-.1-.15-.23-.28-.37-.39-.15-.11-.31-.18-.48-.23s-.36-.08-.55-.08c-.35,0-.67.09-.95.27s-.51.44-.67.79-.25.77-.25,1.27.08.92.25,1.26c.17.35.39.61.67.78.28.18.6.27.95.27.19,0,.37-.03.55-.08.17-.05.33-.13.48-.23s.27-.23.37-.39.17-.33.21-.53h.75c-.05.3-.15.57-.29.8s-.31.44-.53.61-.45.29-.71.38c-.27.09-.55.13-.84.13h0Z"/> <path fill="#fff" d="M119.78,53.91c-.4,0-.75-.09-1.05-.28-.3-.19-.53-.45-.7-.79s-.25-.73-.25-1.19.08-.86.25-1.2.4-.61.7-.79.65-.28,1.05-.28.75.09,1.05.28.53.45.7.79.25.74.25,1.2-.08.85-.25,1.19-.4.61-.7.79-.65.28-1.05.28ZM119.78,53.27c.29,0,.54-.07.73-.23s.33-.35.43-.6.14-.51.14-.8-.05-.56-.14-.81c-.09-.25-.23-.45-.43-.61s-.43-.23-.73-.23-.53.07-.72.23c-.19.15-.33.35-.42.6s-.14.52-.14.81.05.55.14.8c.09.25.23.45.42.6s.43.23.72.23h0Z"/> <path fill="#fff" d="M122.81,53.81v-4.39h.69v.98h-.05c.06-.24.15-.43.29-.59.13-.15.28-.27.45-.35.17-.08.35-.12.55-.12.32,0,.58.1.77.29.2.2.33.45.38.77h-.09c.05-.22.15-.41.29-.57s.31-.28.51-.37c.2-.09.41-.13.65-.13.25,0,.49.05.69.17s.37.27.5.5c.13.22.19.51.19.85v2.96h-.71v-2.94c0-.31-.09-.55-.27-.68s-.39-.21-.62-.21c-.2,0-.37.04-.51.13-.14.08-.25.19-.33.34s-.11.31-.11.49v2.87h-.71v-3.01c0-.25-.08-.44-.25-.59s-.37-.22-.62-.22c-.17,0-.33.04-.48.12-.15.08-.27.2-.36.35s-.14.35-.14.59v2.77h-.71,0Z"/> <path fill="#fff" d="M129.86,55.45v-6.03h.69v.7h.08c.05-.08.12-.18.21-.3s.22-.23.39-.32.39-.14.68-.14c.37,0,.69.09.97.27s.5.45.65.79c.16.34.24.74.24,1.21s-.08.87-.23,1.21-.37.6-.65.79-.6.28-.97.28c-.28,0-.5-.05-.67-.14s-.3-.21-.39-.33-.16-.22-.21-.31h-.05v2.32h-.71ZM131.79,53.27c.27,0,.51-.07.69-.22.19-.15.32-.35.41-.59s.14-.53.14-.83-.05-.58-.14-.82c-.09-.25-.23-.44-.41-.59-.19-.15-.41-.21-.69-.21s-.49.07-.68.21-.32.33-.41.57-.14.53-.14.85.05.61.14.86.23.45.42.59.41.21.67.21h0Z"/> <path fill="#fff" d="M136.1,53.91c-.28,0-.53-.05-.75-.16s-.41-.26-.54-.46-.2-.45-.2-.73c0-.25.05-.45.15-.61s.23-.28.4-.37.35-.16.55-.2.41-.08.61-.11c.26-.03.47-.06.64-.08s.29-.05.37-.09.12-.12.12-.23v-.03c0-.18-.03-.34-.1-.47-.07-.13-.17-.23-.31-.29s-.31-.1-.51-.1-.39.03-.54.1-.27.15-.36.25-.16.2-.21.3l-.68-.22c.11-.27.27-.47.45-.63s.4-.26.63-.32.46-.09.69-.09c.15,0,.31.02.5.05s.37.11.54.21c.17.11.32.26.43.47s.17.48.17.82v2.89h-.69v-.59h-.05c-.05.1-.13.21-.24.31-.11.11-.25.2-.43.27s-.39.11-.63.11h-.01ZM136.22,53.29c.26,0,.48-.05.67-.15s.32-.23.41-.4.14-.33.14-.51v-.61s-.09.07-.19.09-.21.05-.33.07-.25.04-.36.05c-.11.01-.21.03-.28.03-.17.02-.33.06-.48.11s-.27.13-.35.23-.13.23-.13.4c0,.15.04.28.12.38s.19.18.32.23.29.08.47.08h0Z"/> <path fill="#fff" d="M140.09,51.18v2.63h-.71v-4.39h.68v1.07h-.09c.13-.41.33-.69.57-.87s.54-.25.87-.25c.29,0,.55.06.78.18.22.12.39.31.52.55.13.25.19.55.19.93v2.79h-.71v-2.73c0-.34-.09-.6-.27-.79-.17-.19-.42-.29-.73-.29-.21,0-.4.05-.57.14s-.3.23-.39.4-.15.39-.15.64h0Z"/> <path fill="#fff" d="M143.95,55.41l.18-.61.07.02c.15.03.27.05.39.03s.22-.07.32-.17.17-.25.25-.46l.13-.37-1.67-4.41h.77l.93,2.61c.1.27.18.54.25.81s.14.53.21.78h-.26c.07-.25.15-.51.22-.78s.15-.54.25-.81l.94-2.61h.77l-1.93,5.05c-.09.23-.19.43-.32.57s-.27.26-.43.33-.35.11-.56.11c-.13,0-.23,0-.33-.03s-.15-.03-.19-.05h0Z"/> </svg></div>
+  <span class="area">Connect training</span>
+</header>
+
+<main>
+  <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+
+  <section id="home">
+    <h1>Credas Connect training</h1>
+    <p class="lede">Practise the Portal on a safe copy filled with made-up records. Open a module to see its exercises, then work through them at your own pace.</p>
+    <div class="prog" id="prog" hidden aria-live="polite"></div>
+    <p class="devnote">These exercises work best on a laptop, desktop computer or tablet. On a phone, turn it sideways for more room.</p>
+    <div class="folders" id="folders"></div>
+    <p class="foot">Each exercise opens with an overview and a coach card that guides you step by step. Nothing you do in these exercises affects the live system.</p>
+  </section>
+
+  <section class="module" id="module" aria-live="polite"></section>
+</main>
+
+<script>
+const MODULES=[
+ {
+  "id": "individuals",
+  "name": "Individuals",
+  "desc": "Find people and tailor the list on the first screen you see after logging in.",
+  "long": "The Individuals tab lists everyone who has been invited or added, with their invite status, completion status and check results. These exercises cover finding the people you need, choosing what the list shows, reviewing the results of their checks and exploring the rest of their record.",
+  "items": [
+   {
+    "name": "Search and filter the list",
+    "desc": "Search by name, phone number, email address or reg code, filter from the toolbar, combine options in All filters, and clear them again.",
+    "id": "individuals-search-filter",
+    "mins": 5,
+    "outline": [
+     [
+      "Search",
+      [
+       "Search by name",
+       "Search by email address",
+       "Search by phone number",
+       "Copy a reg code",
+       "Search by reg code"
+      ]
+     ],
+     [
+      "Toolbar filters",
+      [
+       "Filter by status",
+       "Filter by ID type",
+       "Remove one filter",
+       "Clear all filters"
+      ]
+     ],
+     [
+      "All filters",
+      [
+       "Date range",
+       "Status",
+       "ID type",
+       "Journeys",
+       "Approval status",
+       "Invited by",
+       "Apply your filters",
+       "Clear all filters"
+      ]
+     ]
+    ],
+    "url": "individuals-search-filter.html"
+   },
+   {
+    "name": "Configure the table",
+    "desc": "Use Table Configuration to choose which details, documents and data checks appear as columns.",
+    "id": "individuals-table-config",
+    "mins": 3,
+    "outline": [
+     [
+      "Open the settings",
+      [
+       "Open the table settings",
+       "Open Table Configuration"
+      ]
+     ],
+     [
+      "Choose your columns",
+      [
+       "Details: hide Email",
+       "Details: show Approval Status",
+       "Documents: show Passport",
+       "Data Checks: hide Liveness",
+       "Data Checks: show Sanctions & PEPs"
+      ]
+     ],
+     [
+      "Apply",
+      [
+       "Apply your changes"
+      ]
+     ]
+    ],
+    "url": "individuals-table-config.html"
+   },
+   {
+    "name": "Review an individual's results",
+    "desc": "Open a record and review the Liveness, ID verification, Address and Mortality, and Sanctions and PEPs results, including their Info and Archive tabs.",
+    "id": "individuals-review-results",
+    "mins": 5,
+    "outline": [
+     [
+      "Open the record",
+      [
+       "Open Angela's record"
+      ]
+     ],
+     [
+      "Liveness",
+      [
+       "Liveness: open the result",
+       "Liveness: check the details",
+       "Liveness: see earlier attempts",
+       "Close the Liveness panel"
+      ]
+     ],
+     [
+      "ID verification",
+      [
+       "ID verification: open the result",
+       "ID verification: review every result",
+       "ID verification: see earlier checks",
+       "Close the ID verification panel"
+      ]
+     ],
+     [
+      "Address and Mortality",
+      [
+       "Address and Mortality: open the result",
+       "Address and Mortality: read the results",
+       "Close the Address and Mortality panel"
+      ]
+     ],
+     [
+      "Sanctions and PEPs",
+      [
+       "Sanctions and PEPs: open the review",
+       "Sanctions and PEPs: see earlier checks",
+       "Close the Sanctions and PEPs panel"
+      ]
+     ],
+     [
+      "Finish",
+      [
+       "Return to the list"
+      ]
+     ]
+    ],
+    "url": "individuals-review-results.html"
+   },
+   {
+    "name": "Explore an individual's record",
+    "desc": "Walk through every tab of a record: User Details, the contact summary, Quick Actions, each section of a journey, and the remaining tabs.",
+    "id": "individuals-record-tour",
+    "mins": 5,
+    "outline": [
+     [
+      "Open the record",
+      [
+       "Open Angela's record"
+      ]
+     ],
+     [
+      "User Details",
+      [
+       "Open User Details",
+       "Personal details",
+       "Account",
+       "Groups"
+      ]
+     ],
+     [
+      "Contact and Quick Actions",
+      [
+       "Contact information",
+       "Quick Actions"
+      ]
+     ],
+     [
+      "Processes",
+      [
+       "Open Processes",
+       "Open the process",
+       "Open the first section",
+       "Work through each section",
+       "Back to the record"
+      ]
+     ],
+     [
+      "Other tabs",
+      [
+       "Evidence and eSign Documents",
+       "Exports",
+       "Notes",
+       "Audit Trail"
+      ]
+     ]
+    ],
+    "url": "individuals-record-tour.html"
+   },
+   {
+    "name": "Approve or reject an individual",
+    "desc": "Add the Approval Status column, then approve Angela Specimen, reject her and reset her to pending from the Actions menu, without changing any of her check results.",
+    "id": "individuals-approve-reject",
+    "mins": 4,
+    "outline": [
+     [
+      "Find Angela",
+      [
+       "Find Angela"
+      ]
+     ],
+     [
+      "Show Approval Status",
+      [
+       "Open the table settings",
+       "Open Table Configuration",
+       "Show Approval Status",
+       "Apply the change"
+      ]
+     ],
+     [
+      "Approve",
+      [
+       "Open Angela's actions",
+       "Approve Angela"
+      ]
+     ],
+     [
+      "Reject and reset",
+      [
+       "Check the status",
+       "Reject Angela",
+       "Confirm the rejection",
+       "Reset to Pending"
+      ]
+     ]
+    ],
+    "url": "individuals-approve-reject.html"
+   }
+  ]
+ },
+ {
+  "id": "sending-journeys",
+  "name": "Sending journeys",
+  "desc": "Send journeys to people, whether they're already in the Portal or brand new.",
+  "long": "A journey is the set of checks you ask someone to complete. These exercises cover sending a journey to someone who's already in the Portal, and adding someone new and sending them a journey.",
+  "items": [
+   {
+    "name": "Send a journey to an existing individual",
+    "desc": "Use Quick Actions on Angela Specimen's record to send an Identity Only journey, choose how she's contacted, then find the new journey on her record.",
+    "id": "send-journey-existing",
+    "mins": 4,
+    "outline": [
+     [
+      "Open the record",
+      [
+       "Open Angela's record"
+      ]
+     ],
+     [
+      "Quick Actions",
+      [
+       "Open Quick Actions",
+       "Choose Create a journey",
+       "Click Complete now"
+      ]
+     ],
+     [
+      "Choose the journey",
+      [
+       "Choose what to send",
+       "Pick the journey",
+       "Add a description",
+       "Continue to contact methods"
+      ]
+     ],
+     [
+      "Contact methods",
+      [
+       "Choose how to contact Angela",
+       "Enter her email address",
+       "Enter her mobile number",
+       "Send the invite"
+      ]
+     ],
+     [
+      "Check the record",
+      [
+       "Close the confirmation",
+       "Find the new journey"
+      ]
+     ]
+    ],
+    "url": "send-journey-existing.html"
+   },
+   {
+    "name": "Add a new individual and send a journey",
+    "desc": "Add Jordan Specimen from the Individuals tab, create their profile, send them an Identity Only journey and find them at the top of the list.",
+    "id": "send-journey-new-individual",
+    "mins": 5,
+    "outline": [
+     [
+      "Start",
+      [
+       "Click Add new",
+       "Choose what to do"
+      ]
+     ],
+     [
+      "Personal information",
+      [
+       "Enter the first name",
+       "Enter the surname",
+       "Enter the date of birth",
+       "Add your reference",
+       "Confirm the personal details"
+      ]
+     ],
+     [
+      "Contact information",
+      [
+       "Enter the email address",
+       "Choose the dialling code",
+       "Enter the mobile number",
+       "Create the profile"
+      ]
+     ],
+     [
+      "Send the journey",
+      [
+       "Choose what to send",
+       "Pick the journey",
+       "Configure the journey",
+       "Send the invite"
+      ]
+     ],
+     [
+      "Check the result",
+      [
+       "Close the confirmation",
+       "Find Jordan in the list"
+      ]
+     ]
+    ],
+    "url": "send-journey-new-individual.html"
+   }
+  ]
+ },
+ {
+  "id": "reports",
+  "name": "Reports",
+  "desc": "Create PDF reports of a person's checks to save, share or keep on file.",
+  "long": "A PDF report brings together a person's checks and forms in one document. These exercises cover creating, previewing and downloading reports from a record.",
+  "items": [
+   {
+    "name": "Generate a PDF report",
+    "desc": "Use Quick Actions on Angela Specimen's record to export a report of her process, choose what to include, preview it and download it.",
+    "id": "reports-pdf",
+    "mins": 4,
+    "outline": [
+     [
+      "Open the record",
+      [
+       "Open Angela's record"
+      ]
+     ],
+     [
+      "Quick Actions",
+      [
+       "Open Quick Actions",
+       "Choose Export PDF Report",
+       "Click Complete now"
+      ]
+     ],
+     [
+      "Choose the report",
+      [
+       "Choose the report type",
+       "Select the process",
+       "Continue"
+      ]
+     ],
+     [
+      "Choose the contents",
+      [
+       "Select everything",
+       "See what's in Forms",
+       "Export the PDF"
+      ]
+     ],
+     [
+      "Review and download",
+      [
+       "Read through the report",
+       "Download the PDF",
+       "Close the preview"
+      ]
+     ]
+    ],
+    "url": "reports-pdf.html"
+   }
+  ]
+ },
+ {
+  "id": "data-checks",
+  "name": "Data checks",
+  "desc": "Run checks yourself from a record, without sending the person a journey.",
+  "long": "Some checks search databases using details you already hold, so you can run them yourself. These exercises cover running stand-alone data checks and reviewing the results.",
+  "items": [
+   {
+    "name": "Run a stand-alone data check",
+    "desc": "Run an Address and Mortality check, with a postcode lookup, and a Sanctions and PEPs check for Angela Specimen, then review both results.",
+    "id": "data-check-standalone",
+    "mins": 4,
+    "outline": [
+     [
+      "Open the record",
+      [
+       "Open Angela's record"
+      ]
+     ],
+     [
+      "Address and Mortality",
+      [
+       "Run an Address and Mortality check",
+       "Choose a profile",
+       "Search for the address",
+       "Choose the address",
+       "Run the check",
+       "Close the panel"
+      ]
+     ],
+     [
+      "Sanctions and PEPs",
+      [
+       "Run a Sanctions and PEPs check",
+       "Check the settings and run it",
+       "Close the panel"
+      ]
+     ],
+     [
+      "Review the results",
+      [
+       "Review the address result",
+       "Close the panel",
+       "View the Sanctions and PEPs result",
+       "Close the panel"
+      ]
+     ]
+    ],
+    "url": "data-check-standalone.html"
+   }
+  ]
+ },
+ {
+  "id": "remediation",
+  "name": "Remediation",
+  "desc": "Review checks that need a decision and record it, with comments, for compliance.",
+  "long": "Some checks come back as Pending validation, Refer or Fail and need a person to decide. These exercises cover updating a check's status, reading the detailed ID report, writing clear compliance comments and finding every change in Notes.",
+  "items": [
+   {
+    "name": "Remediate checks",
+    "desc": "Remediate Angela Specimen's Address and Mortality, Sanctions and PEPs and failed ID verification checks, using the detailed ID report and realistic compliance comments, then find every change under Notes.",
+    "id": "remediate-checks",
+    "mins": 7,
+    "outline": [
+     [
+      "Open the record",
+      [
+       "Open Angela's record"
+      ]
+     ],
+     [
+      "Address and Mortality",
+      [
+       "Review the address check",
+       "Open the status update",
+       "Set the status to Pass",
+       "Add a compliance comment",
+       "Confirm the change",
+       "Close the panel"
+      ]
+     ],
+     [
+      "Sanctions and PEPs",
+      [
+       "Review the sanctions check",
+       "Open the status update",
+       "Set the status to Pass",
+       "Add a compliance comment",
+       "Confirm the change",
+       "Close the panel"
+      ]
+     ],
+     [
+      "ID verification",
+      [
+       "Open the failed ID check",
+       "Open the detailed report",
+       "Read the report",
+       "Start the ID review",
+       "Set the status to Pass",
+       "Add a compliance comment",
+       "Confirm the data is correct",
+       "Confirm the review",
+       "Close the panel"
+      ]
+     ],
+     [
+      "Notes",
+      [
+       "Check the notes"
+      ]
+     ]
+    ],
+    "url": "remediate-checks.html"
+   }
+  ]
+ },
+ {
+  "id": "form-builder",
+  "name": "Form Builder",
+  "desc": "Design the forms that collect information inside a journey.",
+  "long": "Form Builder lets you create forms by dragging elements onto the page, then reuse them in journeys. These exercises cover building a form, passing answers through the Data Connector Source ID and adding conditional logic.",
+  "items": [
+   {
+    "name": "Build a Personal Details and Address form",
+    "desc": "Create a form with headings and questions, link each answer to its Data Connector Source ID, and show the UK address question only to UK residents.",
+    "id": "form-builder-personal-details",
+    "mins": 7,
+    "outline": [
+     [
+      "Open Forms",
+      [
+       "Open the Portal menu",
+       "Go to Journey Builder",
+       "Open Forms"
+      ]
+     ],
+     [
+      "Create the form",
+      [
+       "Add a new form",
+       "Give the form a title",
+       "Add a description",
+       "Make it active",
+       "Save the form"
+      ]
+     ],
+     [
+      "Personal Details",
+      [
+       "Add a heading",
+       "Write the heading",
+       "Add a text question",
+       "Name the question",
+       "Add a reference",
+       "Make it mandatory",
+       "Link it to the data connector",
+       "Save the question",
+       "Add the last name",
+       "Add the date of birth"
+      ]
+     ],
+     [
+      "Address and logic",
+      [
+       "Add an Address heading",
+       "Ask a yes or no question",
+       "Add the address question",
+       "Make it conditional",
+       "Save the conditional question"
+      ]
+     ]
+    ],
+    "url": "form-builder-personal-details.html"
+   }
+  ]
+ },
+ {
+  "id": "journey-builder",
+  "name": "Journey Builder",
+  "desc": "Build the journeys individuals go through, step by step.",
+  "long": "Journey Builder is where you design the sequence of steps an individual completes. These exercises cover creating a journey, adding forms, data checks and identity verification, and connecting the steps in order.",
+  "items": [
+   {
+    "name": "Create a new journey",
+    "desc": "Create the Enhanced AML journey from scratch: fill in its settings, add the Personal Details & Address form, two data checks and identity verification, then connect them in order.",
+    "id": "journey-builder-create",
+    "mins": 6,
+    "outline": [
+     [
+      "Open Process Builder",
+      [
+       "Open the Portal menu",
+       "Go to Journey Builder"
+      ]
+     ],
+     [
+      "Journey settings",
+      [
+       "Add a new journey",
+       "Give it a title",
+       "Add an internal description",
+       "Add an end user description",
+       "Choose the submission rules",
+       "Turn on the webhook",
+       "Set the completion method",
+       "Create the journey"
+      ]
+     ],
+     [
+      "Form step",
+      [
+       "Add the form step",
+       "Name the form step",
+       "Choose the form",
+       "Save the form step"
+      ]
+     ],
+     [
+      "Data checks",
+      [
+       "Add the address check",
+       "Connect the first two steps",
+       "Add the sanctions check",
+       "Connect the sanctions check"
+      ]
+     ],
+     [
+      "Identity verification",
+      [
+       "Add identity verification",
+       "Set up the ID check",
+       "Connect the final step"
+      ]
+     ]
+    ],
+    "url": "journey-builder-create.html"
+   }
+  ]
+ },
+ {
+  "id": "settings",
+  "name": "Settings",
+  "desc": "Manage who can use the Portal and how it's set up.",
+  "long": "Settings covers the people and configuration behind your account.",
+  "items": [
+   {
+    "name": "Add a new user",
+    "desc": "Give a colleague access to the Portal."
+   }
+  ]
+ }
+];
+const $=id=>document.getElementById(id);
+const ready=m=>m.items.filter(i=>i.url).length;
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+const PROG_KEY="credas-connect-training:progress";
+function progGet(){try{return JSON.parse(localStorage.getItem(PROG_KEY)||"{}")||{}}catch(e){return {}}}
+function renderProg(){const P=progGet(),all=MODULES.flatMap(m=>m.items).filter(e=>e.id),done=all.filter(e=>P[e.id]).length;
+  $("prog").hidden=false;$("prog").innerHTML=`<span><b>${done} of ${all.length}</b> exercises completed</span><span class="pbar" role="progressbar" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${done}"><i style="width:${Math.round(done/all.length*100)}%"></i></span>${done?'<button id="progClear">Clear my progress</button>':""}`;
+  if($("progClear"))$("progClear").onclick=()=>{if(confirm("Clear your progress on this device? Completed ticks will be removed from every exercise.")){try{localStorage.removeItem(PROG_KEY)}catch(e){}renderHome();renderProg()}}}
+function doneIn(m){const P=progGet();return m.items.filter(e=>e.id&&P[e.id]).length}
+function renderHome(){
+  $("folders").innerHTML=MODULES.map(m=>{const n=ready(m);
+    return `<button class="folder ${n?"ready":"soon"}" data-id="${m.id}" aria-label="Open ${esc(m.name)}, ${n?n+" exercise"+(n>1?"s":"")+" ready":"coming soon"}">
+      <span class="tab"></span>
+      <span class="body"><span class="sheet"></span><span class="sheet"></span><span class="front"></span>
+        <span class="content"><h2>${esc(m.name)}</h2><p>${esc(m.desc)}</p>
+        <span class="count"><i></i>${n?`${n} exercise${n>1?"s":""} ready`:"Coming soon"}${n&&doneIn(m)?`<span class="done">\u2713 ${doneIn(m)} done</span>`:""}</span></span></span>
+    </button>`}).join("");
+}
+function countSteps(e){return e.outline.reduce((a,g)=>a+g[1].length,0)}
+function stepsPanel(e,id){let n=0;
+  return `<div class="stepsPanel" id="${id}" hidden><div class="sgroups">${e.outline.map(([g,items])=>`<div class="sg"><b>${esc(g)}</b><ol start="${n+1}">${items.map(t=>(n++,`<li>${esc(t)}</li>`)).join("")}</ol></div>`).join("")}</div></div>`}
+function renderModule(m){
+  const n=ready(m);
+  $("module").innerHTML=`<div class="mhead"><div class="ico" aria-hidden="true"><span></span></div><div><h1>${esc(m.name)}</h1><p class="lede">${esc(m.long)}</p></div></div>
+    <ol class="files">${m.items.map((e,i)=>{const dn=e.id&&progGet()[e.id];return `<li class="file ${e.url?"":"soon"}${dn?" isdone":""}">
+      <span class="num" aria-hidden="true">${dn?"\u2713":i+1}</span>
+      <div><h3>${esc(e.name)}</h3><p>${esc(e.desc)}</p>${e.url?`<div class="facts"><button class="stepsBtn" aria-expanded="false" aria-controls="steps-${m.id}-${i}">${countSteps(e)} steps<svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg></button><span>About ${e.mins} minutes</span></div>`:""}</div>
+      <div class="act">${dn?`<span class="doneTag">\u2713 Completed</span>`:""}${e.url?`<a class="start" href="${e.url}" target="_self">${dn?"Start again":"Start exercise"}</a>`:`<span class="soonTag">Coming soon</span>`}</div>
+      ${e.outline?stepsPanel(e,`steps-${m.id}-${i}`):""}
+    </li>`}).join("")}</ol>
+    ${n?"":`<p class="foot">Exercises for this module are being built. Check back soon.</p>`}
+    <button class="back" id="backBtn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2L4 7l5 5"/></svg>All modules</button>`;
+  $("backBtn").onclick=()=>go("");
+  $("module").querySelectorAll(".stepsBtn").forEach(b=>b.onclick=()=>{const p=$(b.getAttribute("aria-controls"));const open=p.hidden;p.hidden=!open;b.setAttribute("aria-expanded",String(open))});
+}
+function route(){
+  const id=location.hash.slice(1),m=MODULES.find(x=>x.id===id);
+  if(m){
+    $("home").hidden=true;renderModule(m);$("module").classList.remove("show");void $("module").offsetWidth;$("module").classList.add("show");
+    $("crumbs").innerHTML=`<a href="#" data-home>Training area</a><span class="sep">/</span><b>${esc(m.name)}</b>`;
+    document.title=m.name+" | Credas Connect training";
+    $("module").querySelector("h1").setAttribute("tabindex","-1");$("module").querySelector("h1").focus({preventScroll:true});
+  }else{
+    $("home").hidden=false;$("module").classList.remove("show");$("module").innerHTML="";
+    $("crumbs").innerHTML=`<b>Training area</b>`;document.title="Credas Connect training";
+  }
+  window.scrollTo(0,0);
+}
+function go(id){if(location.hash.slice(1)===id)route();else location.hash=id}
+$("folders").onclick=e=>{const f=e.target.closest(".folder");if(f)go(f.dataset.id)};
+$("crumbs").onclick=e=>{if(e.target.closest("[data-home]")){e.preventDefault();go("")}};
+window.addEventListener("hashchange",route);
+renderHome();renderProg();route();window.addEventListener("pageshow",()=>{renderHome();renderProg();const id=location.hash.slice(1);if(id)route()});window.addEventListener("storage",e=>{if(e.key===PROG_KEY){renderHome();renderProg()}});
+</script>
+</body>
+</html>
