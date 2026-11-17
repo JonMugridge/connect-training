@@ -11,6 +11,7 @@ data-check-standalone.html          Data checks module
 remediate-checks.html               Remediation module
 form-builder-personal-details.html  Form Builder module
 journey-builder-create.html         Journey Builder module
+settings-*.html                     Settings module (5 exercises)
 
 Every page is a single self-contained file (images included). The pages
 link to each other by file name, so keep all the files together in one
@@ -26,7 +27,7 @@ Progress tracking
 -----------------
 When an exercise is finished, it is recorded in the learner's browser
 (localStorage, key "credas-connect-training:progress"). The training area
-then shows "X of 12 exercises completed", a tick on each finished
+then shows "X of 17 exercises completed", a tick on each finished
 exercise and a count on each folder, and every "Exercise complete" screen
 marks all finished exercises. Learners can reset it with
 "Clear my progress" in the training area.
@@ -42,8 +43,7 @@ Devices and browsers
 Current Chrome, Edge, Safari and Firefox on Windows, Mac, iPad and
 Android tablets. Best on a laptop, desktop or tablet.
 
-The "Listen to overview" voice uses each browser's built-in voice, with
-soft background music that can be switched off with the Music button;
+The "Listen to overview" voice uses each browser's built-in voice;
 Microsoft Edge has the most natural UK voices.
 
 All names, emails, references, addresses and postcodes are made up. The

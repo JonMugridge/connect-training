@@ -774,9 +774,177 @@ const MODULES=[
  {
   "id": "settings",
   "name": "Settings",
-  "desc": "Manage who can use the Portal and how it's set up.",
-  "long": "Settings covers the people and configuration behind your account.",
+  "desc": "Change settings that apply across the whole portal you're in.",
+  "long": "Settings holds options that apply across the whole portal you're in, for every user and every invite. These exercises cover each settings card in turn: the portal name and logo, invite rules, ongoing monitoring, deletion rules and the ID check report.",
   "items": [
+   {
+    "name": "Change a portal's name and logo",
+    "desc": "Rename a portal and change its logo from the Branding card in Settings. This isn't where a client's full branding is set up: that's the dedicated Branding module.",
+    "id": "settings-branding",
+    "mins": 3,
+    "outline": [
+     [
+      "Open the Branding card",
+      [
+       "Open Settings",
+       "Open the Branding card"
+      ]
+     ],
+     [
+      "Name and logo",
+      [
+       "Rename the portal",
+       "Upload a new logo",
+       "Choose the logo file"
+      ]
+     ],
+     [
+      "Save",
+      [
+       "Save your changes",
+       "Back to Settings"
+      ]
+     ]
+    ],
+    "url": "settings-branding.html"
+   },
+   {
+    "name": "Set invite rules",
+    "desc": "Set when invites expire, lock completed processes, apply the rules to all invites, and send reminders by email and SMS after 1, 2 and 3 days.",
+    "id": "settings-invite-rules",
+    "mins": 3,
+    "outline": [
+     [
+      "Open Invite rules",
+      [
+       "Open Settings",
+       "Open Invite rules"
+      ]
+     ],
+     [
+      "Expiry and locking",
+      [
+       "Set when invites expire",
+       "Lock completed processes",
+       "Apply the rules to all invites"
+      ]
+     ],
+     [
+      "Reminders",
+      [
+       "Add SMS reminders",
+       "Set the reminders"
+      ]
+     ],
+     [
+      "Save",
+      [
+       "Save the rules",
+       "Close the confirmation"
+      ]
+     ]
+    ],
+    "url": "settings-invite-rules.html"
+   },
+   {
+    "name": "Set up ongoing monitoring",
+    "desc": "Switch on ongoing monitoring (OGM) so every Sanctions and PEPs check in the portal is re-checked automatically, and choose how long it runs.",
+    "id": "settings-ongoing-monitoring",
+    "mins": 3,
+    "outline": [
+     [
+      "Open Ongoing monitoring",
+      [
+       "Open Settings",
+       "Open Ongoing monitoring"
+      ]
+     ],
+     [
+      "Set it up",
+      [
+       "Turn on monitoring",
+       "Choose how long",
+       "Choose the period"
+      ]
+     ],
+     [
+      "Save",
+      [
+       "Save the changes",
+       "Close the confirmation"
+      ]
+     ]
+    ],
+    "url": "settings-ongoing-monitoring.html"
+   },
+   {
+    "name": "Set deletion rules",
+    "desc": "Set the four archive and delete rules that tidy up a portal automatically, and understand why deletion can't be undone.",
+    "id": "settings-deletion-rules",
+    "mins": 3,
+    "outline": [
+     [
+      "Open Deletion rules",
+      [
+       "Open Settings",
+       "Open Deletion rules"
+      ]
+     ],
+     [
+      "Archive rules",
+      [
+       "Archive completed journeys",
+       "Archive inactive journeys"
+      ]
+     ],
+     [
+      "Delete rules",
+      [
+       "Delete completed records",
+       "Delete inactive records"
+      ]
+     ],
+     [
+      "Save",
+      [
+       "Save the rules",
+       "Close the confirmation"
+      ]
+     ]
+    ],
+    "url": "settings-deletion-rules.html"
+   },
+   {
+    "name": "Choose what the ID check report includes",
+    "desc": "Choose which Sanctions and PEPs sections every exported ID Check Report includes by default.",
+    "id": "settings-id-check-report",
+    "mins": 3,
+    "outline": [
+     [
+      "Open ID check report",
+      [
+       "Open Settings",
+       "Open ID check report"
+      ]
+     ],
+     [
+      "Choose the sections",
+      [
+       "Include notes",
+       "Include law enforcement",
+       "Include disqualified directors"
+      ]
+     ],
+     [
+      "Save",
+      [
+       "Save the settings",
+       "Close the confirmation"
+      ]
+     ]
+    ],
+    "url": "settings-id-check-report.html"
+   },
    {
     "name": "Add a new user",
     "desc": "Give a colleague access to the Portal."
