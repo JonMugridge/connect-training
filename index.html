@@ -29,11 +29,11 @@ a{color:inherit}
 .wrap{max-width:1160px;margin:0 auto;padding:0 28px}
 /* top bar */
 .top{background:var(--navy);color:var(--navy-ink)}
-.top .wrap{display:flex;align-items:center;gap:18px;height:62px}
-.top .brand{display:flex;align-items:center;gap:16px;text-decoration:none}
-.top .brand svg{height:30px;width:auto}
-.top .brand span{border-left:1px solid #ffffff33;padding-left:16px;font:600 14px var(--display);color:var(--gold);letter-spacing:.01em}
-.top nav{margin-left:auto;display:flex;gap:22px;font-size:13.5px}
+.top .wrap{display:flex;align-items:center;gap:18px;height:78px}
+.top .brand{display:flex;align-items:center;gap:20px;text-decoration:none}
+.top .brand svg{height:44px;width:auto}
+.top .brand span{border-left:1px solid #ffffff33;padding-left:20px;font:600 20px var(--display);color:var(--gold);letter-spacing:.01em}
+.top nav{margin-left:auto;display:flex;gap:24px;font-size:14.5px}
 .top nav a{text-decoration:none;color:var(--navy-muted)}
 .top nav a:hover{color:#fff}
 /* hero */
@@ -158,6 +158,7 @@ footer{color:var(--muted);font-size:12.5px;padding:40px 0 48px}
   .coach{width:200px;left:-24px}
   .screen td:nth-child(4){display:none}
 }
+@media (max-width:560px){.top .wrap{height:64px}.top .brand svg{height:34px}.top .brand span{font-size:16px;padding-left:14px}.top .brand{gap:14px}}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
 
 /* intro animation */
