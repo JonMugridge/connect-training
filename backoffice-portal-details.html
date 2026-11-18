@@ -1296,7 +1296,7 @@ const PUB_J=["2024 - Material Information","Companies House ID Verification","Co
 const PRIV_J=["Identity - Web & App","Identity | Address - Web & App","Identity | Address | International Screening - App (passport only)","Identity | Address | International Screening | Open Banking - Web & App","Identity | Address | International Screening | POA - Web & App","Identity | Address | International Screening | Source of Funds - Web & App","Tenant referencing - Web & App"];
 const JR_PICK="Identity | Address | International Screening";
 const jlabel=s=>esc(s).replace(/ \| /g,' <b class="jp">|</b> ');
-function jrnHTML(sel,cols){return `<p class="cnote">Choose which journeys this portal can send. Public journeys are available to every portal, parent journeys come from a reseller, and private journeys belong to this portal alone.</p><div class="jcols">${cols.map((c,ci)=>`<div class="jcol"><h4>${esc(c.title)}</h4>${c.items.length?`<div class="jsel">Select <button class="jall" data-jall="${ci}">\u2713 All</button><button class="jall" data-jnone="${ci}">\u2715 None</button></div><div class="jlist">${c.items.map(it=>{const k=ci+"|"+it;return `<label class="jrow"><input type="checkbox" data-jk="${esc(k)}" ${sel[k]?"checked":""}><span>${jlabel(it)}</span></label>`}).join("")}</div>`:`<p class="jempty">No parent journeys. A Standard portal doesn't sit under a reseller.</p>`}</div>`).join("")}</div>`}
+function jrnHTML(sel,cols){return `<p class="cnote">Choose which journeys this portal can send. Public journeys are available to every portal, parent journeys come from a reseller, and private journeys belong to this portal alone.</p><div class="jcols">${cols.map((c,ci)=>`<div class="jcol"><h4>${esc(c.title)}</h4>${c.items.length?`<div class="jsel">Select <button class="jall" data-jall="${ci}">\u2713 All</button><button class="jall" data-jnone="${ci}">\u2715 None</button></div><div class="jlist">${c.items.map(it=>{const k=ci+"|"+it;return `<label class="jrow"><input type="checkbox" data-jk="${esc(k)}" ${sel[k]?"checked":""}><span>${jlabel(it)}</span></label>`}).join("")}</div>`:""}</div>`).join("")}</div>`}
 function bindJrn(root,sel,cols,after){
   root.querySelectorAll("[data-jk]").forEach(x=>x.onchange=()=>{if(x.checked)sel[x.dataset.jk]=1;else delete sel[x.dataset.jk];after(false)});
   root.querySelectorAll("[data-jall]").forEach(b=>b.onclick=()=>{const ci=+b.dataset.jall;cols[ci].items.forEach(it=>sel[ci+"|"+it]=1);after(true)});
@@ -1681,6 +1681,18 @@ const MODULES=[
     "desc": "Enter a client's own provider credentials on the Settings tab using custom settings",
     "id": "backoffice-portal-settings",
     "url": "backoffice-portal-settings.html"
+   },
+   {
+    "name": "Choose a portal's applications",
+    "desc": "Turn features and modules on or off on the Applications tab, leaving Branding and Journey Builder off",
+    "id": "backoffice-portal-applications",
+    "url": "backoffice-portal-applications.html"
+   },
+   {
+    "name": "Choose a portal's journeys",
+    "desc": "Select public and private journeys on the Journeys tab, and see a portal with no private journeys",
+    "id": "backoffice-portal-journeys",
+    "url": "backoffice-portal-journeys.html"
    }
   ]
  }

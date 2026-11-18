@@ -287,6 +287,36 @@ input{font:inherit;color:inherit}
 .pbusy b{font-size:19px}.pbusy i{width:46px;height:46px;border-radius:50%;border:4px solid transparent;border-top-color:#2D2E3F;border-right-color:#2D2E3F;animation:sp 1s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 @media (max-width:760px){.cds{grid-template-columns:1fr}.bill{grid-template-columns:1fr}}
+.ctabs.tabsin button:not(:first-child){animation:tabin .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i) * 60ms + 150ms)}
+.ctabs.tabsin .ugname{animation:tabin .5s ease both .4s}
+@keyframes tabin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ctabs.tabsin button,.ctabs.tabsin .ugname{animation:none}}
+.jcols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.jcol h4{font-size:13.5px;margin:0 0 12px}
+.jsel{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:12px}
+.jall{border:0;border-radius:999px;background:var(--nav);color:#fff;font-size:11.5px;font-weight:600;padding:6px 12px;cursor:pointer}
+.jall:hover{background:#3B3D52}
+.jlist{display:flex;flex-direction:column;gap:2px}
+.jrow{display:flex;align-items:flex-start;gap:9px;font-size:11px;padding:5px 2px;cursor:pointer;border-radius:4px;width:max-content;max-width:100%}
+.jrow input{width:17px;height:17px;accent-color:#2D2E3F;flex:none;margin:0}
+.jp{color:#E08A1E;font-weight:400;margin:0 1px}
+.jempty{font-size:11.5px;color:#8A8C99}
+@media (max-width:900px){.jcols{grid-template-columns:1fr}}
+.rotree{border:1px solid #DADBDF;border-radius:3px;padding:6px 10px}
+.rorow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:12px;align-items:center;padding:3px 0}
+.rol{display:flex;align-items:center;gap:8px;font-size:11px}.rol b{font-weight:600}.rol b.rtop{font-size:12px;font-weight:700}.rol b.mid{font-size:11.5px}
+.ror{display:flex;align-items:center;gap:10px;font-size:11px}.ror input{width:18px;height:18px;accent-color:#2D2E3F;flex:none}
+.cset{display:grid;grid-template-columns:1fr 1fr;gap:28px}.cset h3,.capi h3{font-size:15px;margin:14px 0 8px}
+.cset input,.cset select,.cds2 select{width:100%;height:30px;border:1px solid #9a9ca5;border-radius:3px;background:#fff;margin-bottom:8px;font:inherit;font-size:12px}
+.cds2{display:grid;grid-template-columns:2fr 1fr;gap:28px}.cds2 h4{font-size:11.5px;margin:12px 0 5px}
+.crd.dim{opacity:.45}
+.cupd{display:flex;justify-content:flex-end;margin-top:14px}.cupd button{height:32px;border:0;border-radius:999px;background:#ECEDEF;color:#BFC1C7;padding:0 18px;font-weight:600;font-size:12px}
+.cboh{font-size:15px;margin:4px 0 12px}.cbo{display:flex;flex-direction:column;gap:9px}
+.noinfo{background:#E6E7EA;color:#55586a;font-size:12px;padding:14px;margin:0}
+.mapsel{width:100%;height:28px;border:1px solid #DADBDF;border-radius:3px;font-size:11px;color:#8A8C99;background:#fff}
+.mlinks div{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;font-weight:600;padding:6px 0;max-width:480px}
+.capi .pill{height:30px;border-radius:999px;border:1px solid #9a9ca5;padding:0 16px;font-size:11.5px;background:#fff}
+@media (max-width:760px){.cset,.cds2{grid-template-columns:1fr}}
 /* dropdown */
 .drop{position:absolute;top:34px;left:0;background:#fff;border-radius:4px;box-shadow:0 2px 4px -1px #0003,0 4px 5px #00000024,0 1px 10px #0000001f;z-index:40;padding:6px 6px 8px;display:none;min-width:100%}
 .drop.show{display:block}
@@ -944,10 +974,11 @@ function drawAdm(){
   if(AD.page==="list"&&AD.tab==="children"){
     const rows=AD.children.slice().sort((a,b)=>a[0].localeCompare(b[0]));
     v.innerHTML=bar("Search by client name")+`<div class="atw"><table class="atbl"><thead><tr><th>Client \u2191</th><th>Email address</th><th>Phone number</th><th class="c">Credas Plus</th><th class="c">Portal Type</th><th class="c" style="width:50px"></th></tr></thead><tbody>
-    ${rows.map(c=>`<tr class="${c[5]?"newrow":""}"><td>${esc(c[0])}</td><td>${esc(c[1])}</td><td>${esc(c[2])}</td><td class="c">${tc(c[3])}</td><td class="c">${esc(c[4])}</td><td class="c"><button class="ibin cedit" data-copen="${esc(c[0])}" aria-label="Open ${esc(c[0])}"><svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1E1F2B"/><path d="M8 16l1-3 5-5 2 2-5 5zM14.5 7.5l2 2" stroke="#fff" stroke-width="1.4" fill="none"/></svg></button></td></tr>`).join("")}</tbody></table>
+    ${rows.map(c=>`<tr class="click${c[5]?" newrow":""}"><td><button class="lnk" data-copen="${esc(c[0])}">${esc(c[0])}</button></td><td>${esc(c[1])}</td><td>${esc(c[2])}</td><td class="c">${tc(c[3])}</td><td class="c">${esc(c[4])}</td><td class="c"><button class="ibin cedit" data-cgo="${esc(c[0])}" aria-label="Go to the ${esc(c[0])} portal" title="Go to portal"><svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1E1F2B"/><path d="M7 9.5h9.5l-2.6-2.6M17 14.5H7.5l2.6 2.6" stroke="#fff" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td></tr>`).join("")}</tbody></table>
     <div class="pager">Items per page: 20 \u25BE<span>1 \u2013 ${rows.length} of ${rows.length}</span></div></div>`;
     $("auAdd").onclick=()=>{if(AD.childMade){toast("Acme Lettings North has already been created.");return}AD.page="childnew";AD.ctab="Details";drawAdm();setTimeout(()=>$("cName")&&$("cName").focus(),40);check()};
-    v.querySelectorAll("[data-copen]").forEach(b=>b.onclick=()=>{if(b.dataset.copen===NEWC.name&&AD.childMade){AD.page="child";drawAdm();check()}else toast("Open the child portal you created, Acme Lettings North.")});bindNoop();return}
+    v.querySelectorAll("[data-copen]").forEach(b=>b.onclick=()=>{if(b.dataset.copen===NEWC.name&&AD.childMade){AD.page="child";drawAdm();check()}else toast("Open the child portal you created, Acme Lettings North.")});
+    v.querySelectorAll("[data-cgo]").forEach(b=>b.onclick=()=>toast(`This icon takes you straight into the ${b.dataset.cgo} portal itself. To see its settings, click its name instead.`));bindNoop();return}
   if(AD.page==="childnew"||AD.page==="child"){drawChild(v);return}
   if(AD.page==="list"&&AD.tab==="roles"){
     v.innerHTML=`<div class="abar" style="justify-content:flex-end"><button class="add" id="auAdd"><b>+</b> Add new</button><button class="icon" data-noop aria-label="Full screen">\u26F6</button></div><div class="atw"><table class="atbl"><thead><tr><th style="width:24%">Name</th><th>Description</th><th class="c" style="width:90px">Active</th><th class="c" style="width:60px"></th></tr></thead><tbody>
@@ -1051,16 +1082,18 @@ function drawChild(v){
   let body="";
   if(t==="Details"){body=`<div class="ugpad cdet">${cfield("cName","Name",f.name,made?"readonly":"")}${cfield("cEmail","Email address",f.email,made?"readonly":"")}${cfield("cXero","Xero ID",f.xero)}${cfield("cHub","HubSpot ID",f.hub)}
      <label class="f2" for="cBill">Billing Portal</label><div class="bill"><input type="text" id="cBill" value="${esc(f.billing)}"><span>If a billing portal is specified, all activity on this portal will be billed as if on the specified portal.</span></div>
-     <label class="f2" for="cAuth">Authentication method</label><select id="cAuth" ${made?"disabled":""}><option value="" ${f.auth?"":"selected"}>&nbsp;</option>${["Authenticator app","Password and Pin"].map(o=>`<option ${o===f.auth?"selected":""}>${o}</option>`).join("")}</select>
+     <label class="f2" for="cAuth">Authentication method</label><select id="cAuth" ${made?"disabled":""}><option value="" ${f.auth?"":"selected"}>&nbsp;</option>${["Either","Password and Pin","Authenticator app"].map(o=>`<option ${o===f.auth?"selected":""}>${o}</option>`).join("")}</select>
      ${cfield("cTel","Telephone number",f.tel)}${cfield("cInd","Industry Types",f.ind)}
      <label class="f2" for="cType">Portal Type</label><select id="cType" class="half" ${made?"disabled":""}><option value="" ${f.type?"":"selected"}>&nbsp;</option>${["Active","Inactive","Test"].map(o=>`<option ${o===f.type?"selected":""}>${o}</option>`).join("")}</select>
      <label class="f2" style="margin-top:12px">Credas Plus</label><span class="fsw${f.plus?" on":""}" id="cPlus" role="switch" aria-checked="${f.plus}" tabindex="0"><i></i>Credas Plus</span>
      <label class="f2" style="margin-top:12px">Display previously submitted data on guest registrations</label><span class="fsw${f.disp?" on":""}" id="cDisp" role="switch" aria-checked="${f.disp}" tabindex="0"><i></i>Display data</span>
      ${made?"":`<div class="uft" style="margin-top:20px"><button class="c1" id="cBack">Back</button><button class="c2${cOk()?" go":""}" id="cCreate" ${cOk()?"":"disabled"}>Create</button></div>`}</div>`}
-  else body=`<div class="ugpad ctab">${CTAB_HTML[t]||`<p class="emptyr">The ${esc(t)} tab is covered in the Back Office module.</p>`}</div>`;
-  v.innerHTML=`<div class="ugpage">${made?back("Back to Child portals"):""}<div class="ugcard"><div class="ugtabs ctabs" role="tablist">${tabs.map(x=>`<button role="tab" aria-selected="${x===t}" class="${x===t?"on":""}" data-ctab="${x}">${x}</button>`).join("")}${made?`<span class="ugname">${esc(f.name)}</span>`:""}</div>${body}</div></div>`;
+  else if(t==="Journeys"){AD.jcols=[{title:"Connect public journeys",items:PUB_J},{title:"Acme Lettings parent journeys",items:["Identity | Address | International Screening - Web & App","Open Banking - Web & App"]},{title:f.name+" private journeys",items:PRIV_J.slice(0,5)}];AD.jsel=AD.jsel||{};body=`<div class="ugpad">${jrnHTML(AD.jsel,AD.jcols)}</div>`}
+  else body=`<div class="ugpad ctab">${ctabHTML(t)||`<p class="emptyr">The ${esc(t)} tab is covered in the Back Office module.</p>`}</div>`;
+  v.innerHTML=`<div class="ugpage">${made?back("Back to Child portals"):""}<div class="ugcard"><div class="ugtabs ctabs${AD.justMade?" tabsin":""}" role="tablist">${tabs.map((x,i)=>`<button role="tab" aria-selected="${x===t}" class="${x===t?"on":""}" data-ctab="${x}" style="--i:${i}">${x}</button>`).join("")}${made?`<span class="ugname">${esc(f.name)}</span>`:""}</div>${body}</div></div>`;
   const q=id=>document.getElementById(id);
   if(made)$("ugBack").onclick=()=>goTab("children");
+  if(t==="Journeys")bindJrn(v,AD.jsel,AD.jcols,full=>{if(full){const s=v.scrollTop;drawAdm();$("admView").scrollTop=s}check()});
   v.querySelectorAll("[data-ctab]").forEach(b=>b.onclick=()=>{AD.ctab=b.dataset.ctab;AD.seen[AD.ctab]=1;drawAdm();check()});
   if(t==="Details"&&!made){
     [["cName","name"],["cEmail","email"],["cXero","xero"],["cHub","hub"],["cBill","billing"],["cTel","tel"],["cInd","ind"]].forEach(([id,k])=>q(id).oninput=e=>{f[k]=k==="email"?e.target.value.trim():e.target.value;const b=q("cCreate");b.disabled=!cOk();b.classList.toggle("go",!!cOk());check()});
@@ -1068,22 +1101,58 @@ function drawChild(v){
     q("cType").onchange=e=>{f.type=e.target.value;const b=q("cCreate");b.disabled=!cOk();b.classList.toggle("go",!!cOk());check()};
     [["cPlus","plus"],["cDisp","disp"]].forEach(([id,k])=>{const x=q(id),tg=()=>{f[k]=!f[k];x.classList.toggle("on",f[k]);x.setAttribute("aria-checked",f[k])};x.onclick=tg;x.onkeydown=e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();tg()}}});
     q("cBack").onclick=()=>goTab("children");
-    q("cCreate").onclick=()=>{if(!cOk())return;AD.busy=true;$("pbusy")&&$("pbusy").classList.add("show");check();setTimeout(()=>{AD.busy=false;$("pbusy")&&$("pbusy").classList.remove("show");AD.children.push([f.name.trim(),f.email,f.tel,f.plus?1:0,f.type,1]);AD.childMade=true;AD.page="child";AD.ctab="Details";drawAdm();toast(`${f.name.trim()} has been created. Its settings tabs are now available.`);check()},1200)};
+    q("cCreate").onclick=()=>{if(!cOk())return;AD.busy=true;$("pbusy")&&$("pbusy").classList.add("show");check();setTimeout(()=>{AD.busy=false;$("pbusy")&&$("pbusy").classList.remove("show");AD.children.push([f.name.trim(),f.email,f.tel,f.plus?1:0,f.type,1]);AD.childMade=true;AD.page="child";AD.ctab="Details";AD.justMade=true;drawAdm();AD.justMade=false;$("admView").scrollTop=0;window.scrollTo(0,0);toast(`${f.name.trim()} has been created. Its settings tabs are now available.`);check()},1200)};
   }
 }
 const CK=(t,on)=>`<label class="ck2 cck"><input type="checkbox" ${on?"checked":""} disabled>${t}</label>`;
-const RD=(t,on)=>`<label class="crd"><input type="radio" ${on?"checked":""} disabled>${t}</label>`;
+const PEN='<svg width="11" height="11" viewBox="0 0 24 24" fill="#1E1F2B"><path d="M3 17.2V21h3.8L17.8 9.9l-3.8-3.8zM20.7 7a1 1 0 0 0 0-1.4l-2.3-2.3a1 1 0 0 0-1.4 0l-1.8 1.8 3.8 3.8z"/></svg>';
+const HIS='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1E1F2B" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>';
+function rotree(nodes,d){return nodes.map(n=>`<div class="rorow"><span class="rol" style="padding-left:${d*18}px"><b class="${d===0?"rtop":d===1?"mid":""}">${esc(n.t)}</b>${PEN}${HIS}</span><span class="ror"><input type="checkbox" checked disabled><span>${esc(n.d)}</span></span></div>${rotree(n.k||[],d+1)}`).join("")}
+const tg2=(t,on)=>`<span class="fsw${on?" on":""}" style="display:flex;margin:3px 0"><i></i>${t}</span>`;
+const rd2=(t,on,dis)=>`<label class="crd${dis?" dim":""}"><input type="radio" ${on?"checked":""} disabled>${t}</label>`;
+const NOINFO=`<p class="noinfo">No information is available for this page.</p>`;
 const CTAB_HTML={
- "Settings":`<p class="cnote">Sets which parts of the portal are switched on for this child portal and its users.</p><div class="cgrid2">${[["Portal","Connect Portal"],["Individuals","Allows the user to see the list of Processes for the Client"],["Masterlist","Allows the user to view the masterlist of entities."],["Processes","Allows the user to see the list of Processes for the Client"],["eSign","Allows the user to view the document library"],["Companies","Allows the user to create and manage companies"],["Settings","Allows users to manage portal settings"]].map(([a,b])=>`<div class="crow">${CK(a,1)}<span>${b}</span></div>`).join("")}</div>`,
- "Applications":`<p class="cnote">The journeys and check types this child portal can use.</p><div class="ccols">${["Identity Only","Identity | Address | International Screening","Enhanced AML","Right to Rent","Right to Work","Safe Harbour","Proof of Ownership","Source of Funds","Company Checks","Bank Account Verification","Land Registry","eSign Documents"].map((a,i)=>CK(a,i!==7&&i!==10)).join("")}</div>`,
- "Activity":`<p class="emptyr">A log of changes made to this child portal. A new portal has no activity yet.</p>`,
- "Journeys":`<p class="emptyr">Journeys available to this child portal. Journeys are covered in the Journey Builder module.</p>`,
- "Legislations":`<p class="cnote">Legislation cards that can be switched on for this child portal.</p><div class="cgrid2">${[["Digital Identity Trust Framework","Allows users to activate DITF profiles"],["Right to Work (RTW)","Allows users to activate the Right to Work card on the Identity checks table cards"],["Right to Rent (RTR)","Allows users to activate the Right to Rent card on the Identity checks table cards"],["Safe Harbour","Allows users to activate the Safe Harbour card on the Identity checks table cards"],["Proof of Ownership","Allows users to activate the Proof of Ownership card on the Identity checks table cards"]].map(([a,b])=>`<div class="crow">${CK(a,1)}<span>${b}</span></div>`).join("")}</div>`,
- "Data Sources":`<p class="cnote">Which data providers and default profiles this child portal's data checks use.</p><div class="cds"><div><h4>Address and Mortality provider</h4>${RD("System Default",1)}${RD("Alternative provider",0)}<h4>Default Address and Mortality profile</h4><select disabled><option>Standard Checks</option></select><h4>Bank Account Validation and Verification provider</h4>${RD("System Default",1)}${RD("Alternative provider",0)}</div><div><h4>Sanction and PEP provider</h4>${RD("None",0)}${RD("System Default",1)}${RD("Alternative provider",0)}<h4>Default Sanctions and PEP check sources</h4>${["PEPs","Former PEPs","PEPs by association","Sanctions","Former Sanctions","Adverse media"].map(x=>`<span class="fsw on" style="display:flex;margin:4px 0"><i></i>${x}</span>`).join("")}</div></div>`,
- "Validation Rules":`<p class="emptyr">Rules for how checks in this child portal are validated. These are covered in the Back Office module.</p>`,
- "Back Office":`<p class="cnote">Which checks from this child portal are sent to the Credas Back Office team for review.</p><div class="ccols">${["Send ID document visual checks to Back Office","Send ID document facial match checks to Back Office","Send ID document name checks to Back Office","Send address and mortality checks to Back Office","Send sanction and PEP checks to Back Office","Send business checks to Back Office","Send Land Registry checks to Back Office"].map(a=>CK(a,0)).join("")}</div>`,
- "Mappings":`<p class="cnote">How this child portal's check profiles map to the profiles at each data provider.</p><table class="atbl"><thead><tr><th>Profile ID</th><th>Profile name</th><th>Data Check Type</th><th class="c">Active</th></tr></thead><tbody>${[["3f9a2c71-0d4e-4b8a-9e15-7c2d8f1a6b30","1+1 PEP","Address and Mortality",1],["8b14e6d2-5a73-4f0c-b2d9-41e7a6c38f05","Standard Checks","Address and Mortality",1],["c7d0f3a8-29b6-4e51-8a4c-6f1b9e2d7a43","Bank Account","Bank account",0],["1e6b9d45-7c28-4a03-9f6e-d52a8b0c4f17","Sanctions and PEPs","Sanctions and PEPs",1]].map(r=>`<tr><td style="font-family:monospace;font-size:10.5px">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="c"><span class="fsw${r[3]?" on":""}"><i></i></span></td></tr>`).join("")}</tbody></table>`,
- "API":`<p class="cnote">Connection details for clients who integrate with this child portal through the Credas API.</p><div class="capi">${["Ongoing monitoring alert webhook URL","Process error/SMS status webhook URL","Status update webhook URL"].map(x=>`<label class="f2">${x}</label><input type="text" readonly>`).join("")}<h4>Webhook Headers</h4><button class="c1 pill" disabled>Add new header</button><h4>API Keys</h4><p class="emptyr" style="text-align:left;padding:4px 0">No API keys have been issued for this child portal yet.</p><button class="c1 pill" disabled>Add new API key</button><h4>Magic Links</h4><p class="cnote">Magic Link settings for this child portal.</p></div>`};
+ "Settings":`<div class="cset"><div><h3>Open Banking Settings</h3><label class="f2">Open Banking Provider</label><select disabled><option></option></select>
+   <h3>GBG ID3 Global</h3>${["Base URL","Username","Password","Organisation Id"].map(x=>`<label class="f2">${x}</label><input type="text" readonly>`).join("")}${tg2("Call charges apply",1)}</div>
+   <div><h3>Document Settings</h3><label class="f2">IDV Provider</label><select disabled><option>Default</option></select>${tg2("Use custom settings?",0)}
+   <h3>Acuris PEPs and Sanctions</h3>${["Base URL","Individual Search API Key","Monitor API Key"].map(x=>`<label class="f2">${x}</label><input type="text" readonly>`).join("")}</div></div><div class="cupd"><button disabled>Update</button></div>`,
+ "Applications":()=>`<div class="rotree">${rotree(PERMS,0)}</div>`,
+ "Activity":NOINFO,
+ "Legislations":`<div class="rotree">${rotree([{t:"Legislation",d:"Allows users to administer legislations",k:[{t:"Digital Identity Trust Framework",d:"Allows users to activate DITF profiles"},{t:"Right to Work (RTW)",d:"Allows users to activate the Right to Work card on the Identity checks table cards"},{t:"Right to Rent (RTR)",d:"Allows users to activate the Right to Rent card on the Identity checks table cards"},{t:"Safe Harbour",d:"Allows users to activate the Safe Harbour card on the Identity checks table cards"},{t:"Proof of Ownership",d:"Allows users to activate the Proof of Ownership card on the Identity checks table cards"}]}],0)}</div>`,
+ "Data Sources":`<div class="cds2"><div>
+   <h4>Address and Mortality provider</h4>${rd2("System Default",1)}${rd2("GBG",0)}${rd2("Experian",0)}
+   <h4>Default Address and Mortality profile</h4><select disabled><option>Standard Checks</option></select>
+   <h4>Bank Account Validation and Verification provider</h4>${rd2("System Default",1)}${rd2("GBG",0)}${rd2("Experian",0,1)}
+   <h4>Bank account profile</h4><select disabled><option>BAVV</option></select>
+   <h4>Sanction and PEP provider</h4>${rd2("None",0)}${rd2("GBG Sanction and PEP provider",0)}${rd2("Acuris Sanction and PEP provider",1)}
+   <h4>Default Sanction and PEP check datasets</h4>${["PEPs","Former PEPs","PEPs by association","Sanctions","Former Sanctions","Adverse media","Law enforcement","Disqualified director"].map(x=>tg2(x,1)).join("")}${tg2("Profiles of Interest",0)}
+   <h4>PEP tiers</h4>${tg2("All",1)}<h4>Default Sanction and PEP check countries</h4>${tg2("All",1)}
+   <h4>Date of Birth</h4>${rd2("None",0)}${rd2("Exact Match",0)}${rd2("Year of Birth",1)}${tg2("Include matches without a date of birth",0)}
+   <h4>Name Match</h4>${rd2("Exact Match",1)}${rd2("Fuzzy Match",0)}
+   <h4>Credas AML Protection Pack (CAPP)</h4><label class="ck2 cck"><input type="checkbox" checked disabled>Enabled</label>
+   <h4>CAPP Address and Mortality profile</h4><select disabled><option>Standard Checks</option></select>
+   <h4>CAPP Datasets</h4>${["PEPs","Former PEPs","PEPs by association","Sanctions","Former Sanctions","Adverse media"].map(x=>tg2(x,1)).join("")}${tg2("Law enforcement",0)}${tg2("Disqualified director",1)}${tg2("Profiles of Interest",0)}
+   <h4>Source of Fund Sources</h4>${["Mortgage","Savings","Gift","Inheritance","Sale of property","Sale of assets","Divorce settlement","ISA or LISA"].map(x=>tg2(x,1)).join("")}${tg2("Equity loan",0)}${tg2("Lottery or gambling win",1)}${tg2("Compensation award",1)}${tg2("Cryptocurrency",0)}
+   <label class="ck2 cck" style="margin-top:10px"><input type="checkbox" disabled>Show CCJs</label></div>
+   <div><h4>Affordability tables</h4><label class="ck2 cck"><input type="checkbox" disabled>Enabled</label></div></div><div class="cupd"><button disabled>Update</button></div>`,
+ "Validation Rules":`<div class="rotree">${rotree([{t:"Update status of a check",d:"Allows the user to update the status of a check",k:[{t:"Liveness",d:"Allows the user to update the status of a Liveness check"},{t:"ID Document",d:"Allows the user to update the status of an ID Document check"},{t:"Standard check",d:"Allows the user to update the status of a Standard check"},{t:"International Sanctions and PEPs",d:"Allows the user to update the status of a Sanctions and PEPs check"}]}],0)}</div>`,
+ "Back Office":`<h3 class="cboh">Credas Back Office Verifier Settings</h3><div class="cbo">${["Send share codes to the Credas verifier for processing","Send liveness checks to the Credas verifier for processing","Send ID document visual analysis to the Credas verifier for processing","Send ID document facial checks to the Credas verifier for processing","Send ID document name checks to the Credas verifier for processing","Send address and mortality checks to the Credas verifier for processing","Send sanction and pep checks to the Credas verifier for processing","Send Land Registry checks from Scotland and N. Ireland to the verifier"].map(x=>`<label class="ck2 cck"><input type="checkbox" disabled>${x}</label>`).join("")}</div><div class="cupd"><button disabled>Update</button></div>`,
+ "Mappings":`<table class="atbl"><thead><tr><th>Profile Id</th><th>Profile Name</th><th>Organisation Id</th><th style="width:200px">Check Type</th><th class="c">Active</th></tr></thead><tbody>${[["5679f3ed-91b4-4450-8d08-ed15a59c7308","2+2 + PAX","Undefined"],["2d8261fa-e3a5-4f12-a83f-e01a5321d01f","All Address Verification","Address and Mortality"],["f09dcda7-1b1c-4314-8a1a-9da62a65e6c5","All ID Verification","Address and Mortality"],["7b326246-0518-4df1-8062-4cb44f6bdc5a","Bank Only","Bank account"],["f3d6c5b5-154c-4a6d-ae74-36fb35aac053","BAVV","Bank account"],["1a27e4a8-6979-457e-86c4-35cf1a6f8fc2","Standard AML","Address and Mortality"],["446848bd-d5ae-4d2b-b9a8-762a07643d71","DBW Standard Checks","Address and Mortality"],["3c51ae78-2af6-445e-b84d-af82895e3508","PEP and Sanction","Sanctions and PEPs"],["b7865b1a-65ac-4396-9e2c-1fb8be4f328a","PEPs & Sanctions","Sanctions and PEPs"]].map(r=>`<tr><td style="font-family:monospace;font-size:10px">${r[0]}</td><td>${r[1]}</td><td></td><td><select disabled class="mapsel"><option>${r[2]}</option></select></td><td class="c"><span class="fsw"><i></i></span></td></tr>`).join("")}</tbody></table><div class="pager">Items per page: 20 \u25BE<span>1 \u2013 9 of 9</span></div>`,
+ "API":`<div class="capi">${["Ongoing monitoring alert webhook URL","Process actor Email/SMS status webhook URL","Status update webhook URL"].map(x=>`<label class="f2">${x}</label><input type="text" readonly>`).join("")}<h3>Webhook Headers</h3><button class="pill" disabled>Add new header</button><h3>API Keys</h3><table class="atbl"><thead><tr><th>Key</th><th>Issue Date</th><th class="c">Locked ?</th><th class="c">Action</th></tr></thead><tbody><tr><td colspan="4" class="emptyr">No information is available for this page.</td></tr></tbody></table><button class="pill" disabled style="margin-top:10px">Add new API key</button><h3>Magic Links</h3><p class="cnote">Magic Link endpoints are only available if clients opt in to use them by activating the toggles below.</p><div class="mlinks">${["Entity Module","Entity Profile","Invite Wizard"].map(x=>`<div><span>${x}</span><span class="fsw"><i></i></span></div>`).join("")}</div></div>`};
+const ctabHTML=t=>{const x=CTAB_HTML[t];return typeof x==="function"?x():x};
+
+
+/* ---------- portal Journeys tab ---------- */
+const PUB_J=["2024 - Material Information","Companies House ID Verification","Companies House ID Verification | AML","DBS | RTW","ID document check","ID verification check","Identity","Identity | Address","Identity | Address | International Screening","Identity | International Screening","Identity | Sanctions","Landlord basic","Landlord enhanced","Landlord standard"];
+const PRIV_J=["Identity - Web & App","Identity | Address - Web & App","Identity | Address | International Screening - App (passport only)","Identity | Address | International Screening | Open Banking - Web & App","Identity | Address | International Screening | POA - Web & App","Identity | Address | International Screening | Source of Funds - Web & App","Tenant referencing - Web & App"];
+const JR_PICK="Identity | Address | International Screening";
+const jlabel=s=>esc(s).replace(/ \| /g,' <b class="jp">|</b> ');
+function jrnHTML(sel,cols){return `<p class="cnote">Choose which journeys this portal can send. Public journeys are available to every portal, parent journeys come from a reseller, and private journeys belong to this portal alone.</p><div class="jcols">${cols.map((c,ci)=>`<div class="jcol"><h4>${esc(c.title)}</h4>${c.items.length?`<div class="jsel">Select <button class="jall" data-jall="${ci}">\u2713 All</button><button class="jall" data-jnone="${ci}">\u2715 None</button></div><div class="jlist">${c.items.map(it=>{const k=ci+"|"+it;return `<label class="jrow"><input type="checkbox" data-jk="${esc(k)}" ${sel[k]?"checked":""}><span>${jlabel(it)}</span></label>`}).join("")}</div>`:""}</div>`).join("")}</div>`}
+function bindJrn(root,sel,cols,after){
+  root.querySelectorAll("[data-jk]").forEach(x=>x.onchange=()=>{if(x.checked)sel[x.dataset.jk]=1;else delete sel[x.dataset.jk];after(false)});
+  root.querySelectorAll("[data-jall]").forEach(b=>b.onclick=()=>{const ci=+b.dataset.jall;cols[ci].items.forEach(it=>sel[ci+"|"+it]=1);after(true)});
+  root.querySelectorAll("[data-jnone]").forEach(b=>b.onclick=()=>{const ci=+b.dataset.jnone;cols[ci].items.forEach(it=>delete sel[ci+"|"+it]);after(true)});
+}
 
 /* ---------- Settings: ID check report ---------- */
 const IDSECS=["Cover page","Overview page","Personal details page","Full profile","Notes","Current PEPs","Former PEPs","PEPs by association","Current sanctions","Former sanctions","Adverse media","Law enforcement","Disqualified director"];
@@ -1208,17 +1277,19 @@ const STEPS=[
  {t:"Choose how users sign in",d:"Under <b>Authentication method</b>, choose <b>Password and Pin</b>.",el:inNew(()=>$("cAuth")),ok:()=>AD.cf.auth===NEWC.auth||AD.childMade},
  {t:"Set the portal type",d:"Scroll down to <b>Portal Type</b> and choose <b>Active</b>. (<b>Test</b> is for trial portals, and <b>Inactive</b> switches a portal off.)",el:inNew(()=>$("cType")),ok:()=>AD.cf.type===NEWC.type||AD.childMade},
  {t:"Create the child portal",d:"Click <b>Create</b>. After a moment, the rest of its settings tabs appear.",el:inNew(()=>$("cCreate")),ok:()=>AD.childMade},
- tour("Settings","It sets which parts of the portal are switched on for this child portal."),
- tour("Applications","It lists the journeys and check types the child portal can use."),
+ tour("Settings","It holds the provider settings for open banking, ID documents and data checks."),
+ tour("Applications","It sets which parts of the portal, and which permissions, are available."),
+ {t:"Choose its journeys",d:"Click the <b>Journeys</b> tab. Journeys are grouped into Connect public journeys, the reseller's parent journeys and the child portal's own private journeys. Tick <b>Identity | Address | International Screening</b> under Connect public journeys. <i>Journeys are covered in detail in the Back Office module.</i>",el:inChild(()=>AD.ctab!=="Journeys"?ctabEl("Journeys"):(document.querySelector(`[data-jk="0|${JR_PICK}"]`)||{}).parentElement),ok:()=>!!(AD.jsel&&AD.jsel["0|"+JR_PICK])},
  tour("Legislations","It controls which legislation cards, such as Right to Work, can be used."),
  tour("Data Sources","It sets which data providers and default profiles the child portal's checks use."),
- tour("Back Office","It chooses which checks are sent to the Credas Back Office team for review."),
- tour("Mappings","It shows how the child portal's check profiles map to each provider."),
+ tour("Validation Rules","It controls which check statuses can be updated manually, such as Liveness and ID Document."),
+ tour("Back Office","It chooses which checks are sent to the Credas verifier for processing."),
+ tour("Mappings","It maps each provider profile to the type of check it's used for."),
  tour("API","It holds the webhook URLs and API keys for clients who integrate through the API."),
- {t:"Back to Child portals",d:"Click <b>Back to Child portals</b>. Acme Lettings North is now in the list.",el:inAdmin(()=>AD.page==="child"?$("ugBack"):null),ok:()=>AD.childMade&&AD.tab==="children"&&AD.page==="list"&&["Settings","Applications","Legislations","Data Sources","Back Office","Mappings","API"].every(t=>AD.seen[t])}
+ {t:"Back to Child portals",d:"Click <b>Back to Child portals</b>. Acme Lettings North is now in the list.",el:inAdmin(()=>AD.page==="child"?$("ugBack"):null),ok:()=>AD.childMade&&AD.tab==="children"&&AD.page==="list"&&AD.jsel&&AD.jsel["0|"+JR_PICK]&&["Settings","Applications","Legislations","Data Sources","Validation Rules","Back Office","Mappings","API"].every(t=>AD.seen[t])}
 ];
 const DRAWER_FIRST=-1,DRAWER_APPLY=-1;
-const GROUPS=[["Open Child portals",0],["Create the child portal",3],["Tour its settings",9],["Finish",16]];
+const GROUPS=[["Open Child portals",0],["Create the child portal",3],["Tour its settings",9],["Finish",18]];
 function renderList(){
   const tick='<svg width="8" height="7" viewBox="0 0 8 7" fill="none" stroke="#fff" stroke-width="1.8"><path d="M1 3.5l2 2L7 1"/></svg>';
   let out="";
@@ -1437,6 +1508,53 @@ const MODULES=[
     "desc": "Create a child portal from a Reseller portal, then tour its settings tabs",
     "id": "admin-child-portals",
     "current": true
+   }
+  ]
+ },
+ {
+  "name": "Back Office",
+  "items": [
+   {
+    "name": "Find a user in Back Office",
+    "desc": "Search every client user by name or email address and open their record",
+    "id": "backoffice-find-user",
+    "url": "backoffice-find-user.html"
+   },
+   {
+    "name": "Find an end-user in Back Office",
+    "desc": "Search the Credas Master list by name, email address or registration code",
+    "id": "backoffice-find-end-user",
+    "url": "backoffice-find-end-user.html"
+   },
+   {
+    "name": "Create a portal and find an existing one",
+    "desc": "Create a new client portal with its client type, tour its settings, then search for a portal",
+    "id": "backoffice-portals",
+    "url": "backoffice-portals.html"
+   },
+   {
+    "name": "Update a portal's details",
+    "desc": "Switch on Credas Plus and Display data on an existing portal's Details tab",
+    "id": "backoffice-portal-details",
+    "url": "backoffice-portal-details.html"
+   },
+   {
+    "name": "Configure a portal's settings",
+    "desc": "Enter a client's own provider credentials on the Settings tab using custom settings",
+    "id": "backoffice-portal-settings",
+    "url": "backoffice-portal-settings.html"
+   },
+   {
+    "name": "Choose a portal's applications",
+    "desc": "Turn features and modules on or off on the Applications tab, leaving Branding and Journey Builder off",
+    "id": "backoffice-portal-applications",
+    "url": "backoffice-portal-applications.html"
+   },
+   {
+    "name": "Choose a portal's journeys",
+    "desc": "Select public and private journeys on the Journeys tab, and see a portal with no private journeys",
+    "id": "backoffice-portal-journeys",
+    "url": "backoffice-portal-journeys.html"
    }
   ]
  }

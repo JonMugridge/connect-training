@@ -509,6 +509,16 @@ td.div,th.div{border-right:1px solid #D9DADF}
 .ex .mini{border:0;border-radius:999px;background:#2D2E3F;color:#fff;font:600 11px/1 Inter,sans-serif;padding:7px 12px;white-space:nowrap;text-decoration:none}
 .ex .mini.lt{background:#EAEBED;color:var(--ink)}
 </style>
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
+<script>
+/* Keep an Azure SAS token (or any query string) on links between pages */
+(function(){var q=location.search;if(!q||q.length<2)return;
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href");
+ if(!h||/^(https?:|mailto:|#|javascript:)/i.test(h)||!/\.html(#|$)/i.test(h))return;
+ var i=h.indexOf("#"),base=i<0?h:h.slice(0,i),hash=i<0?"":h.slice(i);if(base.indexOf("?")>=0)return;
+ e.preventDefault();var url=base+q+hash;if(a.target==="_blank")window.open(url,"_blank");else location.href=url;},true);})();
+</script>
 </head>
 <body>
 <div class="shell">
@@ -595,13 +605,13 @@ td.div,th.div{border-right:1px solid #D9DADF}
     <h2 id="doneTitle">Exercise complete</h2>
     <p>You turned off Delete Entities, hid the eSign module, confirmed Branding and Journey Builder are off, and updated Hartwell Solicitors' applications.</p>
     <div id="modules"></div>
-    <a class="hubbtn" href="https://claude.ai/artifact/EMkDLQW3MQrQEntpULzA6m#back-office" target="_top">Back to training area</a>
+    <a class="hubbtn" href="index.html#back-office" target="_self">Back to training area</a>
   </div>
 </div>
 <div class="introVeil" id="introVeil">
   <div class="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
     <div class="ib" id="introBody"></div>
-    <div class="if"><a class="hublink" href="https://claude.ai/artifact/EMkDLQW3MQrQEntpULzA6m#back-office" target="_top">Back to training area</a><button class="mtog" id="musicBtn" aria-pressed="true" title="Background music"><span aria-hidden="true">♪</span> <span id="musicTxt">Music on</span></button><button class="listen" id="listenBtn" hidden aria-live="polite"><span class="lic" aria-hidden="true"></span><span id="listenTxt">Listen to overview</span></button><button class="pbtn dark" id="introStart">Start exercise</button></div>
+    <div class="if"><a class="hublink" href="index.html#back-office" target="_self">Back to training area</a><button class="mtog" id="musicBtn" aria-pressed="true" title="Background music"><span aria-hidden="true">♪</span> <span id="musicTxt">Music on</span></button><button class="listen" id="listenBtn" hidden aria-live="polite"><span class="lic" aria-hidden="true"></span><span id="listenTxt">Listen to overview</span></button><button class="pbtn dark" id="introStart">Start exercise</button></div>
   </div>
 </div>
 <div class="regVeil" id="regVeil">
@@ -1304,7 +1314,7 @@ const PUB_J=["2024 - Material Information","Companies House ID Verification","Co
 const PRIV_J=["Identity - Web & App","Identity | Address - Web & App","Identity | Address | International Screening - App (passport only)","Identity | Address | International Screening | Open Banking - Web & App","Identity | Address | International Screening | POA - Web & App","Identity | Address | International Screening | Source of Funds - Web & App","Tenant referencing - Web & App"];
 const JR_PICK="Identity | Address | International Screening";
 const jlabel=s=>esc(s).replace(/ \| /g,' <b class="jp">|</b> ');
-function jrnHTML(sel,cols){return `<p class="cnote">Choose which journeys this portal can send. Public journeys are available to every portal, parent journeys come from a reseller, and private journeys belong to this portal alone.</p><div class="jcols">${cols.map((c,ci)=>`<div class="jcol"><h4>${esc(c.title)}</h4>${c.items.length?`<div class="jsel">Select <button class="jall" data-jall="${ci}">\u2713 All</button><button class="jall" data-jnone="${ci}">\u2715 None</button></div><div class="jlist">${c.items.map(it=>{const k=ci+"|"+it;return `<label class="jrow"><input type="checkbox" data-jk="${esc(k)}" ${sel[k]?"checked":""}><span>${jlabel(it)}</span></label>`}).join("")}</div>`:`<p class="jempty">No parent journeys. A Standard portal doesn't sit under a reseller.</p>`}</div>`).join("")}</div>`}
+function jrnHTML(sel,cols){return `<p class="cnote">Choose which journeys this portal can send. Public journeys are available to every portal, parent journeys come from a reseller, and private journeys belong to this portal alone.</p><div class="jcols">${cols.map((c,ci)=>`<div class="jcol"><h4>${esc(c.title)}</h4>${c.items.length?`<div class="jsel">Select <button class="jall" data-jall="${ci}">\u2713 All</button><button class="jall" data-jnone="${ci}">\u2715 None</button></div><div class="jlist">${c.items.map(it=>{const k=ci+"|"+it;return `<label class="jrow"><input type="checkbox" data-jk="${esc(k)}" ${sel[k]?"checked":""}><span>${jlabel(it)}</span></label>`}).join("")}</div>`:""}</div>`).join("")}</div>`}
 function bindJrn(root,sel,cols,after){
   root.querySelectorAll("[data-jk]").forEach(x=>x.onchange=()=>{if(x.checked)sel[x.dataset.jk]=1;else delete sel[x.dataset.jk];after(false)});
   root.querySelectorAll("[data-jall]").forEach(b=>b.onclick=()=>{const ci=+b.dataset.jall;cols[ci].items.forEach(it=>sel[ci+"|"+it]=1);after(true)});
@@ -1560,31 +1570,31 @@ const MODULES=[
     "name": "Search and filter the list",
     "desc": "Search by name, phone number, email address or reg code, filter from the toolbar, combine…",
     "id": "individuals-search-filter",
-    "url": "https://claude.ai/artifact/5iaAiJyvVcXEs9vMdbTzLz"
+    "url": "individuals-search-filter.html"
    },
    {
     "name": "Configure the table",
     "desc": "Use Table Configuration to choose which details, documents and data checks appear as columns",
     "id": "individuals-table-config",
-    "url": "https://claude.ai/artifact/V4odLTcRP6sauUfPuCVRgJ"
+    "url": "individuals-table-config.html"
    },
    {
     "name": "Review an individual's results",
     "desc": "Open a record and review the Liveness, ID verification, Address and Mortality, and…",
     "id": "individuals-review-results",
-    "url": "https://claude.ai/artifact/74vtAvcr6QqKesDPDmfpvC"
+    "url": "individuals-review-results.html"
    },
    {
     "name": "Explore an individual's record",
     "desc": "Walk through every tab of a record: User Details, the contact summary, Quick Actions, each…",
     "id": "individuals-record-tour",
-    "url": "https://claude.ai/artifact/EnyfpeBX553Yhk1PoxEHe7"
+    "url": "individuals-record-tour.html"
    },
    {
     "name": "Approve or reject an individual",
     "desc": "Add the Approval Status column, then approve Angela Specimen, reject her and reset her to…",
     "id": "individuals-approve-reject",
-    "url": "https://claude.ai/artifact/PKF7kuo4pyGRDTk48MBSJK"
+    "url": "individuals-approve-reject.html"
    }
   ]
  },
@@ -1595,13 +1605,13 @@ const MODULES=[
     "name": "Send a journey to an existing individual",
     "desc": "Use Quick Actions on Angela Specimen's record to send an Identity Only journey, choose how…",
     "id": "send-journey-existing",
-    "url": "https://claude.ai/artifact/2RWifwJUqbVP5htdKdHbEt"
+    "url": "send-journey-existing.html"
    },
    {
     "name": "Add a new individual and send a journey",
     "desc": "Add Jordan Specimen from the Individuals tab, create their profile, send them an Identity…",
     "id": "send-journey-new-individual",
-    "url": "https://claude.ai/artifact/DgAUdieLif6q18CSrw66c7"
+    "url": "send-journey-new-individual.html"
    }
   ]
  },
@@ -1612,7 +1622,7 @@ const MODULES=[
     "name": "Generate a PDF report",
     "desc": "Use Quick Actions on Angela Specimen's record to export a report of her process, choose…",
     "id": "reports-pdf",
-    "url": "https://claude.ai/artifact/MfhrSeQdKNrH5BGjYD2dYs"
+    "url": "reports-pdf.html"
    }
   ]
  },
@@ -1623,7 +1633,7 @@ const MODULES=[
     "name": "Run a stand-alone data check",
     "desc": "Run an Address and Mortality check, with a postcode lookup, and a Sanctions and PEPs check…",
     "id": "data-check-standalone",
-    "url": "https://claude.ai/artifact/BS2WT78HMFJ1i6yJcb2SnP"
+    "url": "data-check-standalone.html"
    }
   ]
  },
@@ -1634,7 +1644,7 @@ const MODULES=[
     "name": "Remediate checks",
     "desc": "Remediate Angela Specimen's Address and Mortality, Sanctions and PEPs and failed ID…",
     "id": "remediate-checks",
-    "url": "https://claude.ai/artifact/TSrXUC7W12Sq6o4FJzKvWS"
+    "url": "remediate-checks.html"
    }
   ]
  },
@@ -1645,7 +1655,7 @@ const MODULES=[
     "name": "Build a Personal Details and Address form",
     "desc": "Create a form with headings and questions, link each answer to its Data Connector Source…",
     "id": "form-builder-personal-details",
-    "url": "https://claude.ai/artifact/B8w9TZtx1Zj6HRiLHErr76"
+    "url": "form-builder-personal-details.html"
    }
   ]
  },
@@ -1656,7 +1666,7 @@ const MODULES=[
     "name": "Create a new journey",
     "desc": "Create the Enhanced AML journey from scratch: fill in its settings, add the Personal…",
     "id": "journey-builder-create",
-    "url": "https://claude.ai/artifact/4rY7nouXymuy6C1qFXeGMy"
+    "url": "journey-builder-create.html"
    }
   ]
  },
@@ -1667,31 +1677,31 @@ const MODULES=[
     "name": "Change a portal's name and logo",
     "desc": "Rename a portal and change its logo. Full branding is done in the Branding module",
     "id": "settings-branding",
-    "url": "https://claude.ai/artifact/XX2wHv9Pde3Q4xrKTm4cEQ"
+    "url": "settings-branding.html"
    },
    {
     "name": "Set invite rules",
     "desc": "Set when invites expire, lock completed processes and send email and SMS reminders",
     "id": "settings-invite-rules",
-    "url": "https://claude.ai/artifact/Sh57wTHNKiGnWk6jFYaCQy"
+    "url": "settings-invite-rules.html"
    },
    {
     "name": "Set up ongoing monitoring",
     "desc": "Switch on automatic Sanctions and PEPs monitoring and choose how long it runs",
     "id": "settings-ongoing-monitoring",
-    "url": "https://claude.ai/artifact/9gJAu3QPFZCMK3o6TZgzWe"
+    "url": "settings-ongoing-monitoring.html"
    },
    {
     "name": "Set deletion rules",
     "desc": "Automatically archive journeys and delete records after set periods",
     "id": "settings-deletion-rules",
-    "url": "https://claude.ai/artifact/155ycS2sraR88MvTgy2HFs"
+    "url": "settings-deletion-rules.html"
    },
    {
     "name": "Choose what the ID check report includes",
     "desc": "Pick the Sanctions and PEPs sections every exported ID Check Report includes",
     "id": "settings-id-check-report",
-    "url": "https://claude.ai/artifact/UrmjnpydP5q18CBHiWi2sF"
+    "url": "settings-id-check-report.html"
    }
   ]
  },
@@ -1702,25 +1712,25 @@ const MODULES=[
     "name": "Add a portal user",
     "desc": "Add a user in the Admin Portal and choose their role, user groups and options",
     "id": "admin-add-user",
-    "url": "https://claude.ai/artifact/7caUntKnz5v3v9pHRHmQun"
+    "url": "admin-add-user.html"
    },
    {
     "name": "Create a user group and assign users",
     "desc": "Create a group, set its permissions and add users, from the group or the user's record",
     "id": "admin-user-groups",
-    "url": "https://claude.ai/artifact/1HY9e5zT5xjKDiQCeKEyi7"
+    "url": "admin-user-groups.html"
    },
    {
     "name": "Create a user role and apply it",
     "desc": "Create a permissions template, switch it on and give a user that one role",
     "id": "admin-user-roles",
-    "url": "https://claude.ai/artifact/AswgDrXSiG6TAuX8x9s39V"
+    "url": "admin-user-roles.html"
    },
    {
     "name": "Set up a child portal",
     "desc": "Create a child portal from a Reseller portal, then tour its settings tabs",
     "id": "admin-child-portals",
-    "url": "https://claude.ai/artifact/HnRXb6Rj9YYRyPjce3MqVy"
+    "url": "admin-child-portals.html"
    }
   ]
  },
@@ -1731,37 +1741,43 @@ const MODULES=[
     "name": "Find a user in Back Office",
     "desc": "Search every client user by name or email address and open their record",
     "id": "backoffice-find-user",
-    "url": "https://claude.ai/artifact/FJyR551MJQEV9vhXYPPhfs"
+    "url": "backoffice-find-user.html"
    },
    {
     "name": "Find an end-user in Back Office",
     "desc": "Search the Credas Master list by name, email address or registration code",
     "id": "backoffice-find-end-user",
-    "url": "https://claude.ai/artifact/VMrf31uCd64DgT1PVwhHk2"
+    "url": "backoffice-find-end-user.html"
    },
    {
     "name": "Create a portal and find an existing one",
     "desc": "Create a new client portal with its client type, tour its settings, then search for a portal",
     "id": "backoffice-portals",
-    "url": "https://claude.ai/artifact/DQMmDz8TJKmW5t98k1ATYB"
+    "url": "backoffice-portals.html"
    },
    {
     "name": "Update a portal's details",
     "desc": "Switch on Credas Plus and Display data on an existing portal's Details tab",
     "id": "backoffice-portal-details",
-    "url": "https://claude.ai/artifact/GvTRdHWAbZwD2qP65fqnfv"
+    "url": "backoffice-portal-details.html"
    },
    {
     "name": "Configure a portal's settings",
     "desc": "Enter a client's own provider credentials on the Settings tab using custom settings",
     "id": "backoffice-portal-settings",
-    "url": "https://claude.ai/artifact/AWUVEKxX5pNKdjWDKQ7QSz"
+    "url": "backoffice-portal-settings.html"
    },
    {
     "name": "Choose a portal's applications",
     "desc": "Turn features and modules on or off on the Applications tab, leaving Branding and Journey Builder off",
     "id": "backoffice-portal-applications",
     "current": true
+   },
+   {
+    "name": "Choose a portal's journeys",
+    "desc": "Select public and private journeys on the Journeys tab, and see a portal with no private journeys",
+    "id": "backoffice-portal-journeys",
+    "url": "backoffice-portal-journeys.html"
    }
   ]
  }
@@ -1774,7 +1790,7 @@ function showDone(){
   progMark(PAGE_ID);const P=progGet();
   const all=MODULES.flatMap(m=>m.items).filter(e=>e.id),done=all.filter(e=>P[e.id]).length;
   $("modules").innerHTML=`<div class="progsum"><b>${done} of ${all.length}</b> exercises completed<span class="pbar"><i style="width:${Math.round(done/all.length*100)}%"></i></span></div>`+MODULES.map(m=>`<h3>${m.name}</h3><div class="exlist">${m.items.map(e=>{
-    const right=e.current?'<span class="tag ok">Completed</span><button class="mini" data-again>Start again</button>':e.url?(P[e.id]?`<span class="tag ok">Completed</span><a class="mini lt" href="${e.url}" target="_top">Open</a>`:`<a class="mini lt" href="${e.url}" target="_top">Open</a>`):'<span class="tag soon">Coming soon</span>';
+    const right=e.current?'<span class="tag ok">Completed</span><button class="mini" data-again>Start again</button>':e.url?(P[e.id]?`<span class="tag ok">Completed</span><a class="mini lt" href="${e.url}" target="_self">Open</a>`:`<a class="mini lt" href="${e.url}" target="_self">Open</a>`):'<span class="tag soon">Coming soon</span>';
     return `<div class="ex" ${e.current||e.url?"":'aria-disabled="true"'}><span class="n"><b>${e.name}</b><small>${e.desc}</small></span>${right}</div>`}).join("")}</div>`).join("");
   $("doneVeil").classList.add("show");document.querySelector("[data-again]")?.focus();
 }
