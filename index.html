@@ -92,7 +92,13 @@ main section{padding:56px 0 10px}
 .mod .foot{margin-top:auto}
 .mod .meta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:8px}
 .mod .meta b{color:var(--ink);font-weight:600}
-.mod .foot{display:block}.mod .meta{display:flex}.mod .bar{display:block;background:var(--line);height:6px}
+.mod .foot{display:block}.mod .meta{display:flex;align-items:center}
+.mod .segs{display:flex;gap:4px;margin-top:2px}
+.mod .segs i{flex:1;height:8px;border-radius:4px;background:var(--line)}
+.mod .segs i.on{background:var(--green)}
+.mod .pstat{font-weight:600;color:var(--muted)}
+.mod .pstat.some{color:var(--gold-ink);background:var(--gold-soft);border-radius:999px;padding:2px 9px}
+.mod .pstat.full{color:var(--green);background:var(--green-soft);border-radius:999px;padding:2px 9px}
 .mod .bar i{background:var(--green)}
 .mod .done{position:absolute;top:18px;right:18px;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:14px}
 .mod.fresh .bar i{background:var(--gold)}
@@ -337,7 +343,7 @@ function renderHome(){
   else{cta.textContent="Practise again";cta.href="#modules-list";$("nextNote").textContent="You've completed every exercise. Nicely done."}
   $("mods").innerHTML=MODULES.map(m=>{const r=ready(m),d=r.filter(e=>P[e.id]).length,mins=r.reduce((n,e)=>n+(e.mins||0),0),all=r.length&&d===r.length;
     return `<button class="mod${d?"":" fresh"}" data-mod="${m.id}" aria-label="${esc(m.name)}: ${d} of ${r.length} exercises complete">${all?'<span class="done" aria-hidden="true">\u2713</span>':""}<h3>${esc(m.name)}</h3><p>${esc(m.desc)}</p>
-      <span class="foot"><span class="meta"><span>${r.length} exercise${r.length===1?"":"s"}, about ${mins} min</span><span>${d?`<b>${d}</b> done`:"Not started"}</span></span><span class="bar"><i style="width:${r.length?Math.round(d/r.length*100):0}%"></i></span></span></button>`}).join("");
+      <span class="foot"><span class="meta"><span>${r.length} exercise${r.length===1?"":"s"}, about ${mins} min</span><span class="pstat${all?" full":d?" some":""}">${all?"\u2713 All complete":d?`${d} of ${r.length} complete`:"Not started"}</span></span><span class="segs" aria-hidden="true">${r.map(e=>`<i class="${P[e.id]?"on":""}"></i>`).join("")}</span></span></button>`}).join("");
   document.querySelectorAll("[data-mod]").forEach(b=>b.onclick=()=>{location.hash=b.dataset.mod});
   $("clearBtn").hidden=!done;
 }
