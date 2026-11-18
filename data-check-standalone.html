@@ -1200,6 +1200,24 @@ const MODULES=[
     "desc": "Add a user in the Admin Portal and choose their role, user groups and options",
     "id": "admin-add-user",
     "url": "admin-add-user.html"
+   },
+   {
+    "name": "Create a user group and assign users",
+    "desc": "Create a group, set its permissions and add users, from the group or the user's record",
+    "id": "admin-user-groups",
+    "url": "admin-user-groups.html"
+   },
+   {
+    "name": "Create a user role and apply it",
+    "desc": "Create a permissions template, switch it on and give a user that one role",
+    "id": "admin-user-roles",
+    "url": "admin-user-roles.html"
+   },
+   {
+    "name": "Set up a child portal",
+    "desc": "Create a child portal from a Reseller portal, then tour its settings tabs",
+    "id": "admin-child-portals",
+    "url": "admin-child-portals.html"
    }
   ]
  }
@@ -1380,6 +1398,38 @@ $("introBtn").onclick=showIntro;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("introVeil").classList.contains("show"))closeIntro()});
 reset();
 showIntro();
+</script>
+<style id="spotCss">
+#spotlight{position:fixed;z-index:66;pointer-events:none;border-radius:10px;opacity:0;left:50%;top:50%;width:0;height:0;
+  box-shadow:0 0 0 3px #F0A93C,0 0 18px 4px #F0A93C66,0 0 0 200vmax rgba(16,17,26,.52);
+  transition:left .38s cubic-bezier(.3,.7,.2,1),top .38s cubic-bezier(.3,.7,.2,1),width .38s cubic-bezier(.3,.7,.2,1),height .38s cubic-bezier(.3,.7,.2,1),opacity .25s ease}
+#spotlight.on{opacity:1}
+.coach,#coach{z-index:68!important}
+@media (prefers-reduced-motion:reduce){#spotlight{transition:opacity .2s ease}}
+</style>
+<div id="spotlight" aria-hidden="true"></div>
+<script>
+/* Spotlight: dims the screen apart from the coach card and the item to use next, and glides between steps */
+(function(){
+  var sp=document.getElementById("spotlight"),PAD=6,last="";
+  function shown(id){var e=document.getElementById(id);if(!e)return false;var cs=getComputedStyle(e);return cs.display!=="none"&&cs.visibility!=="hidden"&&parseFloat(cs.opacity)>0.05}
+  function target(){
+    var hs=document.getElementById("hints");if(hs&&!hs.checked)return null;
+    if(shown("introVeil")||shown("doneVeil"))return null;
+    var els=document.querySelectorAll(".hint"),best=null,area=0;
+    for(var i=0;i<els.length;i++){var e=els[i];if(e.closest("#coach,.coach,#spotlight"))continue;var r=e.getBoundingClientRect();if(r.width<2||r.height<2)continue;
+      var cs=getComputedStyle(e);if(cs.visibility==="hidden")continue;var a=r.width*r.height;if(!best||a>area){best=r;area=a}}
+    return best}
+  function tick(){
+    var r=target();
+    if(!r){if(sp.classList.contains("on"))sp.classList.remove("on");last=""}
+    else{var vw=innerWidth,vh=innerHeight,l=Math.max(-PAD,r.left-PAD),t=Math.max(-PAD,r.top-PAD),w=Math.min(r.right+PAD,vw+PAD)-l,h=Math.min(r.bottom+PAD,vh+PAD)-t;
+      if(w<4||h<4||r.bottom<0||r.top>vh){sp.classList.remove("on")}
+      else{var k=Math.round(l)+","+Math.round(t)+","+Math.round(w)+","+Math.round(h);if(k!==last){last=k;sp.style.left=l+"px";sp.style.top=t+"px";sp.style.width=w+"px";sp.style.height=h+"px"}
+        if(!sp.classList.contains("on"))sp.classList.add("on")}}
+    requestAnimationFrame(tick)}
+  requestAnimationFrame(tick);
+})();
 </script>
 </body>
 </html>

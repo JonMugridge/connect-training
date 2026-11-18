@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Practice: create a new journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nav:#2D2E3F;--gold:#F0A93C;--gold-d:#E79A2A;--green:#1EC28B;--red:#E0474C;
+  --page:#FFFFFF;--pill:#ECEDEF;--ink:#1E1F2B;--muted:#6E717E;--line:#E4E5E8;--stripe:#F6F6F7;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;height:100%}
+body{background:#F3F3F5;color:var(--ink);font:12px/1.4 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+.shell{background:#fff;min-height:100%;display:flex;flex-direction:column}
+/* nav */
+.top{background:var(--nav);color:#fff;height:60px;display:flex;align-items:center;padding:0 70px 0 56px;overflow-x:auto;flex:none}
+.logo{display:flex;align-items:center;padding-right:16px;margin-right:18px;border-right:1px solid #ffffff66;height:24px}
+.logo svg{flex:none}
+.area{color:var(--gold);font-weight:700;font-size:12.5px;display:flex;align-items:center;gap:7px;margin-right:7px;white-space:nowrap}
+.top nav{display:flex;gap:21px;font-weight:500;font-size:11.5px;white-space:nowrap;align-items:center}
+.top nav span{padding:13px 3px 10px;border-bottom:3px solid transparent}
+.top nav span.on{color:var(--gold);border-color:var(--gold)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:14px;padding-left:18px}
+.avatar{border:1px solid #fff;border-radius:3px;width:34px;height:34px;display:grid;place-items:center;font-size:12.5px;margin-left:6px}
+
+/* toolbar */
+.bar{display:flex;align-items:center;gap:7px;padding:11px 18px 8px 48px;flex:none}
+@media (max-width:1100px){.bar{flex-wrap:wrap;padding-left:18px;row-gap:8px}.search{flex-basis:100%}.tablewrap{margin-left:18px}.chips{padding-left:18px}.top{padding:0 18px}}
+.search{flex:1;min-width:240px;height:30px;border-radius:999px;background:var(--pill);display:flex;align-items:center;gap:9px;padding:0 14px}
+.search input{border:0;background:none;outline:none;flex:1;font-size:12px;min-width:0}
+.search input::placeholder{color:#6B6E79}
+.search .x{border:0;background:none;width:20px;height:20px;border-radius:50%;display:none;place-items:center;color:var(--muted);font-size:14px}
+
+.fbtn{position:relative}
+.chip{height:30px;border:0;border-radius:999px;background:var(--pill);padding:0 15px;display:flex;align-items:center;gap:7px;font-weight:500;font-size:12px;white-space:nowrap}
+.chip:hover{background:#E2E3E6}
+.chip .ct{display:none}
+.add{height:30px;border:0;border-radius:999px;background:var(--nav);color:#fff;padding:0 16px;font-weight:600;display:flex;gap:7px;align-items:center;white-space:nowrap}
+.add b{color:var(--gold);font-size:15px;font-weight:500}
+.icon{width:30px;height:30px;border-radius:50%;border:0;background:var(--pill);display:grid;place-items:center}
+
+/* applied filter chips */
+.chips{display:none;flex-wrap:wrap;gap:8px;padding:2px 18px 8px 48px;flex:none}
+.chips.show{display:flex}
+.fchip{height:30px;border:0;border-radius:999px;background:#ECEDEF;padding:0 13px 0 14px;display:flex;align-items:center;gap:9px;font-size:11.5px;font-weight:500;color:#2D2E3F;white-space:nowrap}
+.fchip:hover{background:#DDDEE1}
+.fchip svg{flex:none}
+.clearall{height:30px;border:0;border-radius:999px;background:var(--nav);color:#fff;padding:0 16px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.clearall:hover{background:#3d3f55}
+/* reg code copy */
+.regcopy{border:0;background:none;padding:2px;border-radius:3px;display:grid;place-items:center;cursor:pointer}
+.regcopy:hover{background:#0000000f}
+.regVeil{position:fixed;inset:0;background:#00000052;z-index:66;display:none;align-items:center;justify-content:center;padding:16px}
+.regVeil.show{display:flex}
+.regdlg{background:#fff;border-radius:4px;width:min(320px,100%);box-shadow:0 11px 15px -7px #0003,0 24px 38px 3px #00000024}
+.regh{display:flex;justify-content:flex-end;padding:12px 16px 10px;border-bottom:1px solid #ECEDEF}
+.regx{width:28px;height:28px;border-radius:50%;border:0;background:var(--nav);color:var(--gold);font-size:13px;display:grid;place-items:center}
+.regb{display:flex;align-items:center;gap:14px;padding:18px 22px 46px;font-weight:700;font-size:12px}
+.regi{width:26px;height:26px;border-radius:50%;background:#3B7DDD;color:#fff;display:grid;place-items:center;font:700 14px/1 Georgia,serif;flex:none}
+
+.lv{display:flex;flex-direction:column;flex:1;min-height:0}
+.lv[hidden],#jbView[hidden]{display:none}
+.amenu{position:fixed;left:0;top:0;background:#fff;color:#1E1F2B;border-radius:4px;box-shadow:0 5px 5px -3px #0003,0 8px 10px 1px #00000024;min-width:150px;padding:6px 0;display:none;z-index:45;font-family:Roboto,Inter,sans-serif;font-weight:400}
+.amenu.show{display:block}
+.amenu button{display:block;width:100%;text-align:left;border:0;background:none;padding:0 16px;height:30px;font-size:12px;color:#1E1F2B}
+.amenu button:hover{background:#0000000a}
+#jbView{flex:1;display:flex;flex-direction:column;min-height:0}
+.jbbar{display:flex;align-items:center;gap:8px;padding:11px 18px 8px 48px}
+.jbt{margin:0 18px 0 48px;flex:1;overflow:auto}
+.jbt .th,.jbt .tr{display:grid;align-items:center;font-size:11px}
+.jbt .th{color:#6E717E;padding:10px 16px;border-bottom:1px solid #D9DADF}
+.jbt .tr{padding:14px 16px;border-bottom:1px solid #E9EAEC;background:#fff}
+.jbt .tr.newf{background:#F4FCF8}
+.tk2{color:#1EC28B;font-size:14px}.cr2{color:#E0474C;font-size:13px}
+.tg{width:28px;height:14px;border-radius:999px;background:#8FE0C3;position:relative;display:inline-block}
+.tg::after{content:"";position:absolute;right:-2px;top:-2px;width:18px;height:18px;border-radius:50%;background:#1EC28B}
+.tg.off{background:#C7C9CF}.tg.off::after{right:auto;left:-2px;background:#fff;box-shadow:0 1px 3px #0005}
+/* builder */
+.bld{flex:1;display:flex;flex-direction:column;min-height:0;padding:0 18px 18px 48px}
+.bld .btop{display:flex;justify-content:flex-end;gap:10px;padding:10px 0}
+.bld .ver{height:30px;border-radius:999px;background:#ECEDEF;padding:0 14px;display:flex;align-items:center;font-size:11.5px;gap:6px}
+.bld .bwrap{flex:1;display:flex;min-height:0;border:1px solid #DADBDF;background:#fff}
+.canvas{flex:1;overflow:auto;padding:16px 22px;position:relative}
+.canvas.dropzone{outline:3px dashed #F0A93C;outline-offset:-8px;background:#FFFBF3}
+.canvas .empty3{font-size:11.5px;color:#3B3D4A}
+.qrow{display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid #F0F0F2}
+.qrow .ck{width:18px;height:18px;border:1.5px solid #55586a;border-radius:3px;flex:none;margin-top:6px}
+.qrow .qm{flex:1;min-width:0}
+.qrow .qm small{display:block;font-size:10px;color:#3B3D4A}
+.qrow .qm .lab{font-size:11px;margin-bottom:4px}
+.qrow .qm .h{font-size:var(--hs,18px);font-weight:800;line-height:1.15}
+.qrow .qm .inp{border:1px solid #E3E4E7;height:28px;border-radius:2px;background:#fff}
+.qrow .qm .cond{font-size:10px;color:#3B3D4A;margin:-2px 0 4px}
+.qrow .qm .cond b{font-weight:600}
+.qrow .dob4{display:flex;gap:6px}
+.qrow .dob4 div{font-size:9.5px;font-weight:700}
+.qrow .dob4 span{display:block;border:1px solid #E3E4E7;height:24px;width:44px;margin-top:2px;font-size:9px;color:#B9BBC2;padding:5px 6px;font-weight:400}
+.qrow .opt{font-size:10.5px;display:flex;align-items:center;gap:6px;margin:3px 0}
+.qrow .opt i{width:12px;height:12px;border-radius:50%;border:1.5px solid #9A9CA6;display:inline-block}
+.qrow .qa2{display:flex;align-items:center;gap:8px;flex:none}
+.qrow .mand{font-size:9px;text-align:center;color:#3B3D4A}
+.qrow .mand .tg{display:block;margin:2px auto 0}
+.ibtn{width:26px;height:26px;border-radius:50%;border:0;background:#2D2E3F;display:grid;place-items:center}
+.ibtn.bin{background:#ECEDEF}
+.fel{width:240px;background:#2D2E3F;color:#fff;padding:16px 14px;overflow:auto;flex:none}
+.fel h3{margin:0;font-size:22px;font-weight:800}
+.fel p{margin:2px 0 10px;font-size:11px;font-weight:700}
+.fel .grp{border-bottom:1px solid #ffffff80;padding:4px 0}
+.fel .el{display:block;width:100%;text-align:left;border:0;background:none;color:#fff;font:inherit;font-size:11px;padding:6px 8px;border-radius:3px;cursor:grab}
+.fel .el:hover{background:#ffffff1a}
+.fel .el:active{cursor:grabbing}
+.fel .el{touch-action:none;user-select:none}
+.dghost{position:fixed;z-index:90;pointer-events:none;background:#2D2E3F;color:#fff;font-size:11.5px;padding:7px 12px;border-radius:4px;box-shadow:0 6px 16px #0005;border:1px solid #F0A93C}
+body.dragging2,body.dragging2 *{cursor:grabbing!important;user-select:none}
+/* modals */
+.pclose{width:28px;height:28px;border-radius:50%;border:0;background:var(--nav);color:var(--gold);font-size:13px;display:grid;place-items:center;cursor:pointer}
+.fveil{position:fixed;inset:0;background:#0000004d;z-index:58;display:none;align-items:center;justify-content:center;padding:14px}
+.fveil.show{display:flex}
+.fmod{background:#fff;border-radius:8px;width:min(560px,100%);max-height:calc(100vh - 28px);display:flex;flex-direction:column;box-shadow:0 11px 15px -7px #0003,0 24px 38px 3px #00000024;position:relative}
+.fmh{display:flex;justify-content:space-between;align-items:center;padding:14px 18px 10px}
+.fmh h2{margin:0;font-size:16px;font-weight:700}
+.fmb{flex:1;overflow:auto;padding:4px 18px 14px}
+.fmb label.f{display:block;font-size:10px;font-weight:700;margin:10px 0 3px}
+.fmb input[type=text],.fmb select,.fmb textarea{width:100%;height:30px;border:1px solid #9a9ca5;border-radius:2px;padding:0 8px;font:inherit;font-size:11.5px;background:#fff}
+.fmb textarea{height:52px;padding:6px 8px;resize:vertical}
+.fsw{display:flex;align-items:center;gap:6px;font-size:10.5px;margin:4px 0;cursor:pointer;user-select:none;width:max-content}
+.fsw i{width:22px;height:10px;border-radius:999px;background:#C7C9CF;position:relative;flex:none}
+.fsw i::after{content:"";position:absolute;left:-2px;top:-2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #0005}
+.fsw.on i{background:#8FE0C3}.fsw.on i::after{left:10px;background:#1EC28B}
+.fsw b{font-weight:400;display:inline-grid;place-items:center;width:10px;height:10px;border-radius:50%;background:#1E1F2B;color:#fff;font-size:7px}
+.rte2{border:1px solid #9a9ca5;border-radius:2px}
+.rte2 .tb{display:flex;gap:9px;align-items:center;padding:5px 8px;border-bottom:1px solid #E3E4E7;font-size:10px;flex-wrap:wrap}
+.rte2 .tb select{width:auto;height:22px;font-size:10px;padding:0 4px}
+.rte2 .ed{min-height:110px;padding:8px;outline:none;font-size:12px}
+.optrows .or{display:grid;grid-template-columns:1fr 1.4fr 1fr 28px;gap:6px;align-items:end;margin-bottom:6px}
+.optrows .or label{font-size:9.5px;font-weight:700;display:block;margin-bottom:2px}
+.optrows .del{width:26px;height:26px;border:0;border-radius:4px;background:#E9AF41;color:#fff}
+.addopt{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#2D2E3F;color:#fff;font-size:10.5px;font-weight:600;padding:6px 12px;margin:4px 0 8px;float:right}
+.mnote{font-size:10.5px;color:#3B3D4A;margin:2px 0}
+.condrow{display:grid;grid-template-columns:1fr 1fr 28px;gap:8px;align-items:center;margin:6px 0 4px}
+.cvwrap{position:relative}
+.cvbtn{width:100%;height:30px;border:1px solid #9a9ca5;border-radius:2px;background:#fff;text-align:left;padding:0 8px;font:inherit;font-size:11.5px;color:#1E1F2B}
+.cvlist{position:absolute;left:0;right:0;top:32px;background:#fff;box-shadow:0 4px 12px #0003;border-radius:3px;z-index:3;padding:4px 0}
+.cvlist label{display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:11.5px;cursor:pointer;margin:0;font-weight:400}
+.fmf{display:flex;justify-content:flex-end;gap:8px;padding:10px 18px 14px}
+.fmf button{height:30px;border-radius:999px;border:0;padding:0 16px;font-weight:600;font-size:11.5px}
+.fmf .c1{background:#ECEDEF}.fmf .c2{background:var(--nav);color:#fff}.fmf .c2:disabled{background:#ECEDEF;color:#BFC1C7}
+.fbusy{position:absolute;inset:0;background:#0000002e;display:grid;place-items:center;z-index:5}
+.fbusy div{background:#fff;border-radius:8px;width:170px;height:220px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:22px 10px;box-shadow:0 6px 20px #0003}
+.fbusy b{font-size:19px}.fbusy i{width:46px;height:46px;border-radius:50%;border:4px solid transparent;border-top-color:#2D2E3F;border-right-color:#2D2E3F;animation:sp 1s linear infinite}
+.fbusy span{font-size:12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* journey canvas */
+.jwrap{flex:1;display:flex;flex-direction:column;min-height:0;padding:0 18px 18px 48px}
+.jwrap .btop{display:flex;justify-content:flex-end;gap:10px;padding:10px 0;position:relative}
+.jboard{flex:1;display:flex;background:#E9EAEC;min-height:420px;position:relative;box-shadow:0 2px 3px #0000001a}
+.jcan{flex:1;position:relative;min-width:0;overflow:hidden}
+.jtabs{display:flex}
+.jtabs span{width:148px;text-align:center;padding:17px 0 15px;font-size:12.5px;font-weight:500}
+.jtabs span.on{font-weight:800;border-bottom:3px solid #1E1F2B}
+.jstage{position:absolute;left:0;right:0;top:52px;bottom:0}
+.jstage>svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.jn svg{flex:none}
+.jban{position:absolute;right:24px;top:-38px;display:none;align-items:center;gap:22px}
+.jban.show{display:flex}.jban b{font-size:16px}.jban button{border:0;background:none;font-size:12px}
+.jn{position:absolute;width:118px;min-height:42px;background:#fff;border-radius:3px;display:flex;align-items:center;gap:6px;padding:4px 3px 4px 7px;box-shadow:0 1px 2px #0002;font-size:9.5px;line-height:1.15;cursor:default}
+.jn .t{flex:1;word-break:break-word}
+.jn .k{border:0;background:none;width:20px;height:28px;border-radius:3px;display:grid;place-items:center;cursor:pointer}
+.jn .k:hover{background:#0000000d}
+.jn.pick{background:#F0A93C;cursor:pointer}
+.jmenu{position:absolute;background:#fff;border-radius:4px;box-shadow:0 6px 18px #0003;z-index:20;padding:4px 0;min-width:140px;display:none;font-family:Roboto,Inter,sans-serif}
+.jmenu.show{display:block}
+.jmenu button{display:flex;gap:10px;align-items:center;width:100%;border:0;background:none;padding:9px 14px;font-size:12.5px;text-align:left}
+.jmenu button:hover{background:#0000000a}
+.jmenu button[aria-disabled="true"]{color:#00000047}
+.addm{right:42px;top:46px;width:205px;max-height:440px;overflow:auto}
+.addm button{padding:0 15px;height:32px;font-size:12px}
+.jset{width:300px;flex:none;background:#fff;display:flex;flex-direction:column;transition:width .2s;overflow:hidden}
+.jset.closed{width:26px}
+.jset .sh3{background:#F0A93C;height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 0 0 8px;font-weight:700;font-size:13px;flex:none}
+.jset .sh3 button{border:0;background:none;width:26px;height:36px}
+.jset.closed .sh3 span,.jset.closed .sb3,.jset.closed .sf3{display:none}
+.sb3{flex:1;overflow:auto;padding:4px 8px 10px;border-right:8px solid #2D2E3F}
+.sb3 label.f{display:block;font-weight:700;font-size:10.5px;margin:9px 0 3px}
+.sb3 input[type=text],.sb3 select{width:100%;height:30px;border:1px solid #9a9ca5;border-radius:2px;padding:0 8px;font:inherit;font-size:11.5px;background:#fff}
+.rte3{border:1px solid #CCCED3;border-radius:2px;font-size:10.5px}
+.rte3 .tb{display:flex;gap:8px;padding:4px 6px;border-bottom:1px solid #E3E4E7;flex-wrap:wrap;font-weight:600}
+.rte3 .ed{min-height:62px;padding:6px 8px;outline:none;font-size:11px;white-space:pre-wrap}
+.sf3{padding:10px 16px 12px;display:flex;justify-content:flex-end;gap:8px;border-right:8px solid #2D2E3F;background:#fff}
+.sf3 button{height:30px;border-radius:999px;border:0;padding:0 16px;font-weight:600;font-size:11.5px}
+.sf3 .b1{background:#fff}.sf3 .b2{background:#2D2E3F;color:#fff}.sf3 .b2:disabled{background:#ECEDEF;color:#BFC1C7}
+/* step modals */
+.smodal{background:#fff;border-radius:8px;width:min(480px,100%);max-height:calc(100vh - 28px);display:flex;flex-direction:column;box-shadow:0 11px 15px -7px #0003,0 24px 38px 3px #00000024}
+.smodal.big{width:min(1040px,100%);height:calc(100vh - 28px);max-height:760px}
+.smodal .fmb{flex:1}
+.avail2{max-height:330px;overflow:auto;display:flex;flex-direction:column;gap:5px;padding-right:6px}
+.avail2 button{border:0;border-radius:999px;background:#ECEDEF;min-height:26px;font-size:10.5px;padding:4px 10px}
+.avail2 button:hover{background:#DDDEE1}
+.fs2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+@media (max-width:760px){.fs2{grid-template-columns:1fr}}
+.chosen2{display:flex;align-items:center;gap:12px;border:1.5px solid #1E1F2B;border-radius:3px;height:40px;padding:0 10px;font-size:11.5px;margin-top:6px}
+.chosen2 .ver{margin-left:auto;background:#EFEFF1;border-radius:999px;padding:5px 12px;font-size:10.5px}
+.stabs3{display:flex;margin:0 0 6px;border-bottom:1px solid #EEE}
+.stabs3 button{width:140px;border:0;background:none;padding:10px 0;font-size:12px;font-weight:600;border-bottom:3px solid transparent}
+.stabs3 button.on{border-color:#2D2E3F}
+.dtgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 10px;font-size:11px;margin:6px 0}
+@media (max-width:900px){.dtgrid{grid-template-columns:repeat(2,1fr)}}
+.dtgrid label{display:flex;align-items:center;gap:6px;margin:0;font-weight:400}
+.dtgrid input[type=checkbox]{width:16px;height:16px;accent-color:#2D2E3F}
+.dtgrid select{height:24px;width:auto;font-size:10px;padding:0 4px;margin-left:auto}
+.errt{color:#D9483B;font-size:11px;margin:3px 0}
+.errb{border:1px solid #D9483B;color:#D9483B;font-size:11px;padding:6px 8px;margin:6px 0;font-weight:600}
+.rtabs button.hint,.ptabs button.hint{animation:tabpulse 1.3s ease-in-out infinite;border-radius:4px;padding-left:8px;padding-right:8px;margin:0 -8px}
+@keyframes tabpulse{0%,100%{box-shadow:inset 0 0 0 2px #F0A93C}50%{box-shadow:inset 0 0 0 2px #F0A93C,inset 0 0 0 5px #F0A93C40}}
+@media (prefers-reduced-motion:reduce){.rtabs button.hint,.ptabs button.hint{animation:none;box-shadow:inset 0 0 0 2px #F0A93C}}
+.progsum{display:flex;align-items:center;gap:10px;font-size:12px;color:#3B3D4A;margin:0 0 6px;flex-wrap:wrap}
+.progsum b{color:#1E1F2B}
+.progsum .pbar{flex:1;min-width:120px;height:6px;border-radius:3px;background:#ECEDEF;overflow:hidden}
+.progsum .pbar i{display:block;height:100%;background:#1EC28B}
+.mtog{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #D2D4D9;background:#fff;color:#3B3D4A;border-radius:999px;height:36px;padding:0 14px;font-weight:600;font-size:12px;cursor:pointer}
+.mtog[aria-pressed="false"]{color:#9A9CA6;text-decoration:line-through}
+.mtog[hidden]{display:none}
+@media (max-width:560px){.intro .if{flex-wrap:wrap}}
+/* dropdown */
+.drop{position:absolute;top:34px;left:0;background:#fff;border-radius:4px;box-shadow:0 2px 4px -1px #0003,0 4px 5px #00000024,0 1px 10px #0000001f;z-index:40;padding:6px 6px 8px;display:none;min-width:100%}
+.drop.show{display:block}
+.drop label{display:flex;align-items:center;gap:7px;padding:2px 2px;font-size:10.5px;white-space:nowrap;cursor:pointer;min-height:19px}
+.drop .apply{display:block;width:100%;margin-top:6px;height:24px;border:0;border-radius:999px;background:var(--nav);color:#fff;font-weight:600;font-size:11px;min-width:88px}
+.drop .empty{font-size:10.5px;color:var(--muted);padding:2px 2px 0}
+.cb{appearance:none;-webkit-appearance:none;width:13px;height:13px;border:1.5px solid #1E1F2B;border-radius:2px;margin:0;flex:none;display:grid;place-items:center;cursor:pointer;background:#fff}
+.cb:checked{background:#1E1F2B}
+.cb:checked::after{content:"";width:7px;height:4px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.cb.lg{width:20px;height:20px;border-width:1.5px;border-color:#55586a;border-radius:3px}
+.cb.lg:checked::after{width:10px;height:5px}
+
+/* table */
+.tablewrap{flex:1;margin:0 18px 0 48px;overflow:auto;position:relative;border-right:8px solid #2D2E3F;border-right-color:transparent}
+table{border-collapse:collapse;width:100%;min-width:1380px;font-size:10.5px}
+thead th{position:sticky;top:0;background:#fff;color:#6E717E;font-weight:500;text-align:left;padding:7px 10px;border-bottom:1px solid #D9DADF;white-space:nowrap;z-index:2}
+th.c,td.c{text-align:center}
+tbody tr:nth-child(even){background:var(--stripe)}
+tbody td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle;height:34px}
+td.div,th.div{border-right:1px solid #D9DADF}
+.pill{display:inline-block;border-radius:999px;padding:2px 7px;font-weight:600;font-size:9.5px;white-space:nowrap}
+.p-dark{background:#2D2E3F;color:#fff}.p-green{background:var(--green);color:#fff}.p-red{background:var(--red);color:#fff}
+.p-grey{background:#E7E8EA;color:#3B3D4A}.p-out{background:#fff;color:#3B3D4A;box-shadow:inset 0 0 0 1px #C6C8CE}
+.reg{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.live{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.dot{width:11px;height:11px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ref{max-width:140px;word-break:break-all}
+.em{max-width:170px;word-break:break-all}
+.kebab{border:0;background:none;padding:4px 8px}
+.emptyrow td{height:160px;text-align:center;color:var(--muted);font-size:12px;background:#fff}
+
+.foot{display:flex;justify-content:flex-end;align-items:center;gap:22px;padding:10px 60px 12px;font-size:11.5px;flex:none}
+.foot .sel{border:1px solid #9a9ca5;border-radius:2px;padding:2px 6px;width:58px;display:flex;justify-content:space-between}
+.foot .nav{display:flex;gap:18px;color:#B7B9C0}
+.foot .nav .on{color:var(--ink)}
+
+/* drawer */
+.dveil{position:fixed;inset:0;background:#0000;z-index:50;display:none}
+.dveil.show{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(370px,100vw);background:#fff;box-shadow:-4px 0 16px #00000026;z-index:51;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.show{transform:none}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 16px 22px;box-shadow:0 2px 4px #0000000f;flex:none}
+.dh h2{margin:0;font-size:16px;font-weight:700}
+.dclose{width:26px;height:26px;border-radius:50%;border:0;background:var(--nav);color:var(--gold);font-size:14px;display:grid;place-items:center}
+.dbody{flex:1;overflow:auto;padding:4px 22px 10px;scrollbar-width:thin;scrollbar-color:#2D2E3F transparent}
+.sec{border-bottom:1px solid #DADBDF;margin-top:14px}
+.sec>button{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;background:none;padding:6px 0 9px;font-size:12px;font-weight:500;text-align:left}
+.sec>button span:last-child{font-size:16px;line-height:1;color:#555}
+.sec .items{border-top:1px solid #DADBDF;margin-bottom:0}
+.sec.closed .items{display:none}
+.sec .row{display:flex;align-items:center;gap:10px;padding:13px 2px;border-bottom:1px solid #ECECEF;font-size:12px;cursor:pointer}
+.sec .row:last-child{border-bottom:0}
+.dates{display:flex;gap:16px;padding:14px 0 18px}
+.dates label{font-weight:700;font-size:10.5px;display:block;margin-bottom:5px}
+.dates input{width:100%;height:32px;border:1px solid #9a9ca5;border-radius:3px;padding:0 8px;font-size:11px;background:#fff}
+.dates>div{flex:1}
+.dwrap{position:relative}
+.dates .dtext{padding-right:32px}
+.dates .dtext.bad{border-color:var(--red)}
+.cal{position:absolute;right:4px;top:4px;width:24px;height:24px;border:0;background:none;display:grid;place-items:center;padding:0}
+.calpop{position:absolute;top:36px;left:0;z-index:5;width:262px;background:#fff;border-radius:4px;box-shadow:0 2px 4px -1px #0003,0 4px 5px #00000024,0 1px 10px #0000001f;padding:8px 8px 10px}
+.calpop.right{left:auto;right:0}
+.chead{display:flex;justify-content:space-between;align-items:center;padding:2px 0 8px 4px}
+.cper{border:0;background:none;font-weight:600;font-size:12px;display:flex;gap:6px;align-items:center;padding:6px 6px;border-radius:4px}
+.cper:hover,.cnav:hover{background:#0000000a}
+.cnav{border:0;background:none;width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.cgrid b{font-size:10px;color:#6E717E;font-weight:500;padding:4px 0 6px}
+.cd{border:0;background:none;height:32px;border-radius:50%;font-size:11.5px;padding:0}
+.cd:hover{background:#ECEDEF}
+.cd.today{box-shadow:inset 0 0 0 1px #8A8D97}
+.cd.inr{background:#F6E3C2;border-radius:0}
+.cd.edge{background:#F0A93C;color:#1E1F2B;font-weight:600}
+.cd.sel{background:#2D2E3F;color:#fff}
+.cgrid.m{grid-template-columns:repeat(4,1fr);gap:6px}
+.cm{border:0;background:none;height:40px;border-radius:999px;font-size:12px}
+.cm:hover{background:#ECEDEF}.cm.sel{background:#2D2E3F;color:#fff}
+.dpick{position:absolute;right:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
+.dfoot{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;background:#F7F7F8;flex:none}
+.pbtn{border:0;border-radius:999px;height:31px;padding:0 18px;font-weight:600;font-size:12px;background:#E7E8EA}
+.pbtn.dark{background:var(--nav);color:#fff;padding:0 46px}
+
+/* coach */
+.coach{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:300px;max-height:calc(100vh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden;background:#fff;border-radius:10px;box-shadow:0 8px 28px #0000003a;z-index:60;border-top:4px solid var(--gold)}
+.coach .ch{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 0}
+.coach .count{font-weight:700;color:var(--gold-d);font-size:12px}
+.coach .ch button{border:0;background:none;color:var(--muted);font-size:12px}
+.coach .cbd{padding:4px 12px 12px}
+.coach .task{font-weight:700;font-size:14px;margin:2px 0 3px}
+.coach .desc{color:var(--muted);font-size:12px;margin:0 0 10px}
+.coach .desc b{color:var(--ink);font-weight:700}
+.coach .bar2{height:4px;background:#EEE;border-radius:4px;overflow:hidden;margin-bottom:10px}
+.coach .bar2 i{display:block;height:100%;background:var(--green);width:0;transition:width .3s}
+.coach .rw{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.coach .rw label{display:flex;gap:6px;align-items:center}
+.coach .rw button{border:0;background:#EAEBED;border-radius:999px;padding:6px 12px;font-weight:600;color:var(--ink)}
+.copyrow{display:none;align-items:center;gap:8px;margin:-2px 0 10px}
+.copyrow.show{display:flex}
+.copyrow code{flex:1 1 auto;min-width:0;background:#F3F3F5;border:1px solid #E1E2E5;border-radius:6px;padding:6px 8px;font:500 12px/1.2 Inter,sans-serif;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copyrow button{flex:none;border:0;border-radius:999px;background:var(--nav);color:#fff;font-weight:600;font-size:11.5px;padding:7px 12px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.copyrow button.done{background:var(--green)}
+.stoggle{display:flex;align-items:center;gap:6px;border:0;background:none;padding:0;margin:-2px 0 10px;color:var(--gold-d);font-weight:600;font-size:12px}
+.stoggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.slist{list-style:none;margin:-4px 0 12px;padding:0 4px 0 0;max-height:min(300px,45vh);overflow:auto;scrollbar-width:thin}
+.slist .g{font-size:10.5px;font-weight:700;color:var(--muted);margin:8px 0 4px}
+.slist .g:first-child{margin-top:0}
+.slist .it{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:#9A9CA6}
+.slist .it i{width:16px;height:16px;border-radius:50%;flex:none;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px #CFD1D6;font-style:normal}
+.slist .it.isdone{color:var(--muted)}
+.slist .it.isdone i{background:var(--green);box-shadow:none}
+.slist .it.now{color:var(--ink);font-weight:700}
+.slist .it.now i{box-shadow:inset 0 0 0 5px var(--gold)}
+
+/* introduction */
+.introVeil{position:fixed;inset:0;background:#1E1F2B99;display:none;align-items:center;justify-content:center;padding:16px;z-index:75}
+.introVeil.show{display:flex}
+.intro{background:#fff;border-radius:12px;width:min(620px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;box-shadow:0 24px 48px #0000004d;border-top:5px solid var(--gold);overflow:hidden}
+.intro .ib{overflow:auto;padding:26px 30px 8px}
+.intro .kicker{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-d);margin:0 0 6px}
+.intro h2{margin:0 0 4px;font-size:22px;line-height:1.25}
+.intro .meta{color:var(--muted);font-size:12px;margin:0 0 16px}
+.intro p{font-size:13px;line-height:1.55;margin:0 0 12px;color:#3B3D4A}
+.intro h3{font-size:13px;margin:18px 0 8px}
+.intro .groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.intro .grp{background:#F6F6F7;border-radius:8px;padding:12px 14px}
+.intro .grp b{display:block;font-size:12px;margin-bottom:6px}
+.intro .grp ol{margin:0;padding-left:18px;font-size:11.5px;color:#4A4C58;line-height:1.55}
+.intro .tips{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.intro .tips li{display:flex;gap:10px;font-size:12.5px;line-height:1.5;color:#3B3D4A}
+.intro .tips i{flex:none;width:22px;height:22px;border-radius:50%;background:#FDF0DA;display:grid;place-items:center;font-style:normal;font-size:12px}
+.intro .if{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:14px 30px 20px;border-top:1px solid #EEEFF1;margin-top:14px}
+.intro .if .hublink{margin-right:auto;color:var(--muted);font-weight:600;font-size:12.5px;text-decoration:none}
+.intro .if .hublink:hover{color:var(--ink);text-decoration:underline}
+.hubbtn{display:inline-block;margin-top:18px;border-radius:999px;background:#EAEBED;color:var(--ink);font-weight:600;font-size:12.5px;padding:9px 18px;text-decoration:none}
+.hubbtn:hover{background:#DDDEE1}
+.listen{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--nav);background:#fff;color:var(--nav);border-radius:999px;height:36px;padding:0 16px 0 12px;font-weight:600;font-size:12.5px;cursor:pointer}
+.listen[hidden]{display:none}
+.listen:hover{background:#F3F3F5}
+.listen .lic{width:18px;height:18px;border-radius:50%;background:var(--nav);position:relative;flex:none}
+.listen .lic::after{content:"";position:absolute;left:7px;top:5px;border-left:6px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent}
+.listen.playing .lic::after{left:6px;top:5px;width:2px;height:8px;border:0;background:#fff;box-shadow:4px 0 0 #fff}
+.listen.playing{background:var(--gold-l,#FCEBD0);border-color:var(--gold-d)}
+.intro .if .pbtn.dark{padding:0 26px;height:36px;font-size:13px}
+.coach .ch span button{border:0;background:none;color:var(--muted);font-size:12px;margin-left:10px}
+.coach{transition:transform .35s ease,box-shadow .35s ease}
+.coach.spot{z-index:80;transform:scale(1.04);transform-origin:left bottom;box-shadow:0 0 0 4px var(--gold),0 18px 44px #00000066}
+@media (prefers-reduced-motion:reduce){.coach{transition:none}.coach.spot{transform:none}}
+.coach.min .cbd{display:none}
+.coach.min{width:auto}
+.hint{animation:pulse 1.3s ease-in-out infinite;position:relative;z-index:5}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #F0A93CCC}50%{box-shadow:0 0 0 6px #F0A93C40}}
+.cal.hint{position:absolute;border-radius:4px}
+@media (prefers-reduced-motion:reduce){.hint{animation:none;box-shadow:0 0 0 3px var(--gold)}}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#2D2E3F;color:#fff;padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:80;max-width:90vw;text-align:center;font-size:12.5px}
+.toast.show{opacity:1}
+
+/* completion popup */
+.doneVeil{position:fixed;inset:0;background:#1E1F2B8C;display:none;align-items:center;justify-content:center;padding:16px;z-index:70}
+.doneVeil.show{display:flex}
+.done{background:#fff;border-radius:10px;width:min(540px,100%);max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 24px 48px #0000004d;border-top:5px solid var(--gold);text-align:center;padding:28px 28px 22px}
+.done .tick{width:52px;height:52px;border-radius:50%;background:var(--green);display:grid;place-items:center;margin:0 auto 12px}
+.done h2{margin:0 0 6px;font-size:20px}
+.done p{margin:0 auto 18px;color:var(--muted);max-width:44ch;font-size:13px}
+.done h3{text-align:left;font-size:12px;margin:14px 0 8px;color:var(--muted);font-weight:600}
+.exlist{display:flex;flex-direction:column;gap:8px;text-align:left}
+.ex{display:flex;align-items:center;gap:10px;border:1px solid #E1E2E5;border-radius:8px;padding:11px 14px;background:#fff}
+.ex .n{flex:1}.ex .n b{display:block;font-size:13px}.ex .n small{color:var(--muted);font-size:11.5px}
+.ex .tag{font-size:11px;font-weight:600;border-radius:999px;padding:4px 10px;white-space:nowrap}
+.ex .tag.ok{background:#E3F7EF;color:#12825C}.ex .tag.soon{background:#EFEFF1;color:var(--muted)}
+.ex[aria-disabled="true"]{opacity:.65}
+.ex .mini{border:0;border-radius:999px;background:#2D2E3F;color:#fff;font:600 11px/1 Inter,sans-serif;padding:7px 12px;white-space:nowrap;text-decoration:none}
+.ex .mini.lt{background:#EAEBED;color:var(--ink)}
+</style>
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
+<script>
+/* Keep an Azure SAS token (or any query string) on links between pages */
+(function(){var q=location.search;if(!q||q.length<2)return;
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href");
+ if(!h||/^(https?:|mailto:|#|javascript:)/i.test(h)||!/\.html(#|$)/i.test(h))return;
+ var i=h.indexOf("#"),base=i<0?h:h.slice(0,i),hash=i<0?"":h.slice(i);if(base.indexOf("?")>=0)return;
+ e.preventDefault();var url=base+q+hash;if(a.target==="_blank")window.open(url,"_blank");else location.href=url;},true);})();
+</script>
+</head>
+<body>
+<div class="shell">
+<header class="top">
+  <div class="logo"><svg viewBox="0 0 148.15 60" height="31" width="77" role="img" aria-label="Credas" xmlns="http://www.w3.org/2000/svg"> <path fill="#f9ba2c" d="M30.29,56.16c-4.83,0-9.55-1.35-13.62-3.91-.38-.24-.5-.75-.25-1.13.24-.38.75-.49,1.13-.25,3.81,2.39,8.22,3.66,12.75,3.66,1.96,0,3.91-.24,5.79-.71.44-.11.88.16.99.6.11.44-.16.88-.6.99-2.01.5-4.09.75-6.19.75"/> <path fill="#f9ba2c" d="M13.18,49.33c-.2,0-.41-.07-.56-.23-1.11-1.05-2.12-2.21-3.03-3.44-.27-.36-.19-.87.17-1.14.37-.27.87-.19,1.14.17.85,1.15,1.8,2.24,2.83,3.23.33.31.34.83.03,1.15-.16.17-.38.25-.59.25"/> <path fill="#f9ba2c" d="M7.52,41.22c-.31,0-.61-.18-.75-.49-1.4-3.23-2.11-6.66-2.11-10.2,0-6.46,2.41-12.63,6.79-17.38,4.35-4.71,10.25-7.62,16.62-8.17.45-.03.85.29.89.74s-.29.85-.74.89C15.91,7.67,6.29,18.17,6.29,30.52c0,3.32.67,6.53,1.97,9.55.18.41,0,.89-.43,1.07-.11.05-.21.07-.33.07"/> <path fill="#f9ba2c" d="M46.94,12.94c-.19,0-.39-.07-.55-.21-4.05-3.67-9.26-5.85-14.7-6.17-.45-.03-.79-.41-.77-.87.03-.45.41-.79.87-.77,5.81.33,11.38,2.67,15.7,6.59.33.31.36.82.05,1.15-.16.18-.39.27-.61.27"/> <path fill="#f9ba2c" d="M40.71,53.87c-.31,0-.6-.17-.74-.47-.19-.41-.01-.89.39-1.08,2.27-1.06,4.35-2.45,6.19-4.15l-3.6-3.6c-.32-.32-.32-.83,0-1.15s.83-.32,1.15,0l4.19,4.19c.15.15.24.36.24.58s-.09.43-.24.58c-2.12,2.09-4.56,3.79-7.25,5.04-.11.05-.23.08-.35.08"/> <path fill="#f9ba2c" d="M30.29,44.25c-7.57,0-13.73-6.15-13.73-13.72s6.15-13.73,13.73-13.73c3.71,0,7.19,1.46,9.79,4.11.31.32.31.84,0,1.15s-.84.31-1.15,0c-2.29-2.33-5.36-3.63-8.63-3.63-6.67,0-12.09,5.42-12.09,12.09s5.42,12.09,12.09,12.09c.57,0,1.15-.04,1.71-.12.45-.06.86.25.92.69s-.25.86-.69.93c-.64.09-1.29.13-1.94.13"/> <path fill="#f9ba2c" d="M36.1,42.86c-.3,0-.59-.17-.73-.45-.21-.4-.04-.89.36-1.1,1.11-.56,2.12-1.28,3.01-2.15.32-.31.84-.31,1.15.01s.31.84-.01,1.15c-1.01.99-2.15,1.81-3.41,2.44-.12.06-.25.09-.37.09"/> <path fill="#f9ba2c" d="M18.76,20.4c-.2,0-.41-.07-.56-.23-.33-.31-.34-.83-.03-1.15,1.14-1.2,2.45-2.22,3.87-3.03.39-.22.89-.08,1.11.31.22.39.09.89-.31,1.11-1.29.73-2.47,1.65-3.49,2.74-.16.17-.38.25-.59.25"/> <path fill="#f9ba2c" d="M41.61,20.19c-.21,0-.42-.08-.58-.25-2.85-2.9-6.67-4.49-10.73-4.49-.98,0-1.97.09-2.92.29-.44.09-.87-.2-.96-.65-.09-.44.2-.87.65-.96,1.06-.21,2.15-.31,3.24-.31,4.51,0,8.73,1.77,11.9,4.98.31.32.31.84,0,1.15-.16.16-.37.23-.57.23"/> <path fill="#f9ba2c" d="M30.29,47.23c-.45,0-.82-.37-.82-.82s.37-.82.82-.82c3.97,0,7.72-1.53,10.55-4.31.32-.31.84-.31,1.15,0s.31.84,0,1.15c-3.14,3.09-7.29,4.78-11.7,4.78"/> <path fill="#f9ba2c" d="M25.3,46.43c-.08,0-.17-.01-.25-.04-1.49-.49-2.91-1.2-4.22-2.1-.37-.25-.47-.77-.21-1.14.25-.37.77-.47,1.14-.21,1.17.81,2.45,1.45,3.8,1.89.43.14.66.6.52,1.03-.11.35-.43.56-.78.56"/> <path fill="#f9ba2c" d="M17.8,41.16c-.24,0-.48-.11-.65-.31-2.34-2.97-3.57-6.54-3.57-10.33,0-2.69.65-5.37,1.9-7.74.21-.4.7-.55,1.1-.35s.55.7.35,1.1c-1.12,2.14-1.71,4.55-1.71,6.98,0,3.41,1.11,6.63,3.22,9.31.28.35.22.87-.13,1.15-.15.12-.33.17-.51.17"/> <path fill="#f9ba2c" d="M12.2,36.7c-.35,0-.68-.23-.79-.59-.53-1.81-.81-3.69-.81-5.59,0-3.24.81-6.46,2.33-9.3.21-.39.71-.55,1.11-.33s.55.71.33,1.11c-1.39,2.6-2.13,5.55-2.13,8.52,0,1.74.25,3.47.74,5.13.13.43-.12.89-.55,1.01-.08.02-.15.03-.23.03"/> <path fill="#f9ba2c" d="M16.45,18.51c-.2,0-.4-.07-.55-.21-.33-.31-.35-.83-.04-1.15,3.71-4.01,8.97-6.3,14.44-6.3s10.27,2.08,14.01,5.85c.32.32.31.84,0,1.15-.32.32-.84.31-1.15,0-3.42-3.46-7.97-5.37-12.84-5.37s-9.83,2.11-13.24,5.77c-.16.17-.38.26-.6.26"/> <path fill="#f9ba2c" d="M30.29,50.21c-7.33,0-14-4.03-17.42-10.51-.21-.4-.06-.89.34-1.11s.89-.06,1.11.34c3.13,5.95,9.25,9.64,15.98,9.64,4.77,0,9.26-1.84,12.66-5.19.32-.31.84-.31,1.15,0s.31.84,0,1.15c-3.71,3.65-8.61,5.65-13.8,5.65"/> <path fill="#f9ba2c" d="M30.29,53.18c-4.3,0-8.49-1.21-12.11-3.5-.38-.24-.49-.75-.25-1.13s.75-.49,1.13-.25c3.36,2.13,7.24,3.25,11.23,3.25,1.67,0,3.33-.19,4.94-.58.44-.11.88.17.99.6.11.44-.17.88-.6.99-1.73.42-3.52.63-5.32.63"/> <path fill="#f9ba2c" d="M15.13,47.07c-.21,0-.41-.08-.57-.23-4.47-4.31-6.93-10.11-6.93-16.31,0-3.97,1.04-7.87,3.01-11.29.23-.39.73-.53,1.12-.3.39.23.53.73.3,1.12-1.83,3.17-2.79,6.79-2.79,10.47,0,5.76,2.29,11.13,6.43,15.14.33.31.33.83.02,1.15-.16.17-.37.25-.59.25"/> <path fill="#f9ba2c" d="M14.14,16.63c-.2,0-.39-.07-.55-.21-.33-.31-.35-.82-.05-1.15,4.29-4.71,10.39-7.41,16.76-7.41,1.65,0,3.29.18,4.88.53.44.09.72.53.62.97-.09.44-.53.72-.97.62-1.48-.33-3-.49-4.53-.49-5.9,0-11.57,2.5-15.54,6.87-.16.17-.39.27-.61.27"/> <path fill="#f9ba2c" d="M44.83,15.04c-.19,0-.39-.07-.55-.21-1.59-1.42-3.38-2.59-5.32-3.47-.41-.19-.59-.67-.41-1.09s.67-.59,1.09-.41c2.09.95,4.01,2.21,5.73,3.74.34.3.37.82.07,1.15-.16.18-.39.27-.61.27"/> <path fill="#f9ba2c" d="M39.41,51.19c-.31,0-.6-.17-.74-.48-.19-.41,0-.89.4-1.09,1.39-.64,2.71-1.44,3.94-2.37.36-.27.87-.21,1.15.15.27.36.21.87-.15,1.15-1.32,1.01-2.75,1.86-4.25,2.55-.11.05-.23.07-.34.07"/> <path fill="#f9ba2c" d="M22.7,58.09c-.07,0-.15,0-.22-.03C10.22,54.59,1.67,43.26,1.67,30.52c0-3.14.51-6.23,1.5-9.17.15-.43.61-.65,1.04-.51.43.15.65.61.51,1.04-.94,2.78-1.42,5.69-1.42,8.65,0,12.02,8.07,22.7,19.61,25.96.43.13.69.57.56,1.01-.1.36-.43.59-.79.59"/> <path fill="#f9ba2c" d="M5.69,18.38c-.13,0-.26-.03-.38-.09-.4-.21-.55-.71-.34-1.11C9.94,7.76,19.64,1.91,30.29,1.91c4.09,0,8.05.85,11.76,2.52.41.19.59.67.41,1.08s-.67.59-1.08.41c-3.49-1.58-7.22-2.37-11.08-2.37-10.03,0-19.18,5.52-23.88,14.4-.15.28-.43.44-.73.44"/> <path fill="#f9ba2c" d="M50.03,11.77c-.21,0-.42-.08-.58-.24-.97-.97-2.01-1.87-3.11-2.69-.36-.27-.44-.78-.17-1.14s.78-.44,1.14-.17c1.17.87,2.27,1.83,3.29,2.85.32.32.31.84,0,1.15-.16.16-.37.23-.57.23"/> <path fill="#f9ba2c" d="M30.29,59.14c-1.19,0-2.38-.07-3.54-.21-.45-.05-.77-.47-.71-.91.05-.45.47-.77.91-.71,1.09.13,2.22.21,3.34.21,7.15,0,13.89-2.77,18.98-7.8.32-.31.84-.31,1.15,0s.31.84,0,1.15c-5.39,5.33-12.54,8.27-20.12,8.27"/> <path fill="#f9ba2c" d="M40.25,53.93c-.25,0-.5-.04-.74-.13-.58-.2-1.05-.61-1.33-1.16-.56-1.14-.09-2.53,1.05-3.09l.73,1.47c-.33.17-.47.56-.31.89.08.16.21.28.39.33.17.06.35.05.51-.03l.73,1.47c-.32.16-.67.24-1.01.24"/> <path fill="#f9ba2c" d="M14.06,49.57c-.65,0-1.31-.27-1.75-.81l1.25-1.06c.24.28.66.31.94.08.28-.24.31-.66.08-.94l1.25-1.06c.82.97.7,2.43-.27,3.25-.43.37-.96.55-1.49.55"/> <path fill="#f9ba2c" d="M45.86,15.47c-.59,0-1.14-.22-1.57-.62l1.12-1.19c.13.12.3.18.48.18s.35-.08.47-.21c.12-.13.19-.3.18-.48,0-.18-.08-.35-.21-.47l1.11-1.19c.45.42.71.99.73,1.61.02.61-.2,1.2-.62,1.65s-.99.71-1.61.73h-.08"/> <path fill="#f9ba2c" d="M15.41,18.92c-.52,0-1.02-.17-1.43-.51-.48-.39-.79-.93-.85-1.54s.11-1.21.49-1.69l1.27,1.02c-.11.14-.16.31-.14.49s.11.34.25.45c.14.11.31.16.49.14.17-.02.33-.11.45-.25l1.28,1.02c-.39.48-.93.79-1.55.85-.09,0-.17.01-.26.01"/> <path fill="#f9ba2c" d="M16.89,23.6l-1.45-.77c.17-.33.05-.73-.27-.91-.33-.17-.73-.05-.91.27l-1.45-.77c.6-1.12,1.99-1.54,3.11-.95,1.12.6,1.55,2,.95,3.11"/> <path fill="#fff" d="M51.41,24.04c0-3.51.44-5.85,1.33-7.01.88-1.16,2.14-1.74,3.77-1.74s2.79.4,3.5,1.2c.51.58.83,1.16.99,1.73.36,1.34.55,3.35.55,6.01v2.5h-2.49v-2.8c0-2.43-.13-4.07-.39-4.89s-.64-1.35-1.12-1.57c-.27-.12-.57-.18-.91-.18-1.05,0-1.77.53-2.17,1.6s-.6,2.74-.6,5.02v11.64c0,2.8.17,4.73.53,5.81.35,1.07,1.05,1.61,2.11,1.61s1.74-.53,2.07-1.6.49-3,.49-5.8v-2.32h2.47v2.31c0,2.53-.14,4.36-.43,5.48-.29,1.11-.61,1.91-.97,2.39-.77,1.03-1.96,1.55-3.57,1.55s-2.83-.51-3.64-1.53c-1-1.25-1.5-3.87-1.5-7.85v-11.55h0"/> <path fill="#fff" d="M72.72,22.66c0-1.46-.07-2.53-.21-3.21-.13-.68-.37-1.14-.69-1.39-.33-.24-.83-.36-1.54-.36h-2.75v11.01h2.57c.83,0,1.41-.14,1.71-.43.31-.29.53-.76.69-1.43.15-.67.23-1.99.23-3.98v-.21h0M65.09,15.66h4.93c1.99,0,3.32.42,3.99,1.25.51.63.83,1.39.96,2.3.13.91.21,2.22.21,3.95s-.2,3.13-.6,4.23-1.09,1.77-2.07,2.03c.39.07.71.18.97.35s.5.46.71.87c.65,1.26.97,4.37.97,9.33,0,2.05.02,3.23.05,3.55.04.31.14.7.31,1.15h-2.43c-.17-.33-.28-.95-.31-1.87-.03-.91-.05-2.38-.05-4.39v-3.19c0-2.02-.13-3.31-.37-3.85-.25-.55-.98-.83-2.2-.83l-2.6-.17v14.3h-2.45V15.66h0Z"/> <polyline fill="#fff" points="79.01 15.66 86.66 15.66 86.66 17.57 81.45 17.57 81.45 28.9 86.35 28.9 86.35 30.9 81.45 30.9 81.45 42.71 86.61 42.71 86.61 44.66 79.01 44.66 79.01 15.66"/> <path fill="#fff" d="M97.44,23.66c0-2.11-.24-3.63-.73-4.56-.48-.93-1.24-1.4-2.27-1.4h-2.17v24.84h2.03c1.36,0,2.25-.62,2.67-1.86.33-1.02.49-2.55.49-4.58l-.02-12.44h0M89.82,15.66h4.47c2.61,0,4.26,1.07,4.97,3.19.42,1.24.63,2.93.63,5.07v12.42c.01,3.02-.41,5.16-1.27,6.41-.86,1.26-2.33,1.89-4.43,1.89h-4.37V15.66h0Z"/> <path fill="#fff" d="M110.61,36.74l-2.67-16.41h-.03l-2.45,16.41h5.16M106.61,15.66h2.5l5.15,29h-2.37l-.95-5.88h-5.8l-.87,5.88h-2.32l4.67-29h0Z"/> <path fill="#fff" d="M116.4,20.11c.17-1.57.63-2.77,1.39-3.59.76-.82,1.96-1.23,3.59-1.23s2.75.41,3.39,1.22c.35.44.63.88.83,1.32.42.89.63,3.01.65,6.36v1.63h-2.52v-1.81c0-2.55-.09-4.09-.25-4.63-.17-.54-.33-.95-.51-1.22-.32-.51-.89-.76-1.71-.76-1.67,0-2.51,1.55-2.51,4.67,0,1.09.11,1.83.31,2.21.21.39.37.69.47.91.1.22.81.98,2.1,2.27l1.58,1.6c2.34,2.41,3.51,5.17,3.51,8.28s-.45,5.17-1.35,6.15c-.89.99-2.22,1.49-3.98,1.49-2.7,0-4.25-1.63-4.66-4.89-.14-1.1-.21-2.45-.21-4.05v-3.01h2.51v2.97c0,2.61.17,4.41.52,5.41.35.99,1.05,1.49,2.11,1.49s1.74-.32,2.03-.96.45-1.42.48-2.33c.03-.91.04-1.89.04-2.93,0-2.15-.85-4.05-2.55-5.71l-1.68-1.6c-1.47-1.44-2.45-2.65-2.95-3.63s-.74-1.98-.74-3,.04-1.88.11-2.59"/> <path fill="#fff" d="M52.42,53.81l2.13-5.85h.87l2.15,5.85h-.79l-1.24-3.47c-.07-.21-.17-.48-.27-.8-.1-.32-.22-.73-.37-1.23h.14c-.14.5-.27.91-.37,1.24s-.19.59-.25.79l-1.21,3.47h-.8ZM53.49,52.18v-.65h3.01v.65h-3.01Z"/> <path fill="#fff" d="M62.6,53.91c-.42,0-.79-.07-1.1-.21s-.55-.33-.73-.57c-.17-.25-.27-.53-.3-.86h.77c.02.22.09.4.22.55.13.14.29.25.49.32s.41.11.64.11c.27,0,.5-.04.71-.13.21-.09.38-.21.5-.37.13-.16.19-.34.19-.55,0-.19-.05-.34-.16-.46s-.25-.21-.42-.29c-.17-.07-.37-.14-.58-.2l-.71-.2c-.47-.13-.84-.33-1.1-.57s-.39-.57-.39-.95c0-.33.09-.62.27-.87.18-.25.42-.44.72-.57.31-.13.65-.21,1.02-.21s.73.07,1.02.21c.29.13.53.32.7.55s.26.5.27.79h-.73c-.03-.29-.17-.51-.41-.66s-.53-.23-.88-.23c-.25,0-.47.04-.66.13-.19.08-.34.19-.44.34s-.16.31-.16.49c0,.21.07.37.19.49.13.13.28.22.45.29.17.07.33.13.47.16l.59.16c.16.04.33.1.52.17s.37.17.55.29.31.27.43.46.17.42.17.69c0,.32-.08.61-.25.87-.17.25-.41.46-.73.61-.31.15-.7.22-1.15.22h.01Z"/> <path fill="#fff" d="M65.81,53.81v-4.39h.69v.98h-.05c.06-.24.15-.43.29-.59s.28-.27.45-.35.35-.12.55-.12c.32,0,.58.1.77.29s.33.45.38.77h-.09c.05-.22.15-.41.29-.57s.31-.28.51-.37c.2-.09.41-.13.65-.13.25,0,.49.05.69.17s.37.27.5.5c.13.22.19.51.19.85v2.96h-.71v-2.94c0-.31-.09-.55-.27-.68s-.39-.21-.62-.21c-.2,0-.37.04-.51.13-.14.08-.25.19-.33.34s-.11.31-.11.49v2.87h-.71v-3.01c0-.25-.08-.44-.25-.59s-.37-.22-.62-.22c-.17,0-.33.04-.48.12-.15.08-.27.2-.36.35s-.14.35-.14.59v2.77h-.71,0Z"/> <path fill="#fff" d="M74.09,53.91c-.28,0-.53-.05-.75-.16s-.41-.26-.54-.46-.2-.45-.2-.73c0-.25.05-.45.15-.61s.23-.28.4-.37.35-.16.55-.2.41-.08.61-.11c.26-.03.47-.06.64-.08s.29-.05.37-.09.12-.12.12-.23v-.03c0-.18-.03-.34-.1-.47-.07-.13-.17-.23-.31-.29s-.31-.1-.51-.1-.39.03-.54.1-.27.15-.36.25-.16.2-.21.3l-.68-.22c.11-.27.27-.47.45-.63s.4-.26.63-.32.46-.09.69-.09c.15,0,.31.02.5.05s.37.11.54.21c.17.11.32.26.43.47s.17.48.17.82v2.89h-.69v-.59h-.05c-.05.1-.13.21-.24.31-.11.11-.25.2-.43.27s-.39.11-.63.11h-.01ZM74.21,53.29c.26,0,.48-.05.67-.15s.32-.23.41-.4.14-.33.14-.51v-.61s-.09.07-.19.09-.21.05-.33.07-.25.04-.36.05c-.11.01-.21.03-.28.03-.17.02-.33.06-.48.11s-.27.13-.35.23-.13.23-.13.4c0,.15.04.28.12.38s.19.18.32.23.29.08.47.08h0Z"/> <path fill="#fff" d="M77.37,53.81v-4.39h.69v.67h.05c.08-.22.23-.4.43-.54.21-.13.45-.2.71-.2h.19c.07,0,.13,0,.17,0v.71s-.07-.01-.16-.03-.17-.01-.27-.01c-.21,0-.4.05-.56.13-.17.09-.3.21-.39.36s-.14.33-.14.53v2.75h-.71Z"/> <path fill="#fff" d="M82.25,49.42v.61h-2.27v-.61h2.27ZM80.65,48.38h.71v4.29c0,.2.04.34.12.43.08.09.21.13.4.13.05,0,.1,0,.17-.01.07-.01.13-.02.19-.03l.15.59c-.07.03-.16.05-.25.06-.09.01-.19.02-.28.02-.38,0-.67-.1-.89-.3s-.32-.48-.32-.84v-4.35h0Z"/> <path fill="#fff" d="M85.11,53.91c-.42,0-.79-.07-1.1-.21s-.55-.33-.73-.57-.27-.53-.3-.86h.77c.02.22.09.4.22.55s.29.25.49.32.41.11.64.11c.27,0,.5-.04.71-.13s.38-.21.5-.37.19-.34.19-.55c0-.19-.05-.34-.16-.46s-.25-.21-.42-.29-.37-.14-.58-.2l-.71-.2c-.47-.13-.84-.33-1.1-.57s-.39-.57-.39-.95c0-.33.09-.62.27-.87.18-.25.42-.44.72-.57s.65-.21,1.02-.21.73.07,1.02.21.53.32.7.55c.17.23.26.5.27.79h-.73c-.03-.29-.17-.51-.41-.66-.24-.15-.53-.23-.88-.23-.25,0-.47.04-.66.13-.19.08-.34.19-.44.34-.11.14-.16.31-.16.49,0,.21.07.37.19.49.13.13.28.22.45.29.17.07.33.13.47.16l.59.16c.16.04.33.1.52.17s.37.17.55.29c.17.12.31.27.43.46s.17.42.17.69c0,.32-.08.61-.25.87s-.41.46-.73.61-.7.22-1.15.22h.01Z"/> <path fill="#fff" d="M90.17,53.91c-.43,0-.79-.09-1.1-.28-.31-.19-.55-.45-.71-.79-.17-.34-.25-.73-.25-1.18s.08-.85.25-1.19.39-.61.69-.81c.3-.19.65-.29,1.04-.29.23,0,.46.04.69.11.23.08.43.2.62.37s.33.4.44.68.17.62.17,1.03v.29h-3.41v-.59h3.03l-.33.22c0-.29-.05-.55-.13-.77-.09-.22-.23-.4-.4-.53-.18-.13-.4-.19-.67-.19s-.49.07-.68.19-.33.3-.43.51-.15.43-.15.67v.39c0,.33.06.6.17.83s.27.4.47.51.44.17.71.17c.17,0,.33-.03.47-.07s.27-.13.37-.23c.1-.1.18-.23.23-.37l.69.19c-.07.22-.18.41-.35.58s-.36.3-.6.39-.51.14-.81.14h0Z"/> <path fill="#fff" d="M94.32,53.91c-.28,0-.53-.05-.75-.16s-.41-.26-.54-.46-.2-.45-.2-.73c0-.25.05-.45.15-.61s.23-.28.4-.37.35-.16.55-.2.41-.08.61-.11c.26-.03.47-.06.64-.08s.29-.05.37-.09.12-.12.12-.23v-.03c0-.18-.03-.34-.1-.47-.07-.13-.17-.23-.31-.29s-.31-.1-.51-.1-.39.03-.54.1-.27.15-.36.25-.16.2-.21.3l-.68-.22c.11-.27.27-.47.45-.63s.4-.26.63-.32.46-.09.69-.09c.15,0,.31.02.5.05s.37.11.54.21c.17.11.32.26.43.47s.17.48.17.82v2.89h-.69v-.59h-.05c-.05.1-.13.21-.24.31-.11.11-.25.2-.43.27s-.39.11-.63.11h-.01ZM94.44,53.29c.26,0,.48-.05.67-.15s.32-.23.41-.4.14-.33.14-.51v-.61s-.09.07-.19.09-.21.05-.33.07-.25.04-.36.05c-.11.01-.21.03-.28.03-.17.02-.33.06-.48.11s-.27.13-.35.23-.13.23-.13.4c0,.15.04.28.12.38s.19.18.32.23.29.08.47.08h0Z"/> <path fill="#fff" d="M97.6,53.81v-4.39h.69v.67h.05c.08-.22.23-.4.43-.54.21-.13.45-.2.71-.2h.19c.07,0,.13,0,.17,0v.71s-.07-.01-.16-.03-.17-.01-.27-.01c-.21,0-.4.05-.56.13-.17.09-.3.21-.39.36s-.14.33-.14.53v2.75h-.71Z"/> <path fill="#fff" d="M102.28,53.91c-.4,0-.75-.09-1.05-.28-.3-.19-.53-.45-.7-.79s-.25-.73-.25-1.19.08-.86.25-1.2.4-.61.7-.79.65-.28,1.05-.28c.21,0,.41.03.6.08s.36.13.51.24c.15.11.29.23.4.38s.2.32.26.51l-.68.19c-.03-.11-.08-.21-.15-.31s-.15-.17-.24-.25c-.09-.07-.2-.13-.32-.16s-.25-.06-.39-.06c-.29,0-.53.07-.72.23-.19.15-.33.35-.42.6s-.14.52-.14.81.05.55.14.8c.09.25.23.45.42.6s.43.23.72.23c.15,0,.28-.02.41-.06s.23-.09.33-.17.17-.16.24-.26.11-.21.15-.33l.67.19c-.06.2-.14.37-.26.53-.11.15-.25.29-.41.39s-.33.19-.52.25c-.19.06-.39.09-.61.09h0Z"/> <path fill="#fff" d="M105.8,51.18v2.63h-.71v-5.85h.71v2.53h-.12c.13-.41.33-.69.57-.87s.54-.25.87-.25c.29,0,.55.06.78.18s.4.31.52.55c.13.25.19.55.19.93v2.79h-.71v-2.73c0-.34-.09-.6-.27-.79-.17-.19-.42-.29-.73-.29-.21,0-.4.05-.57.14s-.3.23-.39.4-.15.39-.15.64h0Z"/> <path fill="#fff" d="M114.57,53.89c-.5,0-.95-.12-1.34-.36s-.7-.59-.92-1.04c-.23-.45-.33-.98-.33-1.6s.11-1.15.33-1.61c.22-.45.53-.79.92-1.04.39-.25.84-.37,1.34-.37.29,0,.57.04.84.13.27.09.5.21.71.38s.39.37.53.61.23.51.29.81h-.75c-.04-.2-.11-.38-.21-.53-.1-.15-.23-.28-.37-.39-.15-.11-.31-.18-.48-.23s-.36-.08-.55-.08c-.35,0-.67.09-.95.27s-.51.44-.67.79-.25.77-.25,1.27.08.92.25,1.26c.17.35.39.61.67.78.28.18.6.27.95.27.19,0,.37-.03.55-.08.17-.05.33-.13.48-.23s.27-.23.37-.39.17-.33.21-.53h.75c-.05.3-.15.57-.29.8s-.31.44-.53.61-.45.29-.71.38c-.27.09-.55.13-.84.13h0Z"/> <path fill="#fff" d="M119.78,53.91c-.4,0-.75-.09-1.05-.28-.3-.19-.53-.45-.7-.79s-.25-.73-.25-1.19.08-.86.25-1.2.4-.61.7-.79.65-.28,1.05-.28.75.09,1.05.28.53.45.7.79.25.74.25,1.2-.08.85-.25,1.19-.4.61-.7.79-.65.28-1.05.28ZM119.78,53.27c.29,0,.54-.07.73-.23s.33-.35.43-.6.14-.51.14-.8-.05-.56-.14-.81c-.09-.25-.23-.45-.43-.61s-.43-.23-.73-.23-.53.07-.72.23c-.19.15-.33.35-.42.6s-.14.52-.14.81.05.55.14.8c.09.25.23.45.42.6s.43.23.72.23h0Z"/> <path fill="#fff" d="M122.81,53.81v-4.39h.69v.98h-.05c.06-.24.15-.43.29-.59.13-.15.28-.27.45-.35.17-.08.35-.12.55-.12.32,0,.58.1.77.29.2.2.33.45.38.77h-.09c.05-.22.15-.41.29-.57s.31-.28.51-.37c.2-.09.41-.13.65-.13.25,0,.49.05.69.17s.37.27.5.5c.13.22.19.51.19.85v2.96h-.71v-2.94c0-.31-.09-.55-.27-.68s-.39-.21-.62-.21c-.2,0-.37.04-.51.13-.14.08-.25.19-.33.34s-.11.31-.11.49v2.87h-.71v-3.01c0-.25-.08-.44-.25-.59s-.37-.22-.62-.22c-.17,0-.33.04-.48.12-.15.08-.27.2-.36.35s-.14.35-.14.59v2.77h-.71,0Z"/> <path fill="#fff" d="M129.86,55.45v-6.03h.69v.7h.08c.05-.08.12-.18.21-.3s.22-.23.39-.32.39-.14.68-.14c.37,0,.69.09.97.27s.5.45.65.79c.16.34.24.74.24,1.21s-.08.87-.23,1.21-.37.6-.65.79-.6.28-.97.28c-.28,0-.5-.05-.67-.14s-.3-.21-.39-.33-.16-.22-.21-.31h-.05v2.32h-.71ZM131.79,53.27c.27,0,.51-.07.69-.22.19-.15.32-.35.41-.59s.14-.53.14-.83-.05-.58-.14-.82c-.09-.25-.23-.44-.41-.59-.19-.15-.41-.21-.69-.21s-.49.07-.68.21-.32.33-.41.57-.14.53-.14.85.05.61.14.86.23.45.42.59.41.21.67.21h0Z"/> <path fill="#fff" d="M136.1,53.91c-.28,0-.53-.05-.75-.16s-.41-.26-.54-.46-.2-.45-.2-.73c0-.25.05-.45.15-.61s.23-.28.4-.37.35-.16.55-.2.41-.08.61-.11c.26-.03.47-.06.64-.08s.29-.05.37-.09.12-.12.12-.23v-.03c0-.18-.03-.34-.1-.47-.07-.13-.17-.23-.31-.29s-.31-.1-.51-.1-.39.03-.54.1-.27.15-.36.25-.16.2-.21.3l-.68-.22c.11-.27.27-.47.45-.63s.4-.26.63-.32.46-.09.69-.09c.15,0,.31.02.5.05s.37.11.54.21c.17.11.32.26.43.47s.17.48.17.82v2.89h-.69v-.59h-.05c-.05.1-.13.21-.24.31-.11.11-.25.2-.43.27s-.39.11-.63.11h-.01ZM136.22,53.29c.26,0,.48-.05.67-.15s.32-.23.41-.4.14-.33.14-.51v-.61s-.09.07-.19.09-.21.05-.33.07-.25.04-.36.05c-.11.01-.21.03-.28.03-.17.02-.33.06-.48.11s-.27.13-.35.23-.13.23-.13.4c0,.15.04.28.12.38s.19.18.32.23.29.08.47.08h0Z"/> <path fill="#fff" d="M140.09,51.18v2.63h-.71v-4.39h.68v1.07h-.09c.13-.41.33-.69.57-.87s.54-.25.87-.25c.29,0,.55.06.78.18.22.12.39.31.52.55.13.25.19.55.19.93v2.79h-.71v-2.73c0-.34-.09-.6-.27-.79-.17-.19-.42-.29-.73-.29-.21,0-.4.05-.57.14s-.3.23-.39.4-.15.39-.15.64h0Z"/> <path fill="#fff" d="M143.95,55.41l.18-.61.07.02c.15.03.27.05.39.03s.22-.07.32-.17.17-.25.25-.46l.13-.37-1.67-4.41h.77l.93,2.61c.1.27.18.54.25.81s.14.53.21.78h-.26c.07-.25.15-.51.22-.78s.15-.54.25-.81l.94-2.61h.77l-1.93,5.05c-.09.23-.19.43-.32.57s-.27.26-.43.33-.35.11-.56.11c-.13,0-.23,0-.33-.03s-.15-.03-.19-.05h0Z"/> </svg></div>
+  <div class="area" id="areaBtn" role="button" tabindex="0" aria-haspopup="menu" style="cursor:pointer;position:relative"><span id="areaTxt">Portal</span> <svg width="11" height="7" viewBox="0 0 11 7" fill="none" stroke="#fff" stroke-width="1.6"><path d="M1 1l4.5 4.5L10 1"/></svg><div class="amenu" id="amenu" role="menu"></div></div>
+  <nav id="topnav"><span class="on">Individuals</span><span>Masterlist</span><span>Processes</span><span>eSign</span><span>Companies</span><span>Settings</span></nav>
+  <div class="right">
+    <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><circle cx="10" cy="10" r="8.5"/><path d="M10 9v5M10 6v.5" stroke-linecap="round"/></svg>
+    <svg width="18" height="19" viewBox="0 0 19 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M4 14V9a5.5 5.5 0 0 1 11 0v5l1.5 2h-14z"/><path d="M8 18.5h3"/></svg>
+    <span class="avatar">JM</span>
+  </div>
+</header>
+
+<div id="listView" class="lv">
+<div class="bar">
+  <div class="search" id="searchBox">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1E1F2B" stroke-width="1.6"><circle cx="7" cy="7" r="5.5"/><path d="M11 11l4 4" stroke-linecap="round"/></svg>
+    <input id="q" placeholder="Search by name, phone number or email address" aria-label="Search by name, phone number or email address" autocomplete="off">
+    <button class="x" id="qx" aria-label="Clear search">×</button>
+  </div>
+  <div class="fbtn"><button class="chip" data-drop="status" id="btn-status">Status <span class="ct"></span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#1E1F2B" stroke-width="1.4"><path d="M1 1l4 4 4-4"/></svg></button><div class="drop" id="drop-status"></div></div>
+  <div class="fbtn"><button class="chip" data-drop="tags" id="btn-tags">Tags <span class="ct"></span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#1E1F2B" stroke-width="1.4"><path d="M1 1l4 4 4-4"/></svg></button><div class="drop" id="drop-tags"></div></div>
+  <div class="fbtn"><button class="chip" data-drop="idtype" id="btn-idtype">ID type <span class="ct"></span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#1E1F2B" stroke-width="1.4"><path d="M1 1l4 4 4-4"/></svg></button><div class="drop" id="drop-idtype"></div></div>
+  <button class="chip" id="btn-all">All filters <span class="ct"></span><svg width="11" height="8" viewBox="0 0 11 8" fill="#1E1F2B"><circle cx="1.5" cy="1.5" r="1.2"/><circle cx="5.5" cy="1.5" r="1.2"/><circle cx="9.5" cy="1.5" r="1.2"/><circle cx="1.5" cy="6.5" r="1.2"/><circle cx="5.5" cy="6.5" r="1.2"/><circle cx="9.5" cy="6.5" r="1.2"/></svg></button>
+  <button class="add" data-noop><b>+</b> Add new</button>
+  <button class="icon" aria-label="Table settings" data-noop><svg width="13" height="13" viewBox="0 0 24 24" fill="#1E1F2B"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.6 7.6 0 0 0 1.7 1L11 21h4l.4-2.9a7.6 7.6 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg></button>
+  <button class="icon" aria-label="Full screen" data-noop><svg width="11" height="11" viewBox="0 0 13 13" fill="none" stroke="#1E1F2B" stroke-width="1.8"><path d="M1 4V1h3M9 1h3v3M12 9v3H9M4 12H1V9"/></svg></button>
+</div>
+
+<div class="chips" id="chips" aria-label="Applied filters"></div>
+
+<div class="tablewrap">
+  <table>
+    <thead><tr>
+      <th style="width:40px"><input type="checkbox" class="cb" aria-label="Select all"></th>
+      <th>Date of invite <svg width="9" height="10" viewBox="0 0 9 10" fill="none" stroke="#6E717E" stroke-width="1.5"><path d="M4.5 0v9M1 5.5l3.5 3.5L8 5.5"/></svg></th>
+      <th>Name</th><th class="c div">Invite Status</th><th class="c">Completion Status</th><th>Phone number</th><th>Email</th><th>Reg Code</th><th>Invited By</th><th>Reference</th><th>Liveness</th><th class="c">ID Submitted</th><th class="c">Actions</th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+<div class="foot">
+  <span>Items per page: <span class="sel" style="display:inline-flex;margin-left:6px">20 <span>▾</span></span></span>
+  <span id="range">1 – 20 of 658</span>
+  <span class="nav"><span>|‹</span><span>‹</span><span class="on">›</span><span class="on">›|</span></span>
+</div>
+</div>
+<div id="jbView" hidden></div>
+</div>
+
+<div class="fveil" id="fveil"><div class="fmod" id="fmod" role="dialog" aria-modal="true" aria-labelledby="fmTitle"></div></div>
+<div class="dveil" id="dveil"></div>
+<aside class="drawer" id="drawer" aria-label="All filters">
+  <div class="dh"><h2>All filters</h2><button class="dclose" id="dclose" aria-label="Close">✕</button></div>
+  <div class="dbody" id="dbody"></div>
+  <div class="dfoot"><button class="pbtn" id="clearAll">Clear All</button><button class="pbtn dark" id="dapply">Apply</button></div>
+</aside>
+
+<section class="coach" id="coach" aria-live="polite">
+  <div class="ch"><span class="count" id="count"></span><span><button id="introBtn">Overview</button><button id="coachMin">Hide</button></span></div>
+  <div class="cbd">
+    <div class="task" id="task"></div>
+    <p class="desc" id="desc"></p>
+    <div class="copyrow" id="copyRow"></div>
+    <div class="bar2"><i id="prog"></i></div>
+    <button class="stoggle" id="stoggle" aria-expanded="false" aria-controls="slist"><span id="stoggleTxt">View all steps</span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg></button>
+    <ol class="slist" id="slist" hidden></ol>
+    <div class="rw"><label><input type="checkbox" id="hints" checked> Show hints</label><button id="restart">Start again</button></div>
+  </div>
+</section>
+
+<div class="doneVeil" id="doneVeil">
+  <div class="done" role="dialog" aria-modal="true" aria-labelledby="doneTitle">
+    <div class="tick"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h2 id="doneTitle">Exercise complete</h2>
+    <p>You created the Enhanced AML journey, added a form step, two data checks and identity verification, and connected them in order.</p>
+    <div id="modules"></div>
+    <a class="hubbtn" href="index.html#journey-builder" target="_self">Back to training area</a>
+  </div>
+</div>
+<div class="introVeil" id="introVeil">
+  <div class="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="ib" id="introBody"></div>
+    <div class="if"><a class="hublink" href="index.html#journey-builder" target="_self">Back to training area</a><button class="mtog" id="musicBtn" aria-pressed="true" title="Background music"><span aria-hidden="true">♪</span> <span id="musicTxt">Music on</span></button><button class="listen" id="listenBtn" hidden aria-live="polite"><span class="lic" aria-hidden="true"></span><span id="listenTxt">Listen to overview</span></button><button class="pbtn dark" id="introStart">Start exercise</button></div>
+  </div>
+</div>
+<div class="regVeil" id="regVeil">
+  <div class="regdlg" role="alertdialog" aria-modal="true" aria-labelledby="regMsg">
+    <div class="regh"><button class="regx" id="regClose" aria-label="Close">✕</button></div>
+    <div class="regb"><span class="regi" aria-hidden="true">i</span><span id="regMsg">The registration code has been copied</span></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- data from the recording ---------- */
+const STATUS=["Active","Expired","Inactive","Invite bounced","Invited","Not invited"];
+const TAGS=[];
+const IDTYPES=["Agents Licence","Driving Licence","Electoral Card","Foreigner ID Card","Health Card","Job Licence","Membership ID Card","Military ID Card","National ID Card","Passport","Proof of Age Card","Travel Permit","Travel Visa","Weapons Licence"];
+const JOURNEYS=["Identity Only","Enhanced AML","Safe Harbour","Right to Rent","Right to Work","Source of Funds"];
+const APPROVAL=["Pending","Approved","Rejected"];
+const FOLDERS=[];
+const INVITERS=["Amelia Brooks","Callum Fraser","Chloe Bennett","Darren Holt","Elena Vasquez","Freya Lawson","Harvey Quinn","Imogen Shaw","Jamal Hussain","Katie Morgan","Liam Doherty","Natalie Cross","Owen Pritchard","Rebecca Lyons","Simon Ashworth","Zara Malik"];
+// [date, name, invite, completion, phone, email, reg, invitedBy, reference, liveness, idSubmitted, idType, journey, approval]
+const ROWS=[
+["30/09/2026 12:54", "Oliver Hartley", "Not invited", "No Process", "", "oliver.hartley@example.com", "RDN-VEP", "Callum Fraser", "CASE-10482", "Not performed", 0, "", "Identity Only", "Pending"],
+["30/09/2026 09:33", "Priya Nair", "Not invited", "No Process", "", "priya.nair@example.com", "9NQ-KHK", "Callum Fraser", "CASE-10479", "Not performed", 0, "", "Enhanced AML", "Pending"],
+["28/09/2026 11:10", "Daniel Okafor", "Not invited", "No Process", "", "daniel.okafor@example.com", "JWK-JGK", "Chloe Bennett", "CASE-10471", "Not performed", 0, "", "Identity Only", "Pending"],
+["25/09/2026 09:41", "Angela Specimen", "Active", "Complete", "", "angela.specimen@example.com", "5PL-G78", "Amelia Brooks", "CASE-10466", "Pass", 1, "Passport", "Safe Harbour", "Approved"],
+["25/09/2026 08:32", "Marcus Bell", "Invite bounced", "No Process", "", "marcus.bell@example.com", "XXT-249", "Amelia Brooks", "CASE-10463", "Not performed", 0, "", "Safe Harbour", "Pending"],
+["24/09/2026 13:10", "Isla Whitmore", "Active", "Complete", "", "isla.whitmore@example.com", "YPP-43V", "Amelia Brooks", "CASE-10458", "Refer", 1, "Passport", "Identity Only", "Approved"],
+["24/09/2026 09:39", "Kieran Doyle", "Invited", "Complete", "", "kieran.doyle@example.com", "R7J-ZMR", "Amelia Brooks", "CASE-10455", "Pass", 1, "Driving Licence", "Right to Rent", "Pending"],
+["22/09/2026 18:06", "Megan Price", "Invited", "Complete", "", "megan.price@example.com", "AP6-LRR", "Chloe Bennett", "CASE-10449", "Fail", 1, "Driving Licence", "Enhanced AML", "Rejected"],
+["18/09/2026 12:05", "Megan Price", "Active", "Complete", "", "megan.price@example.com", "HVG-8Y2", "Chloe Bennett", "CASE-10441", "Pass", 1, "", "Enhanced AML", "Approved"],
+["16/09/2026 14:13", "Thomas Reid", "Active", "Complete", "", "thomas.reid@example.com", "CTZ-LPV", "Amelia Brooks", "CASE-10437", "Pass", 1, "National ID Card", "Right to Work", "Approved"],
+["16/09/2026 13:59", "Thomas Reid", "Active", "Complete", "", "thomas.reid@example.com", "S24-PXJ", "Amelia Brooks", "CASE-10436", "Refer", 1, "", "Right to Work", "Pending"],
+["16/09/2026 09:10", "Sophie Lindqvist", "Invited", "Complete", "", "sophie.lindqvist@example.com", "PCF-8VV", "Jamal Hussain", "CASE-10430", "Pass", 1, "", "Right to Rent", "Pending"],
+["15/09/2026 13:14", "Hannah Morales", "Expired", "No Process", "", "hannah.morales@example.com", "YUZ-N6U", "Chloe Bennett", "CASE-10427", "Not performed", 0, "", "Source of Funds", "Pending"],
+["15/09/2026 11:44", "Sophie Lindqvist", "Invited", "Complete", "", "sophie.lindqvist@example.com", "JRL-TYK", "Jamal Hussain", "CASE-10424", "Fail", 1, "", "Right to Rent", "Pending"],
+["08/09/2026 13:12", "Ethan Clarke-Wood", "Not invited", "No Process", "07700 900123", "ethan.clarkewood@example.com", "5SZ-KE5", "Callum Fraser", "CASE-10418", "Not performed", 0, "", "Source of Funds", "Pending"],
+["05/09/2026 10:22", "Grace Adeyemi", "Not invited", "No Process", "07700 900456", "grace.adeyemi@example.com", "KQ2-7TB", "Freya Lawson", "CASE-10412", "Not performed", 0, "", "Right to Work", "Pending"],
+["03/09/2026 15:47", "Lewis Fairbairn", "Inactive", "Complete", "", "lewis.fairbairn@example.com", "M8P-3XD", "Freya Lawson", "CASE-10409", "Pass", 1, "Passport", "Right to Rent", "Approved"],
+["01/09/2026 09:05", "Ruth Kowalski", "Not invited", "No Process", "", "ruth.kowalski@example.com", "W4N-9QA", "Jamal Hussain", "CASE-10401", "Not performed", 0, "", "Identity Only", "Pending"]
+].map(r=>({date:r[0],name:r[1],invite:r[2],comp:r[3],phone:r[4],email:r[5],reg:r[6],by:r[7],ref:r[8],live:r[9],sub:r[10],idt:r[11],jr:r[12],appr:r[13]}));
+
+/* ---------- filter state ---------- */
+const KEYS=["status","tags","idtype","journey","approval","folders","by"];
+const FIELD={status:"invite",idtype:"idt",journey:"jr",approval:"appr",by:"by"};
+const OPTS={status:STATUS,tags:TAGS,idtype:IDTYPES,journey:JOURNEYS,approval:APPROVAL,folders:FOLDERS,by:[...new Set(INVITERS)]};
+const LABEL={status:"Status",tags:"Tags",idtype:"ID type",journey:"Journey",approval:"Approval Status",folders:"Folders",by:"Invited By"};
+let applied,pending,dateFrom,dateTo,query;
+function blank(){const o={};KEYS.forEach(k=>o[k]=new Set());return o}
+function clone(o){const c={};KEYS.forEach(k=>c[k]=new Set(o[k]));return c}
+const $=id=>document.getElementById(id);
+
+function toISO(d){const [dd,mm,rest]=d.split("/");return `${rest.slice(0,4)}-${mm}-${dd}`}
+function digits(s){return s.replace(/\D/g,"")}
+function normPhone(s){let d=digits(s);if(d.startsWith("44"))d="0"+d.slice(2);return d}
+function matchQuery(r,q){
+  if(!q)return true;const l=q.toLowerCase(),dq=normPhone(q);
+  return r.name.toLowerCase().includes(l)||r.email.toLowerCase().includes(l)||r.reg.toLowerCase().includes(l.replace(/\s/g,""))||(dq.length>=3&&normPhone(r.phone).includes(dq));
+}
+function visible(){
+  return ROWS.filter(r=>{
+    if(!matchQuery(r,query))return false;
+    for(const k of Object.keys(FIELD)){if(applied[k].size&&!applied[k].has(r[FIELD[k]]))return false}
+    if(applied.tags.size||applied.folders.size)return false;
+    const iso=toISO(r.date);
+    if(dateFrom&&iso<dateFrom)return false;if(dateTo&&iso>dateTo)return false;
+    return true;
+  });
+}
+
+/* ---------- table ---------- */
+const INV={"Not invited":"p-dark","Active":"p-green","Invite bounced":"p-red","Expired":"p-grey","Inactive":"p-grey","Invited":"p-out"};
+const COPY='<svg width="10" height="12" viewBox="0 0 10 12" fill="none" stroke="#1E1F2B" stroke-width="1.3"><rect x="3" y="3" width="6" height="8" rx="1"/><path d="M1 9V1h6"/></svg>';
+function liveCell(v){
+  if(v==="Pass")return `<span class="live"><span class="dot" style="background:#1EC28B"><svg width="7" height="6" viewBox="0 0 7 6" fill="none" stroke="#fff" stroke-width="1.6"><path d="M1 3l1.8 1.8L6 1"/></svg></span>Pass</span>`;
+  if(v==="Refer")return `<span class="live"><span class="dot" style="background:#F0A93C"><svg width="2" height="7" viewBox="0 0 2 7"><rect width="2" height="4.4" rx="1" fill="#fff"/><rect y="5.3" width="2" height="1.7" rx=".8" fill="#fff"/></svg></span>Refer</span>`;
+  if(v==="Fail")return `<span class="live"><svg width="12" height="11" viewBox="0 0 12 11"><path d="M6 0l6 11H0z" fill="#E0474C"/><path d="M6 4v3M6 8.5v.5" stroke="#fff" stroke-width="1.3"/></svg>Fail</span>`;
+  return `<span class="live"><span class="dot" style="background:#BFC1C7"><svg width="6" height="2"><rect width="6" height="1.6" fill="#fff"/></svg></span>Not performed</span>`;
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function hl(t){
+  if(!query)return esc(t);const i=t.toLowerCase().indexOf(query.toLowerCase());
+  if(i<0)return esc(t);return esc(t.slice(0,i))+"<mark style='background:#FDE7C2;padding:0'>"+esc(t.slice(i,i+query.length))+"</mark>"+esc(t.slice(i+query.length));
+}
+function render(){
+  const v=visible();
+  $("rows").innerHTML=v.length?v.map(r=>`<tr>
+    <td><input type="checkbox" class="cb" aria-label="Select ${esc(r.name)}"></td>
+    <td style="white-space:nowrap">${r.date}</td><td style="white-space:nowrap">${hl(r.name)}</td>
+    <td class="c div"><span class="pill ${INV[r.invite]}">${r.invite}</span></td>
+    <td class="c"><span class="pill ${r.comp==="Complete"?"p-green":"p-grey"}">${r.comp}</span></td>
+    <td style="white-space:nowrap">${r.phone?hl(r.phone):"-"}</td><td class="em">${r.email?hl(r.email):"-"}</td>
+    <td><span class="reg">${hl(r.reg)} <button class="regcopy" data-reg="${r.reg}" aria-label="Copy reg code ${r.reg}">${COPY}</button></span></td><td style="white-space:nowrap">${r.by}</td><td class="ref">${esc(r.ref)}</td>
+    <td>${liveCell(r.live)}</td>
+    <td class="c">${r.sub?'<svg width="12" height="10" viewBox="0 0 12 10" fill="none" stroke="#1EC28B" stroke-width="1.5"><path d="M1 5l3.5 3.5L11 1"/></svg>':'<svg width="10" height="10" viewBox="0 0 10 10" stroke="#E0474C" stroke-width="1.5"><path d="M1 1l8 8M9 1l-8 8"/></svg>'}</td>
+    <td class="c"><button class="kebab" aria-label="Actions" data-noop><svg width="4" height="13" viewBox="0 0 4 14"><circle cx="2" cy="2" r="1.7" fill="#1E1F2B"/><circle cx="2" cy="7" r="1.7" fill="#1E1F2B"/><circle cx="2" cy="12" r="1.7" fill="#1E1F2B"/></svg></button></td>
+  </tr>`).join(""):`<tr class="emptyrow"><td colspan="13">No individuals match your search or filters.${(KEYS.some(k=>applied[k].size)||dateFrom||dateTo)?"<br>Filters are still applied. Remove them under the search bar, or click Clear all.":""}</td></tr>`;
+  const filtered=query||KEYS.some(k=>applied[k].size)||dateFrom||dateTo;
+  $("range").textContent=filtered?(v.length?`1 – ${v.length} of ${v.length}`:"0 of 0"):"1 – 20 of 658";
+  $("searchBox").classList.toggle("has",!!$("q").value);
+  ["status","tags","idtype"].forEach(k=>{const b=$("btn-"+k);b.classList.toggle("active",applied[k].size>0);b.querySelector(".ct").textContent=applied[k].size});
+  const n=KEYS.reduce((a,k)=>a+applied[k].size,0)+(dateFrom?1:0)+(dateTo?1:0);
+  $("btn-all").classList.toggle("active",n>0);$("btn-all").querySelector(".ct").textContent=n;
+  renderChips();
+  bindNoop();check();
+}
+const X='<svg width="8" height="8" viewBox="0 0 8 8" stroke="#2D2E3F" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l6 6M7 1L1 7"/></svg>';
+/* accepts 15/09/2026, 15/9/26, 15.09.2026, 15-09-2026, 15 09 2026, 15092026 and 2026-09-15 */
+function parseDate(s){
+  s=(s||"").trim();if(!s)return null;let d,m,y,r;
+  if((r=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/)))[,y,m,d]=r;
+  else if((r=s.match(/^(\d{1,2})[\/.\- ](\d{1,2})[\/.\- ](\d{2}|\d{4})$/)))[,d,m,y]=r;
+  else if((r=s.match(/^(\d{2})(\d{2})(\d{4})$/)))[,d,m,y]=r;
+  else return null;
+  d=+d;m=+m;y=+y;if(y<100)y+=2000;
+  const dt=new Date(Date.UTC(y,m-1,d));
+  if(dt.getUTCFullYear()!==y||dt.getUTCMonth()!==m-1||dt.getUTCDate()!==d)return null;
+  return `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+}
+/* ---------- date selector ---------- */
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const TODAY="2026-10-10";
+let calFor=null,calY,calM,calView="days";
+function openCal(id){
+  closeCal();calFor=id;const v=dval(id)||(id==="dto"&&dval("dfrom"))||TODAY;
+  calY=+v.slice(0,4);calM=+v.slice(5,7)-1;calView="days";
+  const pop=document.createElement("div");pop.className="calpop"+(id==="dto"?" right":"");pop.id="calpop";
+  pop.setAttribute("role","dialog");pop.setAttribute("aria-label","Choose date");
+  $(id).parentElement.appendChild(pop);$(id).parentElement.querySelector(".cal").setAttribute("aria-expanded","true");
+  drawCal();coach();
+}
+function closeCal(){const p=$("calpop");if(p){p.parentElement.querySelector(".cal")?.setAttribute("aria-expanded","false");p.remove()}calFor=null}
+function iso(y,m,d){return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`}
+function drawCal(){
+  const pop=$("calpop");if(!pop)return;const sel=dval(calFor);
+  const other=calFor==="dfrom"?dval("dto"):dval("dfrom");
+  let body="";
+  if(calView==="months"){
+    body=`<div class="cgrid m">${MONTHS.map((n,i)=>`<button class="cm ${i===calM?"sel":""}" data-m="${i}">${n.slice(0,3)}</button>`).join("")}</div>`;
+  }else{
+    const first=new Date(Date.UTC(calY,calM,1)),lead=(first.getUTCDay()+6)%7,days=new Date(Date.UTC(calY,calM+1,0)).getUTCDate();
+    let cells="";for(let i=0;i<lead;i++)cells+="<span></span>";
+    for(let d=1;d<=days;d++){
+      const v=iso(calY,calM,d);
+      const inR=sel&&other&&((calFor==="dfrom"&&v>sel&&v<other)||(calFor==="dto"&&v<sel&&v>other));
+      cells+=`<button class="cd${v===sel?" sel":""}${v===TODAY?" today":""}${inR?" inr":""}${v===other?" edge":""}" data-d="${v}" aria-label="${d} ${MONTHS[calM]} ${calY}">${d}</button>`;
+    }
+    body=`<div class="cgrid"><b>Mo</b><b>Tu</b><b>We</b><b>Th</b><b>Fr</b><b>Sa</b><b>Su</b>${cells}</div>`;
+  }
+  pop.innerHTML=`<div class="chead"><button class="cper" data-view>${calView==="months"?calY:MONTHS[calM].slice(0,3).toUpperCase()+" "+calY} <svg width="8" height="5" viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="#1E1F2B"/></svg></button><span><button class="cnav" data-step="-1" aria-label="Previous">‹</button><button class="cnav" data-step="1" aria-label="Next">›</button></span></div>${body}`;
+  const t=pop.querySelector(`[data-d="${iso(2026,8,15)}"]`),t2=pop.querySelector(`[data-d="${iso(2026,8,30)}"]`);
+  coach();
+}
+document.addEventListener("click",e=>{
+  const pop=$("calpop");if(!pop)return;
+  if(!pop.contains(e.target)){if(!e.target.closest(".cal"))closeCal();return}
+  e.stopPropagation();
+  const d=e.target.closest("[data-d]"),st=e.target.closest("[data-step]"),mv=e.target.closest("[data-m]");
+  if(d){const id=calFor;$(id).value=fmtDate(d.dataset.d);$(id).classList.remove("bad");closeCal();check();return}
+  if(e.target.closest("[data-view]")){calView=calView==="days"?"months":"days";drawCal();return}
+  if(mv){calM=+mv.dataset.m;calView="days";drawCal();return}
+  if(st){const n=+st.dataset.step;if(calView==="months")calY+=n;else{calM+=n;if(calM<0){calM=11;calY--}if(calM>11){calM=0;calY++}}drawCal()}
+},true);
+function dval(id){const el=$(id);return el?parseDate(el.value):null}
+function fmtDate(iso){const [y,m,d]=iso.split("-");return `${d}/${m}/${y}`}
+function renderChips(){
+  const c=[];
+  if(query)c.push(["q","",query]);
+  KEYS.forEach(k=>applied[k].forEach(v=>c.push([k,v,v])));
+  if(dateFrom)c.push(["dfrom","","From "+fmtDate(dateFrom)]);
+  if(dateTo)c.push(["dto","","To "+fmtDate(dateTo)]);
+  $("chips").innerHTML=c.map(([k,v,l])=>`<button class="fchip" data-ck="${k}" data-cv="${esc(v)}" aria-label="Remove ${esc(l)}">${esc(l)} ${X}</button>`).join("")+(c.length?'<button class="clearall" id="chipClear">Clear all</button>':"");
+  $("chips").classList.toggle("show",c.length>0);
+}
+$("chips").onclick=e=>{
+  if(e.target.closest("#chipClear")){applied=blank();pending=blank();dateFrom=dateTo=null;query="";$("q").value="";render();return}
+  const b=e.target.closest(".fchip");if(!b)return;
+  const k=b.dataset.ck,v=b.dataset.cv;
+  if(k==="q"){query="";$("q").value=""}
+  else if(k==="dfrom")dateFrom=null;else if(k==="dto")dateTo=null;
+  else applied[k].delete(v);
+  render();
+};
+
+/* ---------- dropdowns ---------- */
+function buildDrop(k){
+  const d=$("drop-"+k);
+  d.innerHTML=(OPTS[k].length?OPTS[k].map(o=>`<label><input type="checkbox" class="cb" data-k="${k}" value="${esc(o)}" ${pending[k].has(o)?"checked":""}> ${esc(o)}</label>`).join(""):"")+`<button class="apply" data-apply="${k}">Apply</button>`;
+}
+function closeDrops(){document.querySelectorAll(".drop.show").forEach(d=>d.classList.remove("show"))}
+document.querySelectorAll("[data-drop]").forEach(b=>b.onclick=e=>{
+  e.stopPropagation();const k=b.dataset.drop,d=$("drop-"+k),open=d.classList.contains("show");
+  closeDrops();if(open){coach();return}
+  pending=clone(applied);buildDrop(k);d.classList.add("show");coach();
+});
+document.addEventListener("change",e=>{
+  const c=e.target;if(!c.dataset||!c.dataset.k)return;
+  c.checked?pending[c.dataset.k].add(c.value):pending[c.dataset.k].delete(c.value);check();
+});
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-apply]");
+  if(a){applied[a.dataset.apply]=new Set(pending[a.dataset.apply]);closeDrops();render();return}
+  if(!e.target.closest(".drop")&&!e.target.closest("[data-drop]")){if(document.querySelector(".drop.show")){closeDrops();coach()}}
+});
+
+/* ---------- drawer ---------- */
+function buildDrawer(){
+  let h=`<div class="sec" data-sec="date"><button><span>Date Range</span><span>—</span></button><div class="items" style="border-top:1px solid #DADBDF"><div class="dates">
+    <div><label for="dfrom">Invited From</label><div class="dwrap"><input id="dfrom" class="dtext" placeholder="Select date" autocomplete="off" value="${dateFrom?fmtDate(dateFrom):""}"><button class="cal" data-for="dfrom" aria-label="Choose Invited From date"><svg width="14" height="15" viewBox="0 0 14 15" fill="#1E1F2B"><path d="M3 0h1.6v1.6h4.8V0H11v1.6h1.4A1.6 1.6 0 0 1 14 3.2v10.2A1.6 1.6 0 0 1 12.4 15H1.6A1.6 1.6 0 0 1 0 13.4V3.2A1.6 1.6 0 0 1 1.6 1.6H3zM1.6 5.6v7.8h10.8V5.6zm1.6 1.6h3.2v3.2H3.2z"/></svg></button><input type="date" class="dpick" id="dfrom-pick" tabindex="-1" aria-hidden="true"></div></div>
+    <div><label for="dto">Invited To</label><div class="dwrap"><input id="dto" class="dtext" placeholder="Select date" autocomplete="off" value="${dateTo?fmtDate(dateTo):""}"><button class="cal" data-for="dto" aria-label="Choose Invited To date"><svg width="14" height="15" viewBox="0 0 14 15" fill="#1E1F2B"><path d="M3 0h1.6v1.6h4.8V0H11v1.6h1.4A1.6 1.6 0 0 1 14 3.2v10.2A1.6 1.6 0 0 1 12.4 15H1.6A1.6 1.6 0 0 1 0 13.4V3.2A1.6 1.6 0 0 1 1.6 1.6H3zM1.6 5.6v7.8h10.8V5.6zm1.6 1.6h3.2v3.2H3.2z"/></svg></button><input type="date" class="dpick" id="dto-pick" tabindex="-1" aria-hidden="true"></div></div></div></div></div>`;
+  KEYS.forEach(k=>{
+    h+=`<div class="sec" data-sec="${k}"><button><span>${LABEL[k]}</span><span>—</span></button><div class="items">${OPTS[k].map(o=>`<label class="row"><input type="checkbox" class="cb lg" data-k="${k}" value="${esc(o)}" ${pending[k].has(o)?"checked":""}> ${esc(o)}</label>`).join("")}</div></div>`;
+  });
+  $("dbody").innerHTML=h;
+  ["dfrom","dto"].forEach(id=>{
+    const t=$(id),pk=$(id+"-pick");
+    t.addEventListener("input",()=>{t.classList.remove("bad");check()});
+    t.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();t.blur()}});
+    t.addEventListener("blur",()=>{const v=parseDate(t.value);if(v)t.value=fmtDate(v);else if(t.value.trim())t.classList.add("bad");check()});
+    pk.addEventListener("change",()=>{if(pk.value){t.value=fmtDate(pk.value);t.classList.remove("bad");check()}});
+  });
+  $("dbody").querySelectorAll(".cal").forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.for;calFor===id?closeCal():openCal(id)});
+  $("dbody").querySelectorAll(".sec>button").forEach(b=>b.onclick=()=>{const s=b.parentElement;s.classList.toggle("closed");b.lastElementChild.textContent=s.classList.contains("closed")?"+":"—"});
+}
+function openDrawer(){closeDrops();pending=clone(applied);buildDrawer();$("dbody").scrollTop=0;$("drawer").classList.add("show");$("dveil").classList.add("show");coach()}
+function closeDrawer(){
+  closeCal();
+  $("drawer").classList.remove("show");$("dveil").classList.remove("show");
+  if(typeof s!=="undefined"&&!finished&&s>=DRAWER_FIRST&&s<=DRAWER_APPLY&&!STEPS[DRAWER_APPLY].ok()){s=DRAWER_FIRST;toast("Those filters weren't applied. Open All filters to try again.")}
+  coach();
+}
+$("btn-all").onclick=e=>{e.stopPropagation();openDrawer()};
+$("dclose").onclick=closeDrawer;$("dveil").onclick=closeDrawer;
+$("dapply").onclick=()=>{applied=clone(pending);dateFrom=dval("dfrom");dateTo=dval("dto");closeDrawer();render()};
+$("clearAll").onclick=()=>{pending=blank();applied=blank();dateFrom=dateTo=null;query="";$("q").value="";buildDrawer();closeDrawer();render();toast("All filters cleared.")};
+
+/* ---------- reg code copy ---------- */
+let copiedReg=null;
+$("rows").addEventListener("click",e=>{
+  const b=e.target.closest(".regcopy");if(!b)return;e.stopPropagation();
+  const v=b.dataset.reg;copiedReg=v;
+  const fb=()=>{const t=document.createElement("textarea");t.value=v;t.style.cssText="position:fixed;left:-9999px";document.body.appendChild(t);t.select();try{document.execCommand("copy")}catch(_){}t.remove()};
+  try{if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(v).catch(fb);else fb()}catch(_){fb()}
+  $("regVeil").classList.add("show");$("regClose").focus();check();
+});
+function closeReg(){$("regVeil").classList.remove("show");check();$("q").focus()}
+$("regClose").onclick=closeReg;
+$("regVeil").onclick=e=>{if(e.target.id==="regVeil")closeReg()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("regVeil").classList.contains("show"))closeReg()});
+
+/* ---------- search ---------- */
+$("q").oninput=()=>{$("searchBox").classList.toggle("has",!!$("q").value)};
+$("q").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();query=$("q").value.trim();render()}};
+$("qx").onclick=()=>{$("q").value="";query="";render();$("q").focus()};
+
+
+/* ---------- Journey Builder: create a journey ---------- */
+const JR={menu:false,area:"portal",view:"proc",created:false,set:{title:"",idesc:"",udesc:"",flags:{"Active":true},completion:"Either",submission:"",webhook:false},
+  nodes:[],links:[],addOpen:false,nodeMenu:null,linkFrom:null,modal:null,draft:null,setOpen:true};
+const PORTAL_MENU=["Portal","Branding","Journey Builder","Product Updates","Admin Portal","Product Config","System Config","Back office"];
+const JB_NAV=["Process Builder","Forms","Lists","Info & Terms","eSign"];
+const PORTAL_NAV=["Individuals","Masterlist","Processes","eSign","Companies","Settings"];
+const PROC_ROWS=[["2024 - Material Information",1,1,1],["Additional Documentation",1,0,1],["AML Check with Facial Recognition",1,1,1],["Identity Only",1,1,1],["Enhanced AML",1,1,1],["Right to Rent",1,0,1],["Right to Work",1,0,1],["Safe Harbour",1,1,1]];
+const ADDLIST=[["Export Journey"],["Add Identity Verification","idv"],["Add Forms","forms"],["Add Open Banking"],["Add Source of Funds"],["Add Tables"],["Add Data Check","dc"],["Add Information Page"],["Add Terms"],["Add Basic eSign Document"],["Add Advanced eSign Document",0,1],["Add Email"],["Add SMS Message",0,1],["Add Webhook"],["Add Redirect URL"],["Add NFC"],["Add Payment"],["Add Decision"]];
+const FORMS2=["Personal Details & Address","Personal Details/Address/Bank Account (Lettings)","(NEW) Company House Personal Details Form","(NEW) Address Form for Public Journeys","(NEW) Company House Address Form","(NEW) Lettings Property Address Form for Public Journeys","(NEW) Personal Details Form for Public Journeys","1. Basic fittings (TA10)","1. Council Tax (TA6)1","1. Property and seller details (TA6 6th ed.)"];
+const DCTYPES=["Address and Mortality","Bank account","Credas AML Protection Pack","Proof of ownership","Sanctions and PEPs"];
+const DOCTYPES=["Passport","Driving Licence","Agents Licence","Electoral Card","Foreigner ID Card","Health Card","Job Licence","Membership ID Card","Military ID Card","National ID Card","Proof of Age Card","Travel Permit","Visa","Weapons Licence","Passport Card"];
+const MANUAL_OPTS=["Workflow will continue, and manual validation can be completed later","Workflow will pause until manual validation is completed"];
+const NICON={forms:'<svg width="20" height="16" viewBox="0 0 20 16"><rect x="0" y="1" width="12" height="6" rx="1.3" fill="#1E1F2B"/><rect x="0" y="9" width="12" height="6" rx="1.3" fill="#1E1F2B"/><circle cx="2.7" cy="4" r="1" fill="#fff"/><circle cx="2.7" cy="12" r="1" fill="#fff"/><path d="M15 1h4l-2 5h3l-5.5 9 1.2-6H13z" fill="#1E1F2B"/></svg>',
+ dc:'<svg width="20" height="17" viewBox="0 0 22 18" fill="none" stroke="#1E1F2B" stroke-width="2"><path d="M3 2v10a3 3 0 0 0 6 0V2M2 2h2M8 2h2"/><path d="M13 2v10a3 3 0 0 0 6 0V2M12 2h2M18 2h2"/></svg>',
+ idv:'<svg width="15" height="18" viewBox="0 0 15 18"><rect width="15" height="18" rx="2" fill="#1E1F2B"/><rect x="3" y="4" width="9" height="7" rx="1" fill="#fff"/><circle cx="7.5" cy="7.5" r="2" fill="#1E1F2B"/></svg>'};
+const KEB3='<svg width="4" height="13" viewBox="0 0 4 14"><circle cx="2" cy="2" r="1.7" fill="#1E1F2B"/><circle cx="2" cy="7" r="1.7" fill="#1E1F2B"/><circle cx="2" cy="12" r="1.7" fill="#1E1F2B"/></svg>';
+function setHeader(){
+  $("areaTxt").textContent=JR.area==="jb"?"Journey Builder":"Portal";
+  const nav=JR.area==="jb"?JB_NAV:PORTAL_NAV,on=JR.area==="jb"?"Process Builder":"Individuals";
+  $("topnav").innerHTML=nav.map(n=>`<span class="${n===on?"on":""}" ${JR.area==="jb"&&n==="Process Builder"?'data-pb style="cursor:pointer"':""}>${n}</span>`).join("");
+  const pb=$("topnav").querySelector("[data-pb]");if(pb)pb.onclick=()=>{if(!JR.created){JR.view="proc";renderJB();check()}};
+}
+$("areaBtn").onclick=e=>{e.stopPropagation();JR.menu=!JR.menu;$("amenu").innerHTML=PORTAL_MENU.map(m=>`<button role="menuitem" data-am="${m}">${m}</button>`).join("");$("amenu").classList.toggle("show",JR.menu);{const r=$("areaBtn").getBoundingClientRect();$("amenu").style.left=r.left+"px";$("amenu").style.top=(r.bottom+14)+"px"}
+  $("amenu").querySelectorAll("[data-am]").forEach(b=>b.onclick=ev=>{ev.stopPropagation();const m=b.dataset.am;JR.menu=false;$("amenu").classList.remove("show");
+    if(m==="Journey Builder"){JR.area="jb";JR.view=JR.view==="canvas"?"canvas":"proc";renderJB()}else if(m==="Portal"){JR.area="portal";renderJB()}else toast(m+" isn't part of this exercise.");check()});check()};
+document.addEventListener("click",e=>{let ch=false;if(JR.menu&&!e.target.closest("#areaBtn")){JR.menu=false;$("amenu").classList.remove("show");ch=true}
+  if(JR.addOpen&&!e.target.closest("#addm,#cogBtn")){JR.addOpen=false;ch=true}if(JR.nodeMenu&&!e.target.closest("#nmenu,.jn .k")){JR.nodeMenu=null;ch=true}
+  if(ch&&JR.area==="jb"&&JR.view==="canvas")drawCanvas();else if(ch)coach()});
+function renderJB(){
+  setHeader();$("listView").hidden=JR.area==="jb";$("jbView").hidden=JR.area!=="jb";
+  if(JR.area!=="jb"){check();return}
+  const v=$("jbView");
+  if(JR.view==="proc"){v.innerHTML=`<div class="jbbar"><div class="search" style="flex:1"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1E1F2B" stroke-width="1.6"><circle cx="7" cy="7" r="5.5"/><path d="M11 11l4 4"/></svg><input placeholder="Search by title or description" aria-label="Search"></div><button class="chip" data-noop>All filters</button><button class="add" id="jAdd"><b>+</b> Add new</button></div>
+    <div class="jbt"><div class="th" style="grid-template-columns:5fr 1fr 1fr 1fr 30px"><span>Title</span><span>Webhook Enabled</span><span>Is Public</span><span>Is Active</span><span></span></div>${PROC_ROWS.map(r=>`<div class="tr" style="grid-template-columns:5fr 1fr 1fr 1fr 30px"><span>${r[0]}</span><span class="${r[1]?"tk2":"cr2"}">${r[1]?"\u2713":"\u2715"}</span><span class="${r[2]?"tk2":"cr2"}">${r[2]?"\u2713":"\u2715"}</span><span class="${r[3]?"tk2":"cr2"}">${r[3]?"\u2713":"\u2715"}</span><span>\u22EE</span></div>`).join("")}</div>`;
+    $("jAdd").onclick=()=>{JR.view="canvas";renderJB();setTimeout(()=>$("sTitle")&&$("sTitle").focus(),50);check()};bindNoop();check();return}
+  v.innerHTML=`<div class="jwrap"><div class="btop"><button class="icon" id="cogBtn" aria-label="Journey options">\u2699</button><button class="icon" data-noop aria-label="Full screen">\u26F6</button><div class="jmenu addm" id="addm" role="menu"></div></div>
+    <div class="jboard"><div class="jcan"><div class="jtabs"><span class="on">Steps</span><span>Actors</span><span>PDF Packs</span></div><div class="jstage" id="jstage"></div></div>
+    <aside class="jset${JR.setOpen?"":" closed"}" id="jset"></aside></div></div>`;
+  $("cogBtn").onclick=e=>{e.stopPropagation();if(!JR.created){toast("Fill in the settings and click Create first.");return}JR.addOpen=!JR.addOpen;drawCanvas()};
+  drawSettings();drawCanvas();bindNoop();check();
+}
+function fsw2(label,on,attr){return `<div class="fsw${on?" on":""}" ${attr} role="switch" aria-checked="${!!on}" tabindex="0"><i></i>${label}</div>`}
+function drawSettings(){
+  const s=JR.set,el=$("jset");if(!el)return;
+  el.innerHTML=`<div class="sh3"><span>Settings</span><button id="setTog" aria-label="${JR.setOpen?"Collapse":"Expand"} settings">${JR.setOpen?"\u203A":"\u2039"}</button></div>
+  <div class="sb3"><label class="f" for="sTitle">Title</label><input type="text" id="sTitle" value="${esc(s.title)}" autocomplete="off">
+    <label class="f">Internal Description</label><div class="rte3"><div class="tb"><b>B</b><i>I</i><u>U</u><s>S</s><span>\u2261</span><span>\u2022\u2261</span></div><div class="ed" id="sIdesc" contenteditable="true" role="textbox" aria-label="Internal description">${esc(s.idesc)}</div></div>
+    <label class="f">End User Description</label><div class="rte3"><div class="tb"><b>B</b><i>I</i><u>U</u><s>S</s><span>\u2261</span><span>\u2022\u2261</span></div><div class="ed" id="sUdesc" contenteditable="true" role="textbox" aria-label="End user description">${esc(s.udesc)}</div></div>
+    <div style="margin-top:10px">${["Journey description","Show steps intro page","Show all step summary pages","Public","Active"].map(f=>fsw2(f,s.flags[f],`data-sf="${f}"`)).join("")}</div>
+    <label class="f" for="sSender">Sender name</label><input type="text" id="sSender" autocomplete="off"><label class="f" for="sSendEmail">Sender email address</label><input type="text" id="sSendEmail" autocomplete="off">
+    <label class="f" for="sSub">Submission rules</label><select id="sSub"><option value="" ${s.submission?"":"selected"}>Select submission rules</option>${["Automatic (Mandatory)","Automatic (Optional)","Manual"].map(o=>`<option ${o===s.submission?"selected":""}>${o}</option>`).join("")}</select>
+    <div style="margin-top:10px">${fsw2("Webhook Enabled",s.webhook,'data-sf="__wh"')}</div>${s.webhook?`<label class="f">Default webhook URL (optional)</label><input type="text">`:""}
+    <label class="f" for="sRef">Reference</label><input type="text" id="sRef" autocomplete="off">
+    <label class="f" for="sComp">Completion Method</label><select id="sComp">${["Either","Native only","Web only"].map(o=>`<option ${o===s.completion?"selected":""}>${o}</option>`).join("")}</select>
+    <label class="f" for="sEvent">Event type</label><input type="text" id="sEvent" autocomplete="off"></div>
+  <div class="sf3">${JR.created?`<button class="b2" id="sUpd">Update Settings</button>`:`<button class="b1" id="sBack">Back</button><button class="b2" id="sCreate" ${s.title.trim()?"":"disabled"}>Create</button>`}</div>`;
+  const q=id=>document.getElementById(id);
+  q("setTog").onclick=()=>{JR.setOpen=!JR.setOpen;el.classList.toggle("closed",!JR.setOpen);drawSettings();coach()};
+  q("sTitle").oninput=e=>{s.title=e.target.value;if(q("sCreate"))q("sCreate").disabled=!s.title.trim();check()};
+  q("sIdesc").oninput=e=>{s.idesc=e.target.innerText;check()};q("sUdesc").oninput=e=>{s.udesc=e.target.innerText;check()};
+  q("sComp").onchange=e=>{s.completion=e.target.value;check()};
+  q("sSub").onchange=e=>{s.submission=e.target.value;check()};
+  el.querySelectorAll("[data-sf]").forEach(t=>{const f=()=>{const k=t.dataset.sf;if(k==="__wh")s.webhook=!s.webhook;else s.flags[k]=!s.flags[k];drawSettings();check()};t.onclick=f;t.onkeydown=e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();f()}}});
+  if(q("sBack"))q("sBack").onclick=()=>{JR.view="proc";renderJB()};
+  if(q("sCreate"))q("sCreate").onclick=()=>{if(!s.title.trim())return;JR.created=true;drawSettings();toast("Journey created. Now add its steps from the cog menu.");check()};
+  if(q("sUpd"))q("sUpd").onclick=()=>toast("Settings updated.");
+}
+function chainOrder(){ // nodes reachable in a chain from the first node
+  const first=JR.nodes[0];if(!first)return [];const ord=[first.id];let cur=first.id,guard=0;
+  while(guard++<20){const l=JR.links.find(x=>x[0]===cur);if(!l||ord.includes(l[1]))break;ord.push(l[1]);cur=l[1]}return ord;
+}
+function layout(){const ord=chainOrder();ord.forEach((id,i)=>{const n=JR.nodes.find(x=>x.id===id);n.x=20+i*190;n.y=140});
+  let k=0;JR.nodes.filter(n=>!ord.includes(n.id)).forEach(n=>{n.x=10+k*140;n.y=20;k++})}
+function drawCanvas(){
+  const st=$("jstage");if(!st)return;layout();
+  const svg=JR.links.map(([a,b])=>{const A=JR.nodes.find(n=>n.id===a),B=JR.nodes.find(n=>n.id===b);if(!A||!B)return "";const x1=A.x+118,y1=A.y+21,x2=B.x,y2=B.y+21,mx=(x1+x2)/2,my=(y1+y2)/2;
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1EC28B" stroke-width="1.6"/><circle cx="${mx}" cy="${my}" r="11" fill="#1EC28B"/><path d="M${mx-6} ${my-5}l4.5 5-4.5 5M${mx} ${my-5}l4.5 5-4.5 5" fill="none" stroke="#1E1F2B" stroke-width="2.3"/>`}).join("");
+  st.innerHTML=`<div class="jban${JR.linkFrom?" show":""}"><b>Select the target step</b><button id="linkCancel">Cancel</button></div><svg>${svg}</svg>
+    ${JR.nodes.map(n=>`<div class="jn${JR.linkFrom&&n.id!==JR.linkFrom?" pick":""}" data-n="${n.id}" style="left:${n.x}px;top:${n.y}px">${NICON[n.kind]}<span class="t">${esc(n.title)}</span><button class="k" data-k="${n.id}" aria-label="Step options for ${esc(n.title)}">${KEB3}</button></div>`).join("")}
+    <div class="jmenu" id="nmenu" role="menu"><button data-na="edit">\u270E Edit</button><button data-na="path">\u2197 Add path</button><button data-na="del">\uD83D\uDDD1 Delete</button></div>`;
+  const nm=$("nmenu");if(JR.nodeMenu){const n=JR.nodes.find(x=>x.id===JR.nodeMenu);nm.style.left=(n.x+100)+"px";nm.style.top=(n.y+30)+"px";nm.classList.add("show")}
+  st.querySelectorAll("[data-k]").forEach(b=>b.onclick=e=>{e.stopPropagation();if(JR.linkFrom)return;JR.nodeMenu=JR.nodeMenu===b.dataset.k?null:b.dataset.k;JR.addOpen=false;drawCanvas()});
+  nm.querySelectorAll("[data-na]").forEach(b=>b.onclick=e=>{e.stopPropagation();const id=JR.nodeMenu,a=b.dataset.na;JR.nodeMenu=null;
+    if(a==="path"){if(JR.links.some(l=>l[0]===id)){toast("This step already leads to another step.");drawCanvas();return}JR.linkFrom=id}
+    else if(a==="del"){JR.nodes=JR.nodes.filter(n=>n.id!==id);JR.links=JR.links.filter(l=>l[0]!==id&&l[1]!==id);toast("Step deleted.")}
+    else toast("Editing an existing step isn't needed for this exercise.");drawCanvas();check()});
+  st.querySelectorAll(".jn").forEach(d=>d.onclick=()=>{if(!JR.linkFrom)return;const t=d.dataset.n;if(t===JR.linkFrom)return;
+    if(JR.links.some(l=>l[1]===t)){toast("That step already has a step leading to it.");return}JR.links.push([JR.linkFrom,t]);JR.linkFrom=null;drawCanvas();check()});
+  if($("linkCancel"))$("linkCancel").onclick=()=>{JR.linkFrom=null;drawCanvas();check()};
+  const am=$("addm");am.innerHTML=ADDLIST.map(([l,k,dis])=>`<button role="menuitem" ${k?`data-add="${k}"`:""} ${dis?'aria-disabled="true"':""}>${l}</button>`).join("");am.classList.toggle("show",JR.addOpen);
+  am.querySelectorAll("button").forEach(b=>b.onclick=e=>{e.stopPropagation();if(b.getAttribute("aria-disabled"))return;const k=b.dataset.add;if(!k){toast(b.textContent+" isn't part of this exercise.");return}JR.addOpen=false;drawCanvas();openStep(k)});
+  coach();
+}
+/* step modals */
+function openStep(kind){
+  JR.modal=kind;JR.draft={kind,title:"",desc:"",form:null,dctype:"",profile:"DEFAULT PROFILE",tab:"Details",docs:{},manual:"",nameCheck:"Exact",nfc:"No NFC check",retries:"2",live:"1"};
+  $("fveil").classList.add("show");drawStep();check();setTimeout(()=>{const t=$("stTitle");t&&t.focus()},50);
+}
+function closeStep(){JR.modal=null;JR.draft=null;$("fveil").classList.remove("show");$("fmod").className="fmod";check()}
+function stepOk(){const d=JR.draft;if(!d||!d.title.trim())return false;if(d.kind==="forms")return !!d.form;if(d.kind==="dc")return !!d.dctype;if(d.kind==="idv")return Object.keys(d.docs).length>0&&!!d.manual;return true}
+function drawStep(){
+  const d=JR.draft,m=$("fmod");let html="";
+  const foot=`<div class="fmf"><button class="c1" id="stCancel">Cancel</button><button class="c2" id="stSave" ${stepOk()?"":"disabled"}>Save</button></div>`;
+  if(d.kind==="forms"){m.className="smodal big";
+    html=`<div class="fmh"><h2 id="fmTitle">Forms step</h2></div><div class="fmb"><div class="fs2"><div><label class="f" for="stTitle">Title</label><input type="text" id="stTitle" placeholder="Enter the step title" value="${esc(d.title)}" autocomplete="off">
+      <label class="f">Description</label><div class="rte3"><div class="tb"><b>B</b><i>I</i><u>U</u><s>S</s><span>12pt \u25BE</span><span>Paragraph \u25BE</span></div><div class="ed" contenteditable="true" role="textbox" aria-label="Description" id="stDesc">${esc(d.desc)}</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px">Applicant<i class="tg"></i></div><h3 style="font-size:15px;margin:10px 0 4px">Forms</h3>${d.form?`<div class="chosen2">\u283F <span>${esc(d.form)}</span><span class="ver">Latest \u25BE</span><button class="ibtn bin" id="stRemove" aria-label="Remove form" style="width:24px;height:24px">\uD83D\uDDD1</button></div>`:""}</div>
+      <div><h3 style="font-size:15px;margin:6px 0 8px">Available Forms</h3><div class="avail2">${FORMS2.filter(f=>f!==d.form).map(f=>`<button data-form="${esc(f)}">${esc(f)}</button>`).join("")}</div></div></div></div>`+foot}
+  if(d.kind==="dc"){m.className="smodal";
+    html=`<div class="fmh"><h2 id="fmTitle">Data check step</h2></div><div class="fmb"><label class="f" for="stTitle">Title</label><input type="text" id="stTitle" placeholder="Enter the step title" value="${esc(d.title)}" autocomplete="off">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px">Applicant<i class="tg"></i></div>
+      <label class="f" for="stType">Data check type</label><select id="stType"><option value="">Data check type</option>${DCTYPES.map(t=>`<option ${t===d.dctype?"selected":""}>${t}</option>`).join("")}</select>
+      ${d.dctype?`<label class="f">Data check Profile</label><select><option>DEFAULT PROFILE</option></select>${d.dctype==="Sanctions and PEPs"?`<div style="margin-top:10px">${fsw2("Enhanced Sanctions & PEP",false,"data-noop2")}</div>`:""}`:""}<div style="height:90px"></div></div>`+foot}
+  if(d.kind==="idv"){m.className="smodal big";
+    const tabs=`<div class="stabs3">${["Details","Settings","Legislations"].map(t=>`<button class="${d.tab===t?"on":""}" data-stab="${t}">${t}</button>`).join("")}</div>`;
+    let body="";
+    if(d.tab==="Details")body=`<label class="f" for="stTitle">Title</label><input type="text" id="stTitle" value="${esc(d.title)}" autocomplete="off"><label class="f">Description</label><div class="rte3"><div class="tb"><b>B</b><i>I</i><u>U</u><s>S</s><span>12pt \u25BE</span></div><div class="ed" contenteditable="true" role="textbox" aria-label="Description" id="stDesc" style="min-height:120px">${esc(d.desc)}</div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px">Applicant<i class="tg"></i></div>`;
+    if(d.tab==="Settings")body=`<h3 style="font-size:16px;margin:8px 0">IDV Settings</h3><label class="f">ID Scan Type</label><select><option>Credas Connect IDV</option></select><div style="margin-top:10px">${fsw2("Capture Selfie",true,"")}</div>
+      <label class="f">Liveness Check Type</label><select><option>Auto liveness will be attempted, on failure, manual checks are performed.</option></select><label class="f">Liveness Retries</label><input type="text" value="1">
+      <div style="margin-top:10px">${fsw2("Perform ID Check",true,"")}</div><label class="f">ID Check Method</label><select><option>Auto or manual - ID is valid if all checks are complete automatically, or manual checks are performed</option></select>
+      <label class="f">ID Document Types</label>${Object.keys(d.docs).length?"":`<div class="errb">You have selected to perform a biometric document check, but have not selected any document types below.</div>`}
+      <div class="dtgrid">${DOCTYPES.map(t=>`<label><input type="checkbox" data-doc="${t}" ${d.docs[t]?"checked":""}>${t}${d.docs[t]?`<select data-side="${t}" aria-label="${t} sides"><option ${d.docs[t]==="Front only"?"selected":""}>Front only</option><option ${d.docs[t]==="Front and back"?"selected":""}>Front and back</option></select>`:""}</label>`).join("")}</div>
+      <label class="f">ID Document Retries</label><input type="text" value="${d.retries}"><label class="f">ID Document NFC Type</label><select><option>No NFC check</option><option>NFC (if available) or visual analysis</option></select>
+      <label class="f" for="stManual">Manual step configuration</label><select id="stManual"><option value="">&nbsp;</option>${MANUAL_OPTS.map(o=>`<option ${o===d.manual?"selected":""}>${o}</option>`).join("")}</select>${d.manual?"":`<div class="errt">This setting is required.</div>`}
+      <label class="f">ID Document Name Check Option</label><select><option>Exact</option><option>Fuzzy</option></select><div style="margin-top:10px">${fsw2("Identify documents without biometric features",false,"")}</div>
+      <label class="f">IDV Pass Mandatory?</label><select><option>Optional - IDV Pass is not required to continue the workflow</option><option>Mandatory - IDV Pass is required to continue the workflow</option></select>
+      <label class="f">Fail document when re-capture is detected?</label><select><option>No - Allow re-captured documents</option><option>Yes - Fail documents when re-capture is detected</option></select>`;
+    if(d.tab==="Legislations")body=`<p style="font-size:12px;color:#6E717E;margin-top:20px">No legislations are set up for this step.</p>`;
+    html=`<div class="fmh"><h2 id="fmTitle">IDV step</h2></div><div class="fmb">${tabs}${body}</div>`+foot}
+  m.innerHTML=html;bindStep();coach();
+}
+function bindStep(){
+  const d=JR.draft,q=id=>document.getElementById(id);const upd=()=>{const b=q("stSave");if(b)b.disabled=!stepOk();check()};
+  q("stCancel").onclick=closeStep;
+  if(q("stTitle"))q("stTitle").oninput=e=>{d.title=e.target.value;upd()};
+  if(q("stDesc"))q("stDesc").oninput=e=>{d.desc=e.target.innerText};
+  $("fmod").querySelectorAll("[data-form]").forEach(b=>b.onclick=()=>{d.form=b.dataset.form;drawStep();check()});
+  if(q("stRemove"))q("stRemove").onclick=()=>{d.form=null;drawStep();check()};
+  if(q("stType"))q("stType").onchange=e=>{d.dctype=e.target.value;drawStep();check()};
+  $("fmod").querySelectorAll("[data-stab]").forEach(b=>b.onclick=()=>{d.tab=b.dataset.stab;drawStep();check()});
+  $("fmod").querySelectorAll("[data-doc]").forEach(c=>c.onchange=()=>{const t=c.dataset.doc;if(c.checked)d.docs[t]=t==="Driving Licence"||t==="National ID Card"?"Front and back":"Front only";else delete d.docs[t];drawStep();check()});
+  $("fmod").querySelectorAll("[data-side]").forEach(s=>{s.onclick=e=>e.preventDefault();s.onchange=()=>{d.docs[s.dataset.side]=s.value}});
+  if(q("stManual"))q("stManual").onchange=e=>{d.manual=e.target.value;drawStep();check()};
+  $("fmod").querySelectorAll(".fsw:not([data-sf])").forEach(t=>t.onclick=()=>t.classList.toggle("on"));
+  if(q("stSave"))q("stSave").onclick=()=>{if(!stepOk())return;JR.nodes.push({id:"n"+(JR.nodes.length+1)+Date.now()%1000,kind:d.kind,title:d.title.trim(),dctype:d.dctype,form:d.form,docs:Object.keys(d.docs)});closeStep();drawCanvas();check()};
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&JR.modal){closeStep();e.stopImmediatePropagation()}},true);
+
+/* ---------- exercise ---------- */
+const drawerOpen=()=>$("drawer").classList.contains("show");
+const rowOf=(k,v)=>document.querySelector(`#dbody input[data-k="${k}"][value="${v}"]`)?.parentElement;
+const firstMissing=(k,vals)=>{const v=vals.find(x=>!pending[k].has(x));return v?rowOf(k,v):null};
+const hasAll=(set,vals)=>vals.every(v=>set.has(v));
+const D_FROM="2026-09-15",D_TO="2026-09-30";
+const T={status:["Active","Invited"],idtype:["Passport"],journey:["Identity Only","Safe Harbour"],approval:["Approved"],by:["Amelia Brooks"]};
+const inDrawer=f=>()=>drawerOpen()?f():$("btn-all");
+const sq=s=>document.querySelector("#fmod "+s);
+const node=t=>JR.nodes.find(n=>n.title.trim().toLowerCase()===t.toLowerCase());
+const nodeEl=t=>{const n=node(t);return n?document.querySelector(`#jstage [data-n="${n.id}"]`):null};
+const kebEl=t=>{const n=node(t);return n?document.querySelector(`#jstage [data-k="${n.id}"]`):null};
+const linked=(a,b)=>{const A=node(a),B=node(b);return !!(A&&B&&JR.links.some(l=>l[0]===A.id&&l[1]===B.id))};
+const JDESC="This journey carries out the following:\n- Identity\n- Address & Mortality\n- PEPs & Sanctions";
+const inCanvas=f=>()=>JR.area!=="jb"?(JR.menu?document.querySelector('[data-am="Journey Builder"]'):$("areaBtn")):JR.view!=="canvas"?$("jAdd"):f();
+const toAdd=(kind,f)=>inCanvas(()=>JR.modal===kind?f():JR.modal?sq("#stCancel"):JR.addOpen?document.querySelector(`#addm [data-add="${kind}"]`):$("cogBtn"));
+const gap=spec=>{for(const [ok,sel] of spec){if(!ok())return typeof sel==="string"?sq(sel):sel()}return sq("#stSave")};
+const pathTo=(a,b)=>inCanvas(()=>JR.modal?sq("#stCancel"):JR.linkFrom?nodeEl(b):JR.nodeMenu===(node(a)||{}).id?document.querySelector('#nmenu [data-na="path"]'):kebEl(a));
+const STEPS=[
+ {t:"Open the Portal menu",d:"Journeys are built in the Journey Builder area. Click <b>Portal</b> at the top left.",el:()=>JR.area==="jb"||JR.menu?null:$("areaBtn"),ok:()=>JR.menu||JR.area==="jb"},
+ {t:"Go to Journey Builder",d:"Choose <b>Journey Builder</b>. You land on Process Builder, which lists every journey.",el:()=>JR.menu?document.querySelector('[data-am="Journey Builder"]'):JR.area==="jb"?null:$("areaBtn"),ok:()=>JR.area==="jb"},
+ {t:"Add a new journey",d:"Click <b>+ Add new</b>. An empty journey opens, with its Settings panel on the right.",el:inCanvas(()=>null),ok:()=>JR.view==="canvas"},
+ {t:"Give it a title",copy:"Enhanced AML",d:"Type or paste <b>Enhanced AML</b> into Title.",el:inCanvas(()=>$("sTitle")),ok:()=>JR.set.title.trim().toLowerCase()==="enhanced aml"||JR.created},
+ {t:"Add an internal description",copy:JDESC,d:"Only your team sees the internal description. Paste the description below into <b>Internal Description</b>, listing what the journey does.",el:inCanvas(()=>$("sIdesc")),ok:()=>JR.set.idesc.trim().length>=10||JR.created},
+ {t:"Add an end user description",copy:JDESC,d:"The individual sees the end user description. Paste the same text into <b>End User Description</b>.",el:inCanvas(()=>$("sUdesc")),ok:()=>JR.set.udesc.trim().length>=10||JR.created},
+ {t:"Choose the submission rules",d:"Scroll down the Settings panel. Under <b>Submission rules</b>, choose <b>Automatic (Mandatory)</b>, so the journey is submitted automatically once every mandatory step is complete.",el:inCanvas(()=>$("sSub")),ok:()=>JR.set.submission==="Automatic (Mandatory)"||JR.created},
+ {t:"Turn on the webhook",d:"Switch on <b>Webhook Enabled</b>, so your systems are notified as the journey progresses. A Default webhook URL box appears, which is optional.",el:inCanvas(()=>document.querySelector('#jset [data-sf="__wh"]')),ok:()=>JR.set.webhook||JR.created},
+ {t:"Set the completion method",d:"Under <b>Completion Method</b>, choose <b>Native only</b>, so the journey is completed in the Credas app.",el:inCanvas(()=>$("sComp")),ok:()=>JR.set.completion==="Native only"||JR.created},
+ {t:"Create the journey",d:"Click <b>Create</b> at the bottom of the Settings panel.",el:inCanvas(()=>$("sCreate")),ok:()=>JR.created},
+ {t:"Add the form step",d:"Steps are added from the cog menu. Click the <b>cog icon</b> above the journey and choose <b>Add Forms</b>.",el:toAdd("forms",()=>null),ok:()=>JR.modal==="forms"||!!node("Personal Details & Address")},
+ {t:"Name the form step",copy:"Personal Details & Address",d:"Type or paste <b>Personal Details &amp; Address</b> into Title.",el:toAdd("forms",()=>sq("#stTitle")),ok:()=>(JR.draft&&JR.draft.kind==="forms"&&JR.draft.title.trim().toLowerCase()==="personal details & address")||!!node("Personal Details & Address")},
+ {t:"Choose the form",d:"Under Available Forms, click <b>Personal Details &amp; Address</b> \u2013 the form built in the Form Builder exercise.",el:toAdd("forms",()=>sq('[data-form="Personal Details & Address"]')),ok:()=>(JR.draft&&JR.draft.form==="Personal Details & Address")||!!node("Personal Details & Address")},
+ {t:"Save the form step",d:"Click <b>Save</b>. The step appears on the journey.",el:toAdd("forms",()=>sq("#stSave")),ok:()=>!!node("Personal Details & Address")},
+ {t:"Add the address check",copy:"Address & Mortality",d:"From the cog menu, choose <b>Add Data Check</b>. Title it <b>Address &amp; Mortality</b>, choose <b>Address and Mortality</b> as the Data check type, leave the DEFAULT PROFILE and click <b>Save</b>.",
+  el:toAdd("dc",()=>{const d=JR.draft;return gap([[()=>d.title.trim().toLowerCase()==="address & mortality","#stTitle"],[()=>d.dctype==="Address and Mortality","#stType"]])}),ok:()=>!!(node("Address & Mortality")&&node("Address & Mortality").dctype==="Address and Mortality")},
+ {t:"Connect the first two steps",d:"New steps aren't connected yet. Open the <b>\u22EE</b> menu on Personal Details &amp; Address, choose <b>Add path</b>, then click <b>Address &amp; Mortality</b>.",el:pathTo("Personal Details & Address","Address & Mortality"),ok:()=>linked("Personal Details & Address","Address & Mortality")},
+ {t:"Add the sanctions check",copy:"PEPs & Sanctions",d:"Choose <b>Add Data Check</b> again. Title it <b>PEPs &amp; Sanctions</b>, choose <b>Sanctions and PEPs</b> and click <b>Save</b>.",
+  el:toAdd("dc",()=>{const d=JR.draft;return gap([[()=>d.title.trim().toLowerCase()==="peps & sanctions","#stTitle"],[()=>d.dctype==="Sanctions and PEPs","#stType"]])}),ok:()=>!!(node("PEPs & Sanctions")&&node("PEPs & Sanctions").dctype==="Sanctions and PEPs")},
+ {t:"Connect the sanctions check",d:"Open the <b>\u22EE</b> menu on Address &amp; Mortality, choose <b>Add path</b>, then click <b>PEPs &amp; Sanctions</b>.",el:pathTo("Address & Mortality","PEPs & Sanctions"),ok:()=>linked("Address & Mortality","PEPs & Sanctions")},
+ {t:"Add identity verification",copy:"Identity",d:"From the cog menu, choose <b>Add Identity Verification</b>. On the Details tab, type <b>Identity</b> as the Title.",el:toAdd("idv",()=>JR.draft.tab!=="Details"?sq('[data-stab="Details"]'):sq("#stTitle")),ok:()=>(JR.draft&&JR.draft.kind==="idv"&&JR.draft.title.trim().toLowerCase()==="identity")||!!node("Identity")},
+ {t:"Set up the ID check",d:"Open the <b>Settings</b> tab. Under ID Document Types, tick <b>Passport</b> and <b>Driving Licence</b>. Then set <b>Manual step configuration</b> to <b>Workflow will continue, and manual validation can be completed later</b>, and click <b>Save</b>.",
+  el:toAdd("idv",()=>{const d=JR.draft;if(d.tab!=="Settings")return sq('[data-stab="Settings"]');return gap([[()=>!!d.docs.Passport,'[data-doc="Passport"]'],[()=>!!d.docs["Driving Licence"],'[data-doc="Driving Licence"]'],[()=>d.manual===MANUAL_OPTS[0],"#stManual"]])}),
+  ok:()=>!!(node("Identity")&&node("Identity").docs.includes("Passport")&&node("Identity").docs.includes("Driving Licence"))},
+ {t:"Connect the final step",d:"Open the <b>\u22EE</b> menu on PEPs &amp; Sanctions, choose <b>Add path</b>, then click <b>Identity</b>. The journey is complete.",el:pathTo("PEPs & Sanctions","Identity"),ok:()=>linked("PEPs & Sanctions","Identity")&&linked("Address & Mortality","PEPs & Sanctions")&&linked("Personal Details & Address","Address & Mortality")}
+];
+const DRAWER_FIRST=-1,DRAWER_APPLY=-1;
+const GROUPS=[["Open Process Builder",0],["Journey settings",2],["Form step",10],["Data checks",14],["Identity verification",18]];
+function renderList(){
+  const tick='<svg width="8" height="7" viewBox="0 0 8 7" fill="none" stroke="#fff" stroke-width="1.8"><path d="M1 3.5l2 2L7 1"/></svg>';
+  let out="";
+  STEPS.forEach((st,i)=>{
+    const g=GROUPS.find(x=>x[1]===i);if(g)out+=`<li class="g">${g[0]}</li>`;
+    const cls=finished||i<s?"isdone":i===s?"now":"";
+    out+=`<li class="it ${cls}"${i===s&&!finished?' aria-current="step"':""}><i>${cls==="isdone"?tick:""}</i>${st.t.replace(/^All filters: (.)/,(m,c)=>c.toUpperCase())}</li>`;
+  });
+  $("slist").innerHTML=out;
+  $("stoggleTxt").textContent=$("slist").hidden?`View all ${STEPS.length} steps`:"Hide steps";
+  const cur=$("slist").querySelector(".now");if(cur&&!$("slist").hidden)cur.scrollIntoView({block:"nearest"});
+}
+$("stoggle").onclick=()=>{const l=$("slist");l.hidden=!l.hidden;$("stoggle").setAttribute("aria-expanded",String(!l.hidden));renderList()};
+let s=0,finished=false;
+function check(){
+  if(finished)return;
+  let moved=false;
+  while(s<STEPS.length&&STEPS[s].ok()){s++;moved=true}
+  if(s>=STEPS.length){finished=true;coach();setTimeout(showDone,500);return}
+  if(moved&&s>0)toast("Nice. Next step: "+STEPS[s].t+".");
+  coach();
+}
+function coach(){
+  document.querySelectorAll(".hint").forEach(e=>e.classList.remove("hint"));
+  if(typeof renderList==="function")renderList();
+  if(finished){renderCopy(null);$("count").textContent="Complete";$("task").textContent="All done";$("desc").textContent="Try it again with hints turned off.";$("prog").style.width="100%";return}
+  const st=STEPS[s];
+  $("count").textContent=`Step ${s+1} of ${STEPS.length}`;$("task").textContent=st.t;$("desc").innerHTML=st.d;renderCopy(st.copy);$("prog").style.width=(s/STEPS.length*100)+"%";
+  if(!$("hints").checked)return;
+  const el=st.el();if(el){el.classList.add("hint");if(el.id==="q")$("searchBox").classList.add("hint"),el.classList.remove("hint");el.scrollIntoView?.({block:"nearest",inline:"nearest"})}
+}
+const COPYICON='<svg width="11" height="12" viewBox="0 0 10 12" fill="none" stroke="#fff" stroke-width="1.4"><rect x="3" y="3" width="6" height="8" rx="1"/><path d="M1 9V1h6"/></svg>';
+function renderCopy(v){
+  const r=$("copyRow");
+  if(!v){r.classList.remove("show");r.innerHTML="";r.dataset.v="";return}
+  if(r.dataset.v===v)return;
+  r.dataset.v=v;r.innerHTML=`<code>${esc(v)}</code><button id="copyBtn" aria-label="Copy ${esc(v)}">${COPYICON}Copy</button>`;r.classList.add("show");
+  $("copyBtn").onclick=()=>copyText(v);
+}
+function copyText(v){
+  const ok=()=>{const b=$("copyBtn");if(!b)return;b.classList.add("done");b.innerHTML="Copied";toast("Copied. Paste it into the search box and press Enter.");setTimeout(()=>{if($("copyBtn")){b.classList.remove("done");b.innerHTML=COPYICON+"Copy"}},1600)};
+  const fallback=()=>{const t=document.createElement("textarea");t.value=v;t.setAttribute("readonly","");t.style.cssText="position:fixed;left:-9999px;top:0";document.body.appendChild(t);t.select();let done=false;try{done=document.execCommand("copy")}catch(e){}t.remove();done?ok():toast("Copy isn't available here. Type it instead.")};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(v).then(ok,fallback);else fallback();
+}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2400)}
+function bindNoop(){document.querySelectorAll("[data-noop]").forEach(b=>b.onclick=e=>{e.stopPropagation();toast("Not part of this exercise.")})}
+
+/* modules and exercises shown in the completion popup */
+const MODULES=[
+ {
+  "name": "Individuals",
+  "items": [
+   {
+    "name": "Search and filter the list",
+    "desc": "Search by name, phone number, email address or reg code, filter from the toolbar, combine…",
+    "id": "individuals-search-filter",
+    "url": "individuals-search-filter.html"
+   },
+   {
+    "name": "Configure the table",
+    "desc": "Use Table Configuration to choose which details, documents and data checks appear as columns",
+    "id": "individuals-table-config",
+    "url": "individuals-table-config.html"
+   },
+   {
+    "name": "Review an individual's results",
+    "desc": "Open a record and review the Liveness, ID verification, Address and Mortality, and…",
+    "id": "individuals-review-results",
+    "url": "individuals-review-results.html"
+   },
+   {
+    "name": "Explore an individual's record",
+    "desc": "Walk through every tab of a record: User Details, the contact summary, Quick Actions, each…",
+    "id": "individuals-record-tour",
+    "url": "individuals-record-tour.html"
+   },
+   {
+    "name": "Approve or reject an individual",
+    "desc": "Add the Approval Status column, then approve Angela Specimen, reject her and reset her to…",
+    "id": "individuals-approve-reject",
+    "url": "individuals-approve-reject.html"
+   }
+  ]
+ },
+ {
+  "name": "Sending journeys",
+  "items": [
+   {
+    "name": "Send a journey to an existing individual",
+    "desc": "Use Quick Actions on Angela Specimen's record to send an Identity Only journey, choose how…",
+    "id": "send-journey-existing",
+    "url": "send-journey-existing.html"
+   },
+   {
+    "name": "Add a new individual and send a journey",
+    "desc": "Add Jordan Specimen from the Individuals tab, create their profile, send them an Identity…",
+    "id": "send-journey-new-individual",
+    "url": "send-journey-new-individual.html"
+   }
+  ]
+ },
+ {
+  "name": "Reports",
+  "items": [
+   {
+    "name": "Generate a PDF report",
+    "desc": "Use Quick Actions on Angela Specimen's record to export a report of her process, choose…",
+    "id": "reports-pdf",
+    "url": "reports-pdf.html"
+   }
+  ]
+ },
+ {
+  "name": "Data checks",
+  "items": [
+   {
+    "name": "Run a stand-alone data check",
+    "desc": "Run an Address and Mortality check, with a postcode lookup, and a Sanctions and PEPs check…",
+    "id": "data-check-standalone",
+    "url": "data-check-standalone.html"
+   }
+  ]
+ },
+ {
+  "name": "Remediation",
+  "items": [
+   {
+    "name": "Remediate checks",
+    "desc": "Remediate Angela Specimen's Address and Mortality, Sanctions and PEPs and failed ID…",
+    "id": "remediate-checks",
+    "url": "remediate-checks.html"
+   }
+  ]
+ },
+ {
+  "name": "Form Builder",
+  "items": [
+   {
+    "name": "Build a Personal Details and Address form",
+    "desc": "Create a form with headings and questions, link each answer to its Data Connector Source…",
+    "id": "form-builder-personal-details",
+    "url": "form-builder-personal-details.html"
+   }
+  ]
+ },
+ {
+  "name": "Journey Builder",
+  "items": [
+   {
+    "name": "Create a new journey",
+    "desc": "Create the Enhanced AML journey from scratch: fill in its settings, add the Personal…",
+    "id": "journey-builder-create",
+    "current": true
+   }
+  ]
+ },
+ {
+  "name": "Settings",
+  "items": [
+   {
+    "name": "Add a new user",
+    "desc": "Give a colleague access to the Portal"
+   }
+  ]
+ }
+];
+const PAGE_ID="journey-builder-create";
+const PROG_KEY="credas-connect-training:progress";
+function progGet(){try{return JSON.parse(localStorage.getItem(PROG_KEY)||"{}")||{}}catch(e){return {}}}
+function progMark(id){try{const p=progGet(),now=new Date().toISOString();p[id]=Object.assign({first:now},p[id]||{},{last:now});localStorage.setItem(PROG_KEY,JSON.stringify(p))}catch(e){}}
+function showDone(){
+  progMark(PAGE_ID);const P=progGet();
+  const all=MODULES.flatMap(m=>m.items).filter(e=>e.id),done=all.filter(e=>P[e.id]).length;
+  $("modules").innerHTML=`<div class="progsum"><b>${done} of ${all.length}</b> exercises completed<span class="pbar"><i style="width:${Math.round(done/all.length*100)}%"></i></span></div>`+MODULES.map(m=>`<h3>${m.name}</h3><div class="exlist">${m.items.map(e=>{
+    const right=e.current?'<span class="tag ok">Completed</span><button class="mini" data-again>Start again</button>':e.url?(P[e.id]?`<span class="tag ok">Completed</span><a class="mini lt" href="${e.url}" target="_self">Open</a>`:`<a class="mini lt" href="${e.url}" target="_self">Open</a>`):'<span class="tag soon">Coming soon</span>';
+    return `<div class="ex" ${e.current||e.url?"":'aria-disabled="true"'}><span class="n"><b>${e.name}</b><small>${e.desc}</small></span>${right}</div>`}).join("")}</div>`).join("");
+  $("doneVeil").classList.add("show");document.querySelector("[data-again]")?.focus();
+}
+$("modules").onclick=e=>{if(e.target.closest("[data-again]")){$("doneVeil").classList.remove("show");reset()}};
+
+function reset(){
+  applied=blank();pending=blank();dateFrom=dateTo=null;query="";$("q").value="";s=0;finished=false;
+  Object.assign(JR,{menu:false,area:"portal",view:"proc",created:false,set:{title:"",idesc:"",udesc:"",flags:{"Active":true},completion:"Either",submission:"",webhook:false},nodes:[],links:[],addOpen:false,nodeMenu:null,linkFrom:null,modal:null,draft:null,setOpen:true});$("fveil").classList.remove("show");$("amenu").classList.remove("show");if(typeof setHeader==="function"){setHeader();$("listView").hidden=false;$("jbView").hidden=true}
+  closeDrops();closeDrawer();$("doneVeil").classList.remove("show");render();coach();
+}
+$("restart").onclick=reset;$("hints").onchange=coach;
+$("coachMin").onclick=()=>{const c=$("coach");c.classList.toggle("min");$("coachMin").textContent=c.classList.contains("min")?"Show":"Hide"};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if($("calpop")){closeCal();coach();return}closeDrops();if($("drawer").classList.contains("show"))closeDrawer()}});
+const INTRO={
+  kicker:"Journey Builder module \u00b7 Exercise 1",
+  title:"Create a new journey",
+  paras:["A journey is the set of steps an individual completes, such as forms, data checks and identity verification. Journeys are built in Process Builder, in the Journey Builder area, and once a journey is active it can be sent to anyone.",
+         "In this exercise, you'll create an Enhanced AML journey from scratch. You'll fill in its settings, then add four steps: the Personal Details & Address form from the Form Builder exercise, an Address & Mortality check, a PEPs & Sanctions check and identity verification. Finally, you'll connect them in order with Add path."],
+  tips:[["\u2699","Steps are added from the <b>cog</b> menu above the journey."],["\u2197","New steps start unconnected. Use <b>Add path</b> on a step's \u22EE menu to link it to the next one."],["\u270e","The <b>internal description</b> is for your team; the <b>end user description</b> is shown to the individual."],["!","Some settings are required, such as <b>Manual step configuration</b> for identity verification."]]
+};
+function showIntro(){
+  const groups=GROUPS.map((g,i)=>{const end=i<GROUPS.length-1?GROUPS[i+1][1]:STEPS.length;
+    return `<div class="grp"><b>${g[0]}</b><ol start="${g[1]+1}">${STEPS.slice(g[1],end).map(st=>`<li>${st.t.replace(/^All filters: (.)/,(m,c)=>c.toUpperCase())}</li>`).join("")}</ol></div>`}).join("");
+  $("introBody").innerHTML=`<p class="kicker">${INTRO.kicker}</p><h2 id="introTitle">${INTRO.title}</h2><p class="meta">${STEPS.length} steps \u00b7 about ${Math.max(3,Math.round(STEPS.length/3))} minutes</p>
+    ${INTRO.paras.map(t=>`<p>${t.replace(/&(?!amp;)/g,"&amp;")}</p>`).join("")}
+    <h3>What you'll practise</h3><div class="groups">${groups}</div>
+    <h3>Good to know</h3><ul class="tips">${INTRO.tips.map(([i,t])=>`<li><i aria-hidden="true">${i}</i><span>${t}</span></li>`).join("")}
+      <li><i aria-hidden="true">\u2139</i><span>The coach card in the bottom-left corner guides you through each step, and orange highlights show where to click. Untick <b>Show hints</b> for more of a challenge.</span></li>
+      <li><i aria-hidden="true">\u2713</i><span>This is a practice copy with made-up records, so nothing you do here affects the live system.</span></li></ul>`;
+  $("introVeil").classList.add("show");$("introBody").scrollTop=0;$("introStart").focus();
+}
+
+/* ---------- background music (composed in the browser with Web Audio) ---------- */
+const Music=(()=>{
+  const BPM=92,BEAT=60/BPM,BAR=BEAT*4,SIX=BEAT/4,BASE=0.22,DUCK=0.08,LEVEL=3.2,SWING=0.16;
+  const hz=n=>440*Math.pow(2,(n-69)/12);
+  /* D major, modern pop/corporate feel: Gmaj7 – A6 – F#m7 – Bm7, one bar each */
+  const PROG=[{root:31,keys:[54,59,62,66]},{root:33,keys:[54,57,61,64]},{root:30,keys:[52,57,61,64]},{root:35,keys:[54,57,62,66]}];
+  /* 16-step patterns (1 = hit) */
+  const KICK =[1,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0];
+  const SNARE=[0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0];
+  const HAT  =[1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,1];
+  const STAB =[1,0,0,1, 0,0,1,0, 0,0,1,0, 0,1,0,0];   /* syncopated chord stabs */
+  const BASSP=[1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,1];
+  let ctx=null,master=null,musicBus=null,drumBus=null,pump=null,rev=null,noise=null,timer=null,next=0,step=0,on=true,playing=false;
+  try{on=localStorage.getItem("credas-connect-training:music")!=="off"}catch(e){}
+  function impulse(sec,decay){const r=ctx.sampleRate,len=r*sec,b=ctx.createBuffer(2,len,r);for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay)}return b}
+  function init(){
+    if(ctx)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    ctx=new AC();master=ctx.createGain();master.gain.value=0;
+    const comp=ctx.createDynamicsCompressor();comp.threshold.value=-16;comp.ratio.value=3;comp.attack.value=.01;comp.release.value=.2;
+    const tone=ctx.createBiquadFilter();tone.type="lowpass";tone.frequency.value=9000;
+    musicBus=ctx.createGain();musicBus.gain.value=BASE;
+    pump=ctx.createGain();pump.gain.value=1;            /* gentle "breathing" on each kick */
+    drumBus=ctx.createGain();drumBus.gain.value=.5;
+    rev=ctx.createConvolver();rev.buffer=impulse(2.4,3);const wet=ctx.createGain();wet.gain.value=.22;const dry=ctx.createGain();dry.gain.value=.9;
+    pump.connect(dry);pump.connect(rev);rev.connect(wet);
+    const inst=ctx.createGain();inst.connect(pump);musicBus._inst=inst;
+    drumBus.connect(dry);const dsend=ctx.createGain();dsend.gain.value=.08;drumBus.connect(dsend);dsend.connect(rev);
+    dry.connect(musicBus);wet.connect(musicBus);musicBus.connect(master);master.connect(tone);tone.connect(comp);comp.connect(ctx.destination);
+    const len=ctx.sampleRate;noise=ctx.createBuffer(1,len,ctx.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+  }
+  const IN=()=>musicBus._inst;
+  function kick(t,v){const o=ctx.createOscillator(),g=ctx.createGain();o.type="sine";o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(48,t+.11);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.95*v,t+.004);g.gain.exponentialRampToValueAtTime(.001,t+.42);o.connect(g);g.connect(drumBus);o.start(t);o.stop(t+.45);
+    pump.gain.cancelScheduledValues(t);pump.gain.setValueAtTime(.62,t);pump.gain.linearRampToValueAtTime(1,t+BEAT*.8)}
+  function nz(t,dur,type,freq,q,amp,dest){const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=noise;s.playbackRate.value=.9+Math.random()*.2;
+    f.type=type;f.frequency.value=freq;f.Q.value=q;g.gain.setValueAtTime(amp,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(f);f.connect(g);g.connect(dest||drumBus);s.start(t,Math.random()*.5);s.stop(t+dur+.02)}
+  function snare(t){nz(t,.22,"bandpass",1900,.8,.32);nz(t+.012,.12,"highpass",3500,.5,.12);
+    const o=ctx.createOscillator(),g=ctx.createGain();o.type="triangle";o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(160,t+.08);g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.12);o.connect(g);g.connect(drumBus);o.start(t);o.stop(t+.14)}
+  function hat(t,v,open){nz(t,open?.22:.045,"highpass",7600,.7,(open?.07:.06)*v)}
+  function shaker(t,v){nz(t,.07,"bandpass",5200,1.2,.035*v)}
+  function bass(t,n,dur){const o=ctx.createOscillator(),o2=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type="sine";o2.type="triangle";o.frequency.value=hz(n);o2.frequency.value=hz(n);
+    f.type="lowpass";f.frequency.value=420;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.24,t+.012);g.gain.exponentialRampToValueAtTime(.12,t+dur*.6);g.gain.linearRampToValueAtTime(0,t+dur);
+    const g2=ctx.createGain();g2.gain.value=.25;o.connect(g);o2.connect(g2);g2.connect(f);f.connect(g);g.connect(IN());o.start(t);o2.start(t);o.stop(t+dur+.02);o2.stop(t+dur+.02)}
+  function keys(t,notes,dur,v){/* warm electric-piano chord: rounded body, soft tine, slow tremolo */
+    notes.forEach((n,i)=>{const o=ctx.createOscillator(),o2=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain(),g2=ctx.createGain();
+      o.type="triangle";o2.type="sine";o.frequency.value=hz(n);o2.frequency.value=hz(n)*2;o.detune.value=(i%2?4:-4);
+      f.type="lowpass";f.frequency.setValueAtTime(2600,t);f.frequency.exponentialRampToValueAtTime(900,t+dur);
+      const a=.038*v/(1+i*.1);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(a,t+.006);g.gain.exponentialRampToValueAtTime(a*.4,t+.25);g.gain.exponentialRampToValueAtTime(.0005,t+dur);
+      g2.gain.setValueAtTime(a*.18,t);g2.gain.exponentialRampToValueAtTime(.0005,t+.3);
+      o.connect(f);f.connect(g);o2.connect(g2);g2.connect(g);g.connect(IN());o.start(t);o2.start(t);o.stop(t+dur+.05);o2.stop(t+dur+.05)})}
+  function pad(t,notes,dur){notes.forEach(n=>{[-7,7].forEach(det=>{const o=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type="sawtooth";o.frequency.value=hz(n+12);o.detune.value=det;
+    f.type="lowpass";f.frequency.value=1500;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.006,t+.8);g.gain.setValueAtTime(.006,t+dur-.3);g.gain.linearRampToValueAtTime(0,t+dur+.6);
+    o.connect(f);f.connect(g);g.connect(IN());o.start(t);o.stop(t+dur+.7)})})}
+  function schedule(){
+    while(next<ctx.currentTime+.35){
+      const bar=Math.floor(step/16),i=step%16,ch=PROG[bar%PROG.length],sw=(i%2)?SIX*SWING:0,t=next+sw;
+      const intro=bar<2,full=bar>=4;
+      if(i===0)pad(t,ch.keys,BAR);
+      if(STAB[i])keys(t,ch.keys,i===0?BEAT*1.6:BEAT*.7,i===0?1:.75);
+      if(!intro){
+        if(BASSP[i])bass(t,i===15?ch.root+12:ch.root,i===0?BEAT*1.4:BEAT*.6);
+        if(KICK[i]&&!(bar%8===7&&i>=8))kick(t,i===0?1:.8);
+        if(SNARE[i])snare(t);
+        if(HAT[i])hat(t,i%4===0?1:.75,i===15&&bar%2===1);
+        if(full&&i%2===1)shaker(t,.8+Math.random()*.4);
+        if(bar%8===7&&i>=12)snare(t);  /* small fill every 8 bars */
+      }else if(i%4===2)hat(t,.6);
+      next+=SIX;step++;
+    }
+  }
+  function start(){if(!on)return;init();if(!ctx)return;if(ctx.state==="suspended")ctx.resume();if(playing)return;playing=true;
+    step=0;next=ctx.currentTime+.08;master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setValueAtTime(master.gain.value,ctx.currentTime);master.gain.linearRampToValueAtTime(LEVEL,ctx.currentTime+2);
+    schedule();timer=setInterval(schedule,80)}
+  function stop(fade){if(!ctx||!playing)return;playing=false;const t=ctx.currentTime,f=fade==null?2.5:fade;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(0,t+f);
+    const tm=timer;timer=null;setTimeout(()=>clearInterval(tm),f*1000+50)}
+  function duck(d){if(!ctx||!playing)return;const t=ctx.currentTime;musicBus.gain.cancelScheduledValues(t);musicBus.gain.setValueAtTime(musicBus.gain.value,t);musicBus.gain.linearRampToValueAtTime(d?DUCK:BASE,t+(d?.35:.9))}
+  function pause(){if(ctx&&playing)ctx.suspend()} function resume(){if(ctx&&playing)ctx.resume()}
+  function setOn(v){on=v;try{localStorage.setItem("credas-connect-training:music",v?"on":"off")}catch(e){}if(!v)stop(.6)}
+  return {start,stop,duck,pause,resume,setOn,get on(){return on},get playing(){return playing}};
+})();
+
+/* ---------- spoken overview (browser voice) ---------- */
+const SPOKEN=[["Welcome to the Journey Builder module.", 600], ["A journey is the set of steps an individual completes, from forms, to data checks, to identity verification.", 700], ["In this exercise, you'll create an Enhanced AML journey, from scratch.", 300], ["You'll fill in its settings, add four steps, and then connect them in order.", 300], ["One of those steps is the Personal Details and Address form, from the Form Builder exercise, so you'll see how forms and journeys fit together.", 700], ["The coach card, in the bottom left, will guide you as you go.", 700, "coach"], ["When you're ready, click Start exercise.", 0]];
+const TTS=window.speechSynthesis;let ttsVoice=null,ttsQueue=[],ttsState="idle";
+function pickVoice(){
+  if(!TTS)return null;const vs=TTS.getVoices();if(!vs.length)return null;
+  const prefer=[/(Ryan|Thomas|Alfie|Oliver|Elliot|Noah|Ethan).*(Natural|Neural)/i,/(Natural|Neural).*(Ryan|Thomas|Alfie|Oliver)/i,/Daniel \((Premium|Enhanced)\)/i,/Arthur \((Premium|Enhanced)\)/i,/Google UK English Male/i,/Ryan.*United Kingdom/i,/Thomas.*United Kingdom/i,/George/i,/Daniel/i,/Arthur/i,/Oliver/i,/Alfie/i,/Harry/i,/Male.*(UK|GB|United Kingdom)/i];
+  const gb=vs.filter(v=>/en[-_]GB/i.test(v.lang));
+  for(const r of prefer){const v=gb.find(x=>r.test(x.name))||vs.find(x=>r.test(x.name)&&/^en/i.test(x.lang));if(v)return v}
+  return gb.find(v=>!/female|woman|susan|hazel|libby|sonia|kate|serena|martha|fiona|moira|tessa|karen|samantha/i.test(v.name))||gb[0]||vs.find(v=>/^en/i.test(v.lang))||null;
+}
+function overviewText(){
+  const parts=[INTRO.title+"."].concat(INTRO.paras);
+  parts.push("In this exercise, you'll work through "+STEPS.length+" steps, in these stages: "+GROUPS.map(g=>g[0]).join(", ").replace(/, ([^,]*)$/," and $1")+".");
+  parts.push("A coach card in the bottom-left corner guides you through each step. Click Start exercise when you're ready.");
+  return parts.join(" ").replace(/&amp;/g,"and").replace(/&/g,"and");
+}
+function setListen(state){ttsState=state;const b=$("listenBtn");b.classList.toggle("playing",state==="playing");$("listenTxt").textContent=state==="playing"?"Pause":state==="paused"?"Resume":"Listen to overview"}
+let ttsTimer=null,ttsGen=0;
+function spotCoach(on){$("coach").classList.toggle("spot",!!on)}
+function speakNext(){
+  if(!ttsQueue.length){spotCoach(false);setListen("idle");Music.stop(3);return}
+  const [text,pause,cue]=ttsQueue.shift(),gen=ttsGen;
+  spotCoach(cue==="coach");
+  const u=new SpeechSynthesisUtterance(text);
+  if(ttsVoice){u.voice=ttsVoice;u.lang=ttsVoice.lang}else u.lang="en-GB";
+  const natural=ttsVoice&&/natural|neural|premium|enhanced/i.test(ttsVoice.name);
+  /* a slightly slower, warmer delivery; short lines and exclamations a touch brighter */
+  u.rate=natural?0.97:0.92;
+  u.pitch=(/[!]$/.test(text)?1.06:text.length<40?1.02:0.97)*(ttsVoice&&!/male|daniel|arthur|ryan|thomas|george|oliver/i.test(ttsVoice.name)?0.9:1);
+  u.onstart=()=>{if(gen===ttsGen)Music.duck(true)};
+  u.onend=()=>{if(gen!==ttsGen)return;Music.duck(false);if(ttsState==="playing")ttsTimer=setTimeout(()=>{if(gen===ttsGen&&ttsState==="playing")speakNext()},pause||150);else if(ttsState==="paused")ttsQueue.unshift(["",pause]) };
+  u.onerror=()=>{if(gen===ttsGen&&ttsState!=="idle")speakNext()};
+  TTS.speak(u);
+}
+function stopSpeech(){spotCoach(false);Music.stop(1.2);if(!TTS)return;ttsGen++;clearTimeout(ttsTimer);ttsQueue=[];setListen("idle");TTS.cancel()}
+if(TTS){
+  $("listenBtn").hidden=false;ttsVoice=pickVoice();
+  TTS.onvoiceschanged=()=>{ttsVoice=pickVoice()};
+  $("listenBtn").onclick=()=>{
+    if(ttsState==="playing"){TTS.pause();Music.pause();setListen("paused");return}
+    if(ttsState==="paused"){Music.resume();setListen("playing");if(TTS.speaking&&TTS.paused){TTS.resume()}else{ttsQueue=ttsQueue.filter(q=>q[0]);speakNext()}return}
+    ttsGen++;clearTimeout(ttsTimer);TTS.cancel();ttsVoice=pickVoice()||ttsVoice;Music.start();
+    ttsQueue=SPOKEN.map(x=>[x[0],x[1],x[2]]);
+    setListen("playing");speakNext();
+  };
+}
+(function(){const b=$("musicBtn");if(!b)return;const sync=()=>{b.setAttribute("aria-pressed",String(Music.on));$("musicTxt").textContent=Music.on?"Music on":"Music off"};sync();
+  b.onclick=()=>{Music.setOn(!Music.on);sync();if(Music.on&&ttsState==="playing")Music.start()};if(!window.speechSynthesis)b.hidden=true})();
+function closeIntro(){stopSpeech();$("introVeil").classList.remove("show");coach()}
+$("introStart").onclick=closeIntro;
+$("introBtn").onclick=showIntro;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("introVeil").classList.contains("show"))closeIntro()});
+reset();
+showIntro();
+</script>
+</body>
+</html>

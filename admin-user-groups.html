@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Practice: create a user group and assign users</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nav:#2D2E3F;--gold:#F0A93C;--gold-d:#E79A2A;--green:#1EC28B;--red:#E0474C;
+  --page:#FFFFFF;--pill:#ECEDEF;--ink:#1E1F2B;--muted:#6E717E;--line:#E4E5E8;--stripe:#F6F6F7;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;height:100%}
+body{background:#F3F3F5;color:var(--ink);font:12px/1.4 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+.shell{background:#fff;min-height:100%;display:flex;flex-direction:column}
+/* nav */
+.top{background:var(--nav);color:#fff;height:60px;display:flex;align-items:center;padding:0 70px 0 56px;overflow-x:auto;flex:none}
+.logo{display:flex;align-items:center;padding-right:16px;margin-right:18px;border-right:1px solid #ffffff66;height:24px}
+.logo svg{flex:none}
+.area{color:var(--gold);font-weight:700;font-size:12.5px;display:flex;align-items:center;gap:7px;margin-right:7px;white-space:nowrap}
+.top nav{display:flex;gap:21px;font-weight:500;font-size:11.5px;white-space:nowrap;align-items:center}
+.top nav span{padding:13px 3px 10px;border-bottom:3px solid transparent}
+.top nav span.on{color:var(--gold);border-color:var(--gold)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:14px;padding-left:18px}
+.avatar{border:1px solid #fff;border-radius:3px;width:34px;height:34px;display:grid;place-items:center;font-size:12.5px;margin-left:6px}
+
+/* toolbar */
+.bar{display:flex;align-items:center;gap:7px;padding:11px 18px 8px 48px;flex:none}
+@media (max-width:1100px){.bar{flex-wrap:wrap;padding-left:18px;row-gap:8px}.search{flex-basis:100%}.tablewrap{margin-left:18px}.chips{padding-left:18px}.top{padding:0 18px}}
+.search{flex:1;min-width:240px;height:30px;border-radius:999px;background:var(--pill);display:flex;align-items:center;gap:9px;padding:0 14px}
+.search input{border:0;background:none;outline:none;flex:1;font-size:12px;min-width:0}
+.search input::placeholder{color:#6B6E79}
+.search .x{border:0;background:none;width:20px;height:20px;border-radius:50%;display:none;place-items:center;color:var(--muted);font-size:14px}
+
+.fbtn{position:relative}
+.chip{height:30px;border:0;border-radius:999px;background:var(--pill);padding:0 15px;display:flex;align-items:center;gap:7px;font-weight:500;font-size:12px;white-space:nowrap}
+.chip:hover{background:#E2E3E6}
+.chip .ct{display:none}
+.add{height:30px;border:0;border-radius:999px;background:var(--nav);color:#fff;padding:0 16px;font-weight:600;display:flex;gap:7px;align-items:center;white-space:nowrap}
+.add b{color:var(--gold);font-size:15px;font-weight:500}
+.icon{width:30px;height:30px;border-radius:50%;border:0;background:var(--pill);display:grid;place-items:center}
+
+/* applied filter chips */
+.chips{display:none;flex-wrap:wrap;gap:8px;padding:2px 18px 8px 48px;flex:none}
+.chips.show{display:flex}
+.fchip{height:30px;border:0;border-radius:999px;background:#ECEDEF;padding:0 13px 0 14px;display:flex;align-items:center;gap:9px;font-size:11.5px;font-weight:500;color:#2D2E3F;white-space:nowrap}
+.fchip:hover{background:#DDDEE1}
+.fchip svg{flex:none}
+.clearall{height:30px;border:0;border-radius:999px;background:var(--nav);color:#fff;padding:0 16px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.clearall:hover{background:#3d3f55}
+/* reg code copy */
+.regcopy{border:0;background:none;padding:2px;border-radius:3px;display:grid;place-items:center;cursor:pointer}
+.regcopy:hover{background:#0000000f}
+.regVeil{position:fixed;inset:0;background:#00000052;z-index:66;display:none;align-items:center;justify-content:center;padding:16px}
+.regVeil.show{display:flex}
+.regdlg{background:#fff;border-radius:4px;width:min(320px,100%);box-shadow:0 11px 15px -7px #0003,0 24px 38px 3px #00000024}
+.regh{display:flex;justify-content:flex-end;padding:12px 16px 10px;border-bottom:1px solid #ECEDEF}
+.regx{width:28px;height:28px;border-radius:50%;border:0;background:var(--nav);color:var(--gold);font-size:13px;display:grid;place-items:center}
+.regb{display:flex;align-items:center;gap:14px;padding:18px 22px 46px;font-weight:700;font-size:12px}
+.regi{width:26px;height:26px;border-radius:50%;background:#3B7DDD;color:#fff;display:grid;place-items:center;font:700 14px/1 Georgia,serif;flex:none}
+.rtabs button.hint,.ptabs button.hint{animation:tabpulse 1.3s ease-in-out infinite;border-radius:4px;padding-left:8px;padding-right:8px;margin:0 -8px}
+@keyframes tabpulse{0%,100%{box-shadow:inset 0 0 0 2px #F0A93C}50%{box-shadow:inset 0 0 0 2px #F0A93C,inset 0 0 0 5px #F0A93C40}}
+@media (prefers-reduced-motion:reduce){.rtabs button.hint,.ptabs button.hint{animation:none;box-shadow:inset 0 0 0 2px #F0A93C}}
+.progsum{display:flex;align-items:center;gap:10px;font-size:12px;color:#3B3D4A;margin:0 0 6px;flex-wrap:wrap}
+.progsum b{color:#1E1F2B}
+.progsum .pbar{flex:1;min-width:120px;height:6px;border-radius:3px;background:#ECEDEF;overflow:hidden}
+.progsum .pbar i{display:block;height:100%;background:#1EC28B}
+.mtog{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #D2D4D9;background:#fff;color:#3B3D4A;border-radius:999px;height:36px;padding:0 14px;font-weight:600;font-size:12px;cursor:pointer}
+.mtog[aria-pressed="false"]{color:#9A9CA6;text-decoration:line-through}
+.mtog[hidden]{display:none}
+@media (max-width:560px){.intro .if{flex-wrap:wrap}}
+
+.lv{display:flex;flex-direction:column;flex:1;min-height:0}
+.lv[hidden],#setView[hidden]{display:none}
+#setView{flex:1;background:#FAFAFA;overflow:auto}
+.sp{padding:22px 56px 40px}
+.sp .lead2{font-size:17px;color:#3B3D4A;margin:0 0 20px}
+.scards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.scard2{background:#fff;border:1px solid #E3E4E7;border-radius:4px;padding:18px 18px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;min-height:120px;font:inherit;color:inherit}
+.scard2:hover{box-shadow:0 2px 8px #0000001a}
+.scard2 b{font-size:16px;margin-bottom:6px}
+.scard2 span{font-size:12px;color:#3B3D4A;line-height:1.35}
+.scard2 i{margin-top:auto;border-top:1px solid #E3E4E7;padding-top:10px;text-align:right;font-style:normal;font-size:14px}
+.bhead{padding:12px 56px 18px;background:#FAFAFA;box-shadow:0 3px 6px -3px #0002}
+.bhead button{border:0;background:none;display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0;color:#2D2E3F}
+.bhead h1{font-size:30px;font-weight:800;margin:6px 0 0}
+.bform{max-width:660px;padding:22px 56px 40px}
+.bform h2{font-size:17px;font-weight:700;margin:0 0 14px}
+.bform label{display:block;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.bform input[type=text]{width:100%;height:36px;border:1px solid #9a9ca5;border-radius:3px;padding:0 10px;font:inherit;font-size:12.5px;background:#fff}
+.bform input[type=text]:focus{outline:2px solid #F0A93C;outline-offset:-1px}
+.bform hr{border:0;border-top:1px solid #DADBDF;margin:22px 0}
+.logobox{width:328px;max-width:100%;height:87px;background:#2D2E3F;display:grid;place-items:center;overflow:hidden}
+.logobox.light{background:#fff;border:1px solid #E3E4E7}
+.lbtns{display:flex;gap:10px;margin-top:10px}
+.lbtns button{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#ECEDEF;padding:7px 14px;font-size:11.5px;font-weight:500}
+.savebar{display:flex;justify-content:flex-end}
+.savebar button{height:36px;border:0;border-radius:999px;background:var(--nav);color:#fff;padding:0 22px;font-weight:600;font-size:12.5px}
+.savebar button:disabled{background:#ECEDEF;color:#BFC1C7}
+.warnbox{display:flex;gap:10px;background:#FDF4E4;border:1px solid #F3D9A8;border-radius:4px;padding:10px 12px;font-size:12px;color:#5a4214;margin-top:10px;line-height:1.45}
+.fpveil{position:fixed;inset:0;background:#0000004d;z-index:58;display:none;align-items:center;justify-content:center;padding:16px}
+.fpveil.show{display:flex}
+.fp{background:#fff;border-radius:8px;width:min(560px,100%);box-shadow:0 11px 15px -7px #0003,0 24px 38px 3px #00000024;overflow:hidden;font-size:12px}
+.fp .fph{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #E3E4E7;font-weight:700;font-size:13px}
+.fp .fpb{display:grid;grid-template-columns:140px 1fr;min-height:220px}
+.fp .side{background:#F6F6F7;padding:10px;color:#3B3D4A;line-height:2}
+.fp .files{padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;align-content:start}
+.fp .fl{border:1px solid transparent;border-radius:4px;background:none;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;font:inherit;font-size:10.5px;cursor:pointer;word-break:break-all;text-align:center}
+.fp .fl:hover{background:#F4F4F5}
+.fp .fl.sel{background:#E6F0FB;border-color:#7AA7E0}
+.fp .fl .th{width:96px;height:46px;border:1px solid #E3E4E7;display:grid;place-items:center;background:#fff;overflow:hidden}
+.fp .fpf{display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid #E3E4E7;background:#FAFAFA}
+.fp .fpf button{height:30px;border-radius:4px;border:1px solid #B9BBC2;background:#fff;padding:0 16px;font-size:12px}
+.fp .fpf .op{background:#2D6BD9;border-color:#2D6BD9;color:#fff}
+.fp .fpf .op:disabled{background:#B9C9E8;border-color:#B9C9E8}
+.hlogo{display:inline-flex;border-radius:3px;overflow:hidden;line-height:0}
+.logo.logoflash .hlogo{animation:logoflash 1.6s ease-out 2}
+@keyframes logoflash{0%{box-shadow:0 0 0 0 #F0A93C}40%{box-shadow:0 0 0 5px #F0A93Caa}100%{box-shadow:0 0 0 0 #F0A93C00}}
+@media (prefers-reduced-motion:reduce){.logo.logoflash .hlogo{animation:none}}
+
+.irf{max-width:660px;padding:18px 56px 300px}
+.irs{padding:4px 0 18px;border-bottom:1px solid #DADBDF;margin-bottom:16px}
+.irs h2{font-size:13.5px;font-weight:700;margin:0 0 4px}
+.irs p{font-size:12px;margin:0 0 12px;color:#3B3D4A}
+.irrow{display:grid;grid-template-columns:1fr 1.5fr;gap:10px}
+.irf input[type=text],.irf select{width:100%;height:34px;border:1px solid #9a9ca5;border-radius:3px;padding:0 10px;font:inherit;font-size:12.5px;background:#fff}
+.irf input[type=text]:focus,.irf select:focus{outline:2px solid #F0A93C;outline-offset:-1px}
+.ck2{display:inline-flex;align-items:center;gap:6px;font-size:11px;margin-right:12px;cursor:pointer}
+.ck2 input{width:18px;height:18px;accent-color:#2D2E3F}
+.ck2.hint{border-radius:6px;padding:4px 8px 4px 4px;margin-left:-4px}
+.rtype{font-size:12px;font-weight:700;margin:0 0 6px}
+.rems{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.fld2{position:relative}
+.fld2 label{position:absolute;left:8px;top:-7px;background:#FAFAFA;padding:0 4px;font-size:9.5px;color:#55586a}
+.irsave{display:flex;justify-content:flex-end}
+.irsave button{height:36px;border:0;border-radius:999px;background:var(--nav);color:#fff;padding:0 22px;font-weight:600;font-size:12.5px}
+.irsave button:disabled{background:#ECEDEF;color:#BFC1C7}
+.err4{color:#D9483B;font-size:11px;margin-top:4px}
+.irdveil{position:fixed;inset:0;background:#0000004d;z-index:58;display:none;align-items:center;justify-content:center;padding:16px}
+.irdveil.show{display:flex}
+.irdlg{background:#fff;border-radius:4px;width:min(292px,100%);box-shadow:0 11px 15px -7px #0003,0 24px 38px 3px #00000024}
+.irdlg .h{display:flex;justify-content:flex-end;padding:12px 16px 10px;border-bottom:1px solid #ECEDEF}
+.irdlg .b{display:flex;align-items:center;gap:14px;padding:18px 22px 46px;font-weight:700;font-size:12px}
+.irdlg .i{width:26px;height:26px;border-radius:50%;background:#3B7DDD;color:#fff;display:grid;place-items:center;font:700 14px/1 Georgia,serif;flex:none}
+.irdlg .x{width:28px;height:28px;border-radius:50%;border:0;background:var(--nav);color:var(--gold);font-size:13px;display:grid;place-items:center}
+
+.monsum{display:flex;align-items:center;gap:10px;font-size:12px;margin-top:14px}
+.monsum i{width:22px;height:22px;border-radius:50%;background:#1EC28B;display:grid;place-items:center;flex:none}
+.monrow{display:grid;grid-template-columns:1fr 1.5fr;gap:10px;margin-top:12px}
+.monrow.one{grid-template-columns:1fr}
+
+.dnote{background:#ECECEE;border-radius:3px;padding:9px 12px;margin:8px 0 10px;font-size:11.5px}
+.dnote b{display:block;font-size:12px;margin-bottom:2px}
+.dsec h2{font-size:13.5px;font-weight:700;margin:0 0 4px}
+.dsec p{font-size:12px;margin:0;color:#3B3D4A}
+.drow{display:grid;grid-template-columns:1fr 1.5fr;gap:10px;margin-top:10px}
+.drow input.bad{border-color:#D9483B}
+
+.idrl{display:flex;flex-direction:column;gap:12px;margin-top:10px}
+.idrl .ck2{font-size:12px;gap:10px}
+.idrl .ck2 input{width:22px;height:22px}
+
+.amenu2{position:fixed;background:#fff;border-radius:4px;box-shadow:0 5px 5px -3px #0003,0 8px 10px 1px #00000024;z-index:60;display:none;padding:6px 0;min-width:170px}
+.amenu2.show{display:block}
+.amenu2 button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 16px;font-size:12.5px;color:#1E1F2B}
+.amenu2 button:hover{background:#0000000a}
+#admView{flex:1;overflow:auto;background:#fff}
+#admView[hidden]{display:none}
+.abar{display:flex;gap:10px;align-items:center;padding:14px 18px 10px}
+.abar .search{flex:1}
+.atbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.atbl th{font-weight:500;color:#55586a;text-align:left;padding:10px 12px;border-bottom:1px solid #E3E4E7;font-size:11px}
+.atbl td{padding:13px 12px;border-bottom:1px solid #EEEFF1}
+.atbl td.c,.atbl th.c{text-align:center}
+.atbl tr.newrow td{background:#FFF3DE;animation:newrow 2.4s ease-out}
+@keyframes newrow{0%{background:#F8D79A}100%{background:#FFF3DE}}
+.tk3{color:#1EC28B;font-size:14px}.cr3{color:#E0474C;font-size:13px}
+.aumod{background:#fff;border-radius:10px;width:min(500px,100%);max-height:calc(100vh - 30px);display:flex;flex-direction:column;box-shadow:0 11px 15px -7px #0003,0 24px 38px 3px #00000024}
+.aumod h2{margin:0;padding:18px 20px 12px;font-size:17px;font-weight:700;box-shadow:0 2px 4px #0000000f}
+.aumod .b{padding:14px 20px;overflow:auto}
+.aumod label.f{display:block;font-size:11px;font-weight:700;margin:12px 0 5px}
+.aumod input[type=text]{width:100%;height:32px;border:1px solid #9a9ca5;border-radius:3px;padding:0 10px;font:inherit;font-size:12.5px}
+.aumod input[type=text]:focus{outline:2px solid #F0A93C;outline-offset:-1px}
+.msel{position:relative}
+.msel>button{width:100%;min-height:32px;border:1px solid #9a9ca5;border-radius:3px;background:#fff;text-align:left;padding:4px 30px 4px 10px;font:inherit;font-size:12px;position:relative}
+.msel>button:after{content:"";position:absolute;right:12px;top:50%;border:5px solid transparent;border-top-color:#55586a;margin-top:-2px}
+.msel>button:disabled{background:#F4F4F5;color:#9A9CA6}
+.msel .opts{position:absolute;left:0;right:0;top:100%;background:#fff;box-shadow:0 6px 16px #0003;border-radius:3px;z-index:20;max-height:200px;overflow:auto;padding:4px 0}
+.msel .opts label{display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:12px;cursor:pointer}
+.msel .opts label:hover{background:#F4F4F5}
+.msel .opts input{width:15px;height:15px;accent-color:#2D2E3F}
+.augsw{display:flex;justify-content:flex-end;margin-top:8px}
+.aumod .ck2{display:flex;margin:10px 0 0}
+.aumod .ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;background:#FAFAFA;border-radius:0 0 10px 10px}
+.aumod .ft button{height:32px;border-radius:999px;border:0;padding:0 18px;font-weight:600;font-size:12px}
+.aumod .ft .c1{background:#ECEDEF}.aumod .ft .c2{background:var(--nav);color:#fff}.aumod .ft .c2:disabled{background:#ECEDEF;color:#BFC1C7}
+.auveil{position:fixed;inset:0;background:#0000004d;z-index:57;display:none;align-items:center;justify-content:center;padding:16px}
+.auveil.show{display:flex}
+.fsw{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.fsw i{width:30px;height:16px;border-radius:999px;background:#C9CBD1;position:relative;transition:background .2s;flex:none}
+.fsw i:after{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #0003;transition:left .2s}
+.fsw.on i{background:#1EC28B}.fsw.on i:after{left:16px}
+.fsw:focus-visible{outline:2px solid #F0A93C;outline-offset:2px;border-radius:4px}
+
+.atw{padding:0 18px 280px}
+.pager{display:flex;justify-content:flex-end;gap:16px;font-size:11px;color:#55586a;padding:12px 4px}
+.lnk{border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left}
+.lnk:hover{text-decoration:underline}
+.atbl tr.click:hover td{background:#F7F7F8}
+.ugpage{padding:14px 18px 300px}
+.ugback{border:0;background:none;display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0 12px;color:#2D2E3F;cursor:pointer}
+.ugcard{background:#fff;border-radius:4px;box-shadow:0 1px 4px #0000001f;overflow:hidden}
+.ugtabs{display:flex;align-items:center;background:#2D2E3F}
+.ugtabs button{border:0;background:none;color:#fff;font:600 12px Inter,sans-serif;padding:11px 22px 9px;border-bottom:3px solid transparent;cursor:pointer}
+.ugtabs button.on{border-bottom-color:var(--gold)}
+.ugtabs .ugname{margin-left:auto;padding-right:16px;color:#B9BBC8;font-size:11.5px}
+.ugpad{padding:16px 18px 20px}
+.f2{display:block;font-size:11px;font-weight:700;margin:0 0 5px}
+.ugadd{display:flex;gap:10px;align-items:flex-start;margin-bottom:16px}
+.ugadd .msel{flex:1}
+.mselb{width:100%;min-height:32px;border:1px solid #9a9ca5;border-radius:3px;background:#fff;text-align:left;padding:4px 30px 4px 10px;font:inherit;font-size:12px;position:relative;cursor:pointer}
+.ugbtn{height:32px;border:0;border-radius:999px;background:var(--nav);color:#fff;padding:0 18px;font-weight:600;font-size:12px;cursor:pointer}
+.ugbtn:disabled{background:#ECEDEF;color:#BFC1C7;cursor:default}
+.ugt th{font-size:10.5px}
+.ibin{border:0;background:none;cursor:pointer;padding:4px}
+.emptyr{color:#8A8C99;font-size:12px;text-align:center;padding:18px}
+.uinfo input[type=text],.uinfo select{width:100%;height:32px;border:1px solid #9a9ca5;border-radius:3px;padding:0 10px;font:inherit;font-size:12.5px;background:#fff;margin-bottom:10px}
+.uinfo .mob{display:grid;grid-template-columns:160px 1fr;gap:10px}
+.uft{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+.uft button{height:32px;border-radius:999px;border:0;padding:0 18px;font-weight:600;font-size:12px}
+.uft .c1{background:#ECEDEF}.uft .c2{background:#ECEDEF;color:#BFC1C7}
+.bigck{font-size:12.5px!important;gap:10px!important}
+.bigck input{width:22px;height:22px}
+.ptree{margin-top:12px}
+.pgrp{border-top:1px solid #E3E4E7;padding:6px 0}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;padding:4px 0}
+.prow.d1{padding-left:18px}.prow.d2{padding-left:36px}
+.prow.ptop .pck span{font-weight:600}
+.pck{display:flex;align-items:center;gap:10px;font-size:12px;cursor:pointer;width:max-content;border-radius:4px;padding:2px 6px 2px 2px}
+.pck input{width:20px;height:20px;accent-color:#2D2E3F;flex:none}
+.pdesc{font-size:11.5px;color:#3B3D4A}
+/* dropdown */
+.drop{position:absolute;top:34px;left:0;background:#fff;border-radius:4px;box-shadow:0 2px 4px -1px #0003,0 4px 5px #00000024,0 1px 10px #0000001f;z-index:40;padding:6px 6px 8px;display:none;min-width:100%}
+.drop.show{display:block}
+.drop label{display:flex;align-items:center;gap:7px;padding:2px 2px;font-size:10.5px;white-space:nowrap;cursor:pointer;min-height:19px}
+.drop .apply{display:block;width:100%;margin-top:6px;height:24px;border:0;border-radius:999px;background:var(--nav);color:#fff;font-weight:600;font-size:11px;min-width:88px}
+.drop .empty{font-size:10.5px;color:var(--muted);padding:2px 2px 0}
+.cb{appearance:none;-webkit-appearance:none;width:13px;height:13px;border:1.5px solid #1E1F2B;border-radius:2px;margin:0;flex:none;display:grid;place-items:center;cursor:pointer;background:#fff}
+.cb:checked{background:#1E1F2B}
+.cb:checked::after{content:"";width:7px;height:4px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.cb.lg{width:20px;height:20px;border-width:1.5px;border-color:#55586a;border-radius:3px}
+.cb.lg:checked::after{width:10px;height:5px}
+
+/* table */
+.tablewrap{flex:1;margin:0 18px 0 48px;overflow:auto;position:relative;border-right:8px solid #2D2E3F;border-right-color:transparent}
+table{border-collapse:collapse;width:100%;min-width:1380px;font-size:10.5px}
+thead th{position:sticky;top:0;background:#fff;color:#6E717E;font-weight:500;text-align:left;padding:7px 10px;border-bottom:1px solid #D9DADF;white-space:nowrap;z-index:2}
+th.c,td.c{text-align:center}
+tbody tr:nth-child(even){background:var(--stripe)}
+tbody td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle;height:34px}
+td.div,th.div{border-right:1px solid #D9DADF}
+.pill{display:inline-block;border-radius:999px;padding:2px 7px;font-weight:600;font-size:9.5px;white-space:nowrap}
+.p-dark{background:#2D2E3F;color:#fff}.p-green{background:var(--green);color:#fff}.p-red{background:var(--red);color:#fff}
+.p-grey{background:#E7E8EA;color:#3B3D4A}.p-out{background:#fff;color:#3B3D4A;box-shadow:inset 0 0 0 1px #C6C8CE}
+.reg{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.live{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.dot{width:11px;height:11px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ref{max-width:140px;word-break:break-all}
+.em{max-width:170px;word-break:break-all}
+.kebab{border:0;background:none;padding:4px 8px}
+.emptyrow td{height:160px;text-align:center;color:var(--muted);font-size:12px;background:#fff}
+
+.foot{display:flex;justify-content:flex-end;align-items:center;gap:22px;padding:10px 60px 12px;font-size:11.5px;flex:none}
+.foot .sel{border:1px solid #9a9ca5;border-radius:2px;padding:2px 6px;width:58px;display:flex;justify-content:space-between}
+.foot .nav{display:flex;gap:18px;color:#B7B9C0}
+.foot .nav .on{color:var(--ink)}
+
+/* drawer */
+.dveil{position:fixed;inset:0;background:#0000;z-index:50;display:none}
+.dveil.show{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(370px,100vw);background:#fff;box-shadow:-4px 0 16px #00000026;z-index:51;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.show{transform:none}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 16px 22px;box-shadow:0 2px 4px #0000000f;flex:none}
+.dh h2{margin:0;font-size:16px;font-weight:700}
+.dclose{width:26px;height:26px;border-radius:50%;border:0;background:var(--nav);color:var(--gold);font-size:14px;display:grid;place-items:center}
+.dbody{flex:1;overflow:auto;padding:4px 22px 10px;scrollbar-width:thin;scrollbar-color:#2D2E3F transparent}
+.sec{border-bottom:1px solid #DADBDF;margin-top:14px}
+.sec>button{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;background:none;padding:6px 0 9px;font-size:12px;font-weight:500;text-align:left}
+.sec>button span:last-child{font-size:16px;line-height:1;color:#555}
+.sec .items{border-top:1px solid #DADBDF;margin-bottom:0}
+.sec.closed .items{display:none}
+.sec .row{display:flex;align-items:center;gap:10px;padding:13px 2px;border-bottom:1px solid #ECECEF;font-size:12px;cursor:pointer}
+.sec .row:last-child{border-bottom:0}
+.dates{display:flex;gap:16px;padding:14px 0 18px}
+.dates label{font-weight:700;font-size:10.5px;display:block;margin-bottom:5px}
+.dates input{width:100%;height:32px;border:1px solid #9a9ca5;border-radius:3px;padding:0 8px;font-size:11px;background:#fff}
+.dates>div{flex:1}
+.dwrap{position:relative}
+.dates .dtext{padding-right:32px}
+.dates .dtext.bad{border-color:var(--red)}
+.cal{position:absolute;right:4px;top:4px;width:24px;height:24px;border:0;background:none;display:grid;place-items:center;padding:0}
+.calpop{position:absolute;top:36px;left:0;z-index:5;width:262px;background:#fff;border-radius:4px;box-shadow:0 2px 4px -1px #0003,0 4px 5px #00000024,0 1px 10px #0000001f;padding:8px 8px 10px}
+.calpop.right{left:auto;right:0}
+.chead{display:flex;justify-content:space-between;align-items:center;padding:2px 0 8px 4px}
+.cper{border:0;background:none;font-weight:600;font-size:12px;display:flex;gap:6px;align-items:center;padding:6px 6px;border-radius:4px}
+.cper:hover,.cnav:hover{background:#0000000a}
+.cnav{border:0;background:none;width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.cgrid b{font-size:10px;color:#6E717E;font-weight:500;padding:4px 0 6px}
+.cd{border:0;background:none;height:32px;border-radius:50%;font-size:11.5px;padding:0}
+.cd:hover{background:#ECEDEF}
+.cd.today{box-shadow:inset 0 0 0 1px #8A8D97}
+.cd.inr{background:#F6E3C2;border-radius:0}
+.cd.edge{background:#F0A93C;color:#1E1F2B;font-weight:600}
+.cd.sel{background:#2D2E3F;color:#fff}
+.cgrid.m{grid-template-columns:repeat(4,1fr);gap:6px}
+.cm{border:0;background:none;height:40px;border-radius:999px;font-size:12px}
+.cm:hover{background:#ECEDEF}.cm.sel{background:#2D2E3F;color:#fff}
+.dpick{position:absolute;right:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
+.dfoot{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;background:#F7F7F8;flex:none}
+.pbtn{border:0;border-radius:999px;height:31px;padding:0 18px;font-weight:600;font-size:12px;background:#E7E8EA}
+.pbtn.dark{background:var(--nav);color:#fff;padding:0 46px}
+
+/* coach */
+.coach{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:300px;max-height:calc(100vh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden;background:#fff;border-radius:10px;box-shadow:0 8px 28px #0000003a;z-index:60;border-top:4px solid var(--gold)}
+.coach .ch{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 0}
+.coach .count{font-weight:700;color:var(--gold-d);font-size:12px}
+.coach .ch button{border:0;background:none;color:var(--muted);font-size:12px}
+.coach .cbd{padding:4px 12px 12px}
+.coach .task{font-weight:700;font-size:14px;margin:2px 0 3px}
+.coach .desc{color:var(--muted);font-size:12px;margin:0 0 10px}
+.coach .desc b{color:var(--ink);font-weight:700}
+.coach .bar2{height:4px;background:#EEE;border-radius:4px;overflow:hidden;margin-bottom:10px}
+.coach .bar2 i{display:block;height:100%;background:var(--green);width:0;transition:width .3s}
+.coach .rw{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.coach .rw label{display:flex;gap:6px;align-items:center}
+.coach .rw button{border:0;background:#EAEBED;border-radius:999px;padding:6px 12px;font-weight:600;color:var(--ink)}
+.copyrow{display:none;align-items:center;gap:8px;margin:-2px 0 10px}
+.copyrow.show{display:flex}
+.copyrow code{flex:1 1 auto;min-width:0;background:#F3F3F5;border:1px solid #E1E2E5;border-radius:6px;padding:6px 8px;font:500 12px/1.2 Inter,sans-serif;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copyrow button{flex:none;border:0;border-radius:999px;background:var(--nav);color:#fff;font-weight:600;font-size:11.5px;padding:7px 12px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.copyrow button.done{background:var(--green)}
+.stoggle{display:flex;align-items:center;gap:6px;border:0;background:none;padding:0;margin:-2px 0 10px;color:var(--gold-d);font-weight:600;font-size:12px}
+.stoggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.slist{list-style:none;margin:-4px 0 12px;padding:0 4px 0 0;max-height:min(300px,45vh);overflow:auto;scrollbar-width:thin}
+.slist .g{font-size:10.5px;font-weight:700;color:var(--muted);margin:8px 0 4px}
+.slist .g:first-child{margin-top:0}
+.slist .it{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:#9A9CA6}
+.slist .it i{width:16px;height:16px;border-radius:50%;flex:none;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px #CFD1D6;font-style:normal}
+.slist .it.isdone{color:var(--muted)}
+.slist .it.isdone i{background:var(--green);box-shadow:none}
+.slist .it.now{color:var(--ink);font-weight:700}
+.slist .it.now i{box-shadow:inset 0 0 0 5px var(--gold)}
+
+/* introduction */
+.introVeil{position:fixed;inset:0;background:#1E1F2B99;display:none;align-items:center;justify-content:center;padding:16px;z-index:75}
+.introVeil.show{display:flex}
+.intro{background:#fff;border-radius:12px;width:min(620px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;box-shadow:0 24px 48px #0000004d;border-top:5px solid var(--gold);overflow:hidden}
+.intro .ib{overflow:auto;padding:26px 30px 8px}
+.intro .kicker{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-d);margin:0 0 6px}
+.intro h2{margin:0 0 4px;font-size:22px;line-height:1.25}
+.intro .meta{color:var(--muted);font-size:12px;margin:0 0 16px}
+.intro p{font-size:13px;line-height:1.55;margin:0 0 12px;color:#3B3D4A}
+.intro h3{font-size:13px;margin:18px 0 8px}
+.intro .groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.intro .grp{background:#F6F6F7;border-radius:8px;padding:12px 14px}
+.intro .grp b{display:block;font-size:12px;margin-bottom:6px}
+.intro .grp ol{margin:0;padding-left:18px;font-size:11.5px;color:#4A4C58;line-height:1.55}
+.intro .tips{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.intro .tips li{display:flex;gap:10px;font-size:12.5px;line-height:1.5;color:#3B3D4A}
+.intro .tips i{flex:none;width:22px;height:22px;border-radius:50%;background:#FDF0DA;display:grid;place-items:center;font-style:normal;font-size:12px}
+.intro .if{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:14px 30px 20px;border-top:1px solid #EEEFF1;margin-top:14px}
+.intro .if .hublink{margin-right:auto;color:var(--muted);font-weight:600;font-size:12.5px;text-decoration:none}
+.intro .if .hublink:hover{color:var(--ink);text-decoration:underline}
+.hubbtn{display:inline-block;margin-top:18px;border-radius:999px;background:#EAEBED;color:var(--ink);font-weight:600;font-size:12.5px;padding:9px 18px;text-decoration:none}
+.hubbtn:hover{background:#DDDEE1}
+.listen{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--nav);background:#fff;color:var(--nav);border-radius:999px;height:36px;padding:0 16px 0 12px;font-weight:600;font-size:12.5px;cursor:pointer}
+.listen[hidden]{display:none}
+.listen:hover{background:#F3F3F5}
+.listen .lic{width:18px;height:18px;border-radius:50%;background:var(--nav);position:relative;flex:none}
+.listen .lic::after{content:"";position:absolute;left:7px;top:5px;border-left:6px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent}
+.listen.playing .lic::after{left:6px;top:5px;width:2px;height:8px;border:0;background:#fff;box-shadow:4px 0 0 #fff}
+.listen.playing{background:var(--gold-l,#FCEBD0);border-color:var(--gold-d)}
+.intro .if .pbtn.dark{padding:0 26px;height:36px;font-size:13px}
+.coach .ch span button{border:0;background:none;color:var(--muted);font-size:12px;margin-left:10px}
+.coach{transition:transform .35s ease,box-shadow .35s ease}
+.coach.spot{z-index:80;transform:scale(1.04);transform-origin:left bottom;box-shadow:0 0 0 4px var(--gold),0 18px 44px #00000066}
+@media (prefers-reduced-motion:reduce){.coach{transition:none}.coach.spot{transform:none}}
+.coach.min .cbd{display:none}
+.coach.min{width:auto}
+.hint{animation:pulse 1.3s ease-in-out infinite;position:relative;z-index:5}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #F0A93CCC}50%{box-shadow:0 0 0 6px #F0A93C40}}
+.cal.hint{position:absolute;border-radius:4px}
+@media (prefers-reduced-motion:reduce){.hint{animation:none;box-shadow:0 0 0 3px var(--gold)}}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#2D2E3F;color:#fff;padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:80;max-width:90vw;text-align:center;font-size:12.5px}
+.toast.show{opacity:1}
+
+/* completion popup */
+.doneVeil{position:fixed;inset:0;background:#1E1F2B8C;display:none;align-items:center;justify-content:center;padding:16px;z-index:70}
+.doneVeil.show{display:flex}
+.done{background:#fff;border-radius:10px;width:min(540px,100%);max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 24px 48px #0000004d;border-top:5px solid var(--gold);text-align:center;padding:28px 28px 22px}
+.done .tick{width:52px;height:52px;border-radius:50%;background:var(--green);display:grid;place-items:center;margin:0 auto 12px}
+.done h2{margin:0 0 6px;font-size:20px}
+.done p{margin:0 auto 18px;color:var(--muted);max-width:44ch;font-size:13px}
+.done h3{text-align:left;font-size:12px;margin:14px 0 8px;color:var(--muted);font-weight:600}
+.exlist{display:flex;flex-direction:column;gap:8px;text-align:left}
+.ex{display:flex;align-items:center;gap:10px;border:1px solid #E1E2E5;border-radius:8px;padding:11px 14px;background:#fff}
+.ex .n{flex:1}.ex .n b{display:block;font-size:13px}.ex .n small{color:var(--muted);font-size:11.5px}
+.ex .tag{font-size:11px;font-weight:600;border-radius:999px;padding:4px 10px;white-space:nowrap}
+.ex .tag.ok{background:#E3F7EF;color:#12825C}.ex .tag.soon{background:#EFEFF1;color:var(--muted)}
+.ex[aria-disabled="true"]{opacity:.65}
+.ex .mini{border:0;border-radius:999px;background:#2D2E3F;color:#fff;font:600 11px/1 Inter,sans-serif;padding:7px 12px;white-space:nowrap;text-decoration:none}
+.ex .mini.lt{background:#EAEBED;color:var(--ink)}
+</style>
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
+<script>
+/* Keep an Azure SAS token (or any query string) on links between pages */
+(function(){var q=location.search;if(!q||q.length<2)return;
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href");
+ if(!h||/^(https?:|mailto:|#|javascript:)/i.test(h)||!/\.html(#|$)/i.test(h))return;
+ var i=h.indexOf("#"),base=i<0?h:h.slice(0,i),hash=i<0?"":h.slice(i);if(base.indexOf("?")>=0)return;
+ e.preventDefault();var url=base+q+hash;if(a.target==="_blank")window.open(url,"_blank");else location.href=url;},true);})();
+</script>
+</head>
+<body>
+<div class="shell">
+<header class="top">
+  <div class="logo"><svg viewBox="0 0 148.15 60" height="31" width="77" role="img" aria-label="Credas" xmlns="http://www.w3.org/2000/svg"> <path fill="#f9ba2c" d="M30.29,56.16c-4.83,0-9.55-1.35-13.62-3.91-.38-.24-.5-.75-.25-1.13.24-.38.75-.49,1.13-.25,3.81,2.39,8.22,3.66,12.75,3.66,1.96,0,3.91-.24,5.79-.71.44-.11.88.16.99.6.11.44-.16.88-.6.99-2.01.5-4.09.75-6.19.75"/> <path fill="#f9ba2c" d="M13.18,49.33c-.2,0-.41-.07-.56-.23-1.11-1.05-2.12-2.21-3.03-3.44-.27-.36-.19-.87.17-1.14.37-.27.87-.19,1.14.17.85,1.15,1.8,2.24,2.83,3.23.33.31.34.83.03,1.15-.16.17-.38.25-.59.25"/> <path fill="#f9ba2c" d="M7.52,41.22c-.31,0-.61-.18-.75-.49-1.4-3.23-2.11-6.66-2.11-10.2,0-6.46,2.41-12.63,6.79-17.38,4.35-4.71,10.25-7.62,16.62-8.17.45-.03.85.29.89.74s-.29.85-.74.89C15.91,7.67,6.29,18.17,6.29,30.52c0,3.32.67,6.53,1.97,9.55.18.41,0,.89-.43,1.07-.11.05-.21.07-.33.07"/> <path fill="#f9ba2c" d="M46.94,12.94c-.19,0-.39-.07-.55-.21-4.05-3.67-9.26-5.85-14.7-6.17-.45-.03-.79-.41-.77-.87.03-.45.41-.79.87-.77,5.81.33,11.38,2.67,15.7,6.59.33.31.36.82.05,1.15-.16.18-.39.27-.61.27"/> <path fill="#f9ba2c" d="M40.71,53.87c-.31,0-.6-.17-.74-.47-.19-.41-.01-.89.39-1.08,2.27-1.06,4.35-2.45,6.19-4.15l-3.6-3.6c-.32-.32-.32-.83,0-1.15s.83-.32,1.15,0l4.19,4.19c.15.15.24.36.24.58s-.09.43-.24.58c-2.12,2.09-4.56,3.79-7.25,5.04-.11.05-.23.08-.35.08"/> <path fill="#f9ba2c" d="M30.29,44.25c-7.57,0-13.73-6.15-13.73-13.72s6.15-13.73,13.73-13.73c3.71,0,7.19,1.46,9.79,4.11.31.32.31.84,0,1.15s-.84.31-1.15,0c-2.29-2.33-5.36-3.63-8.63-3.63-6.67,0-12.09,5.42-12.09,12.09s5.42,12.09,12.09,12.09c.57,0,1.15-.04,1.71-.12.45-.06.86.25.92.69s-.25.86-.69.93c-.64.09-1.29.13-1.94.13"/> <path fill="#f9ba2c" d="M36.1,42.86c-.3,0-.59-.17-.73-.45-.21-.4-.04-.89.36-1.1,1.11-.56,2.12-1.28,3.01-2.15.32-.31.84-.31,1.15.01s.31.84-.01,1.15c-1.01.99-2.15,1.81-3.41,2.44-.12.06-.25.09-.37.09"/> <path fill="#f9ba2c" d="M18.76,20.4c-.2,0-.41-.07-.56-.23-.33-.31-.34-.83-.03-1.15,1.14-1.2,2.45-2.22,3.87-3.03.39-.22.89-.08,1.11.31.22.39.09.89-.31,1.11-1.29.73-2.47,1.65-3.49,2.74-.16.17-.38.25-.59.25"/> <path fill="#f9ba2c" d="M41.61,20.19c-.21,0-.42-.08-.58-.25-2.85-2.9-6.67-4.49-10.73-4.49-.98,0-1.97.09-2.92.29-.44.09-.87-.2-.96-.65-.09-.44.2-.87.65-.96,1.06-.21,2.15-.31,3.24-.31,4.51,0,8.73,1.77,11.9,4.98.31.32.31.84,0,1.15-.16.16-.37.23-.57.23"/> <path fill="#f9ba2c" d="M30.29,47.23c-.45,0-.82-.37-.82-.82s.37-.82.82-.82c3.97,0,7.72-1.53,10.55-4.31.32-.31.84-.31,1.15,0s.31.84,0,1.15c-3.14,3.09-7.29,4.78-11.7,4.78"/> <path fill="#f9ba2c" d="M25.3,46.43c-.08,0-.17-.01-.25-.04-1.49-.49-2.91-1.2-4.22-2.1-.37-.25-.47-.77-.21-1.14.25-.37.77-.47,1.14-.21,1.17.81,2.45,1.45,3.8,1.89.43.14.66.6.52,1.03-.11.35-.43.56-.78.56"/> <path fill="#f9ba2c" d="M17.8,41.16c-.24,0-.48-.11-.65-.31-2.34-2.97-3.57-6.54-3.57-10.33,0-2.69.65-5.37,1.9-7.74.21-.4.7-.55,1.1-.35s.55.7.35,1.1c-1.12,2.14-1.71,4.55-1.71,6.98,0,3.41,1.11,6.63,3.22,9.31.28.35.22.87-.13,1.15-.15.12-.33.17-.51.17"/> <path fill="#f9ba2c" d="M12.2,36.7c-.35,0-.68-.23-.79-.59-.53-1.81-.81-3.69-.81-5.59,0-3.24.81-6.46,2.33-9.3.21-.39.71-.55,1.11-.33s.55.71.33,1.11c-1.39,2.6-2.13,5.55-2.13,8.52,0,1.74.25,3.47.74,5.13.13.43-.12.89-.55,1.01-.08.02-.15.03-.23.03"/> <path fill="#f9ba2c" d="M16.45,18.51c-.2,0-.4-.07-.55-.21-.33-.31-.35-.83-.04-1.15,3.71-4.01,8.97-6.3,14.44-6.3s10.27,2.08,14.01,5.85c.32.32.31.84,0,1.15-.32.32-.84.31-1.15,0-3.42-3.46-7.97-5.37-12.84-5.37s-9.83,2.11-13.24,5.77c-.16.17-.38.26-.6.26"/> <path fill="#f9ba2c" d="M30.29,50.21c-7.33,0-14-4.03-17.42-10.51-.21-.4-.06-.89.34-1.11s.89-.06,1.11.34c3.13,5.95,9.25,9.64,15.98,9.64,4.77,0,9.26-1.84,12.66-5.19.32-.31.84-.31,1.15,0s.31.84,0,1.15c-3.71,3.65-8.61,5.65-13.8,5.65"/> <path fill="#f9ba2c" d="M30.29,53.18c-4.3,0-8.49-1.21-12.11-3.5-.38-.24-.49-.75-.25-1.13s.75-.49,1.13-.25c3.36,2.13,7.24,3.25,11.23,3.25,1.67,0,3.33-.19,4.94-.58.44-.11.88.17.99.6.11.44-.17.88-.6.99-1.73.42-3.52.63-5.32.63"/> <path fill="#f9ba2c" d="M15.13,47.07c-.21,0-.41-.08-.57-.23-4.47-4.31-6.93-10.11-6.93-16.31,0-3.97,1.04-7.87,3.01-11.29.23-.39.73-.53,1.12-.3.39.23.53.73.3,1.12-1.83,3.17-2.79,6.79-2.79,10.47,0,5.76,2.29,11.13,6.43,15.14.33.31.33.83.02,1.15-.16.17-.37.25-.59.25"/> <path fill="#f9ba2c" d="M14.14,16.63c-.2,0-.39-.07-.55-.21-.33-.31-.35-.82-.05-1.15,4.29-4.71,10.39-7.41,16.76-7.41,1.65,0,3.29.18,4.88.53.44.09.72.53.62.97-.09.44-.53.72-.97.62-1.48-.33-3-.49-4.53-.49-5.9,0-11.57,2.5-15.54,6.87-.16.17-.39.27-.61.27"/> <path fill="#f9ba2c" d="M44.83,15.04c-.19,0-.39-.07-.55-.21-1.59-1.42-3.38-2.59-5.32-3.47-.41-.19-.59-.67-.41-1.09s.67-.59,1.09-.41c2.09.95,4.01,2.21,5.73,3.74.34.3.37.82.07,1.15-.16.18-.39.27-.61.27"/> <path fill="#f9ba2c" d="M39.41,51.19c-.31,0-.6-.17-.74-.48-.19-.41,0-.89.4-1.09,1.39-.64,2.71-1.44,3.94-2.37.36-.27.87-.21,1.15.15.27.36.21.87-.15,1.15-1.32,1.01-2.75,1.86-4.25,2.55-.11.05-.23.07-.34.07"/> <path fill="#f9ba2c" d="M22.7,58.09c-.07,0-.15,0-.22-.03C10.22,54.59,1.67,43.26,1.67,30.52c0-3.14.51-6.23,1.5-9.17.15-.43.61-.65,1.04-.51.43.15.65.61.51,1.04-.94,2.78-1.42,5.69-1.42,8.65,0,12.02,8.07,22.7,19.61,25.96.43.13.69.57.56,1.01-.1.36-.43.59-.79.59"/> <path fill="#f9ba2c" d="M5.69,18.38c-.13,0-.26-.03-.38-.09-.4-.21-.55-.71-.34-1.11C9.94,7.76,19.64,1.91,30.29,1.91c4.09,0,8.05.85,11.76,2.52.41.19.59.67.41,1.08s-.67.59-1.08.41c-3.49-1.58-7.22-2.37-11.08-2.37-10.03,0-19.18,5.52-23.88,14.4-.15.28-.43.44-.73.44"/> <path fill="#f9ba2c" d="M50.03,11.77c-.21,0-.42-.08-.58-.24-.97-.97-2.01-1.87-3.11-2.69-.36-.27-.44-.78-.17-1.14s.78-.44,1.14-.17c1.17.87,2.27,1.83,3.29,2.85.32.32.31.84,0,1.15-.16.16-.37.23-.57.23"/> <path fill="#f9ba2c" d="M30.29,59.14c-1.19,0-2.38-.07-3.54-.21-.45-.05-.77-.47-.71-.91.05-.45.47-.77.91-.71,1.09.13,2.22.21,3.34.21,7.15,0,13.89-2.77,18.98-7.8.32-.31.84-.31,1.15,0s.31.84,0,1.15c-5.39,5.33-12.54,8.27-20.12,8.27"/> <path fill="#f9ba2c" d="M40.25,53.93c-.25,0-.5-.04-.74-.13-.58-.2-1.05-.61-1.33-1.16-.56-1.14-.09-2.53,1.05-3.09l.73,1.47c-.33.17-.47.56-.31.89.08.16.21.28.39.33.17.06.35.05.51-.03l.73,1.47c-.32.16-.67.24-1.01.24"/> <path fill="#f9ba2c" d="M14.06,49.57c-.65,0-1.31-.27-1.75-.81l1.25-1.06c.24.28.66.31.94.08.28-.24.31-.66.08-.94l1.25-1.06c.82.97.7,2.43-.27,3.25-.43.37-.96.55-1.49.55"/> <path fill="#f9ba2c" d="M45.86,15.47c-.59,0-1.14-.22-1.57-.62l1.12-1.19c.13.12.3.18.48.18s.35-.08.47-.21c.12-.13.19-.3.18-.48,0-.18-.08-.35-.21-.47l1.11-1.19c.45.42.71.99.73,1.61.02.61-.2,1.2-.62,1.65s-.99.71-1.61.73h-.08"/> <path fill="#f9ba2c" d="M15.41,18.92c-.52,0-1.02-.17-1.43-.51-.48-.39-.79-.93-.85-1.54s.11-1.21.49-1.69l1.27,1.02c-.11.14-.16.31-.14.49s.11.34.25.45c.14.11.31.16.49.14.17-.02.33-.11.45-.25l1.28,1.02c-.39.48-.93.79-1.55.85-.09,0-.17.01-.26.01"/> <path fill="#f9ba2c" d="M16.89,23.6l-1.45-.77c.17-.33.05-.73-.27-.91-.33-.17-.73-.05-.91.27l-1.45-.77c.6-1.12,1.99-1.54,3.11-.95,1.12.6,1.55,2,.95,3.11"/> <path fill="#fff" d="M51.41,24.04c0-3.51.44-5.85,1.33-7.01.88-1.16,2.14-1.74,3.77-1.74s2.79.4,3.5,1.2c.51.58.83,1.16.99,1.73.36,1.34.55,3.35.55,6.01v2.5h-2.49v-2.8c0-2.43-.13-4.07-.39-4.89s-.64-1.35-1.12-1.57c-.27-.12-.57-.18-.91-.18-1.05,0-1.77.53-2.17,1.6s-.6,2.74-.6,5.02v11.64c0,2.8.17,4.73.53,5.81.35,1.07,1.05,1.61,2.11,1.61s1.74-.53,2.07-1.6.49-3,.49-5.8v-2.32h2.47v2.31c0,2.53-.14,4.36-.43,5.48-.29,1.11-.61,1.91-.97,2.39-.77,1.03-1.96,1.55-3.57,1.55s-2.83-.51-3.64-1.53c-1-1.25-1.5-3.87-1.5-7.85v-11.55h0"/> <path fill="#fff" d="M72.72,22.66c0-1.46-.07-2.53-.21-3.21-.13-.68-.37-1.14-.69-1.39-.33-.24-.83-.36-1.54-.36h-2.75v11.01h2.57c.83,0,1.41-.14,1.71-.43.31-.29.53-.76.69-1.43.15-.67.23-1.99.23-3.98v-.21h0M65.09,15.66h4.93c1.99,0,3.32.42,3.99,1.25.51.63.83,1.39.96,2.3.13.91.21,2.22.21,3.95s-.2,3.13-.6,4.23-1.09,1.77-2.07,2.03c.39.07.71.18.97.35s.5.46.71.87c.65,1.26.97,4.37.97,9.33,0,2.05.02,3.23.05,3.55.04.31.14.7.31,1.15h-2.43c-.17-.33-.28-.95-.31-1.87-.03-.91-.05-2.38-.05-4.39v-3.19c0-2.02-.13-3.31-.37-3.85-.25-.55-.98-.83-2.2-.83l-2.6-.17v14.3h-2.45V15.66h0Z"/> <polyline fill="#fff" points="79.01 15.66 86.66 15.66 86.66 17.57 81.45 17.57 81.45 28.9 86.35 28.9 86.35 30.9 81.45 30.9 81.45 42.71 86.61 42.71 86.61 44.66 79.01 44.66 79.01 15.66"/> <path fill="#fff" d="M97.44,23.66c0-2.11-.24-3.63-.73-4.56-.48-.93-1.24-1.4-2.27-1.4h-2.17v24.84h2.03c1.36,0,2.25-.62,2.67-1.86.33-1.02.49-2.55.49-4.58l-.02-12.44h0M89.82,15.66h4.47c2.61,0,4.26,1.07,4.97,3.19.42,1.24.63,2.93.63,5.07v12.42c.01,3.02-.41,5.16-1.27,6.41-.86,1.26-2.33,1.89-4.43,1.89h-4.37V15.66h0Z"/> <path fill="#fff" d="M110.61,36.74l-2.67-16.41h-.03l-2.45,16.41h5.16M106.61,15.66h2.5l5.15,29h-2.37l-.95-5.88h-5.8l-.87,5.88h-2.32l4.67-29h0Z"/> <path fill="#fff" d="M116.4,20.11c.17-1.57.63-2.77,1.39-3.59.76-.82,1.96-1.23,3.59-1.23s2.75.41,3.39,1.22c.35.44.63.88.83,1.32.42.89.63,3.01.65,6.36v1.63h-2.52v-1.81c0-2.55-.09-4.09-.25-4.63-.17-.54-.33-.95-.51-1.22-.32-.51-.89-.76-1.71-.76-1.67,0-2.51,1.55-2.51,4.67,0,1.09.11,1.83.31,2.21.21.39.37.69.47.91.1.22.81.98,2.1,2.27l1.58,1.6c2.34,2.41,3.51,5.17,3.51,8.28s-.45,5.17-1.35,6.15c-.89.99-2.22,1.49-3.98,1.49-2.7,0-4.25-1.63-4.66-4.89-.14-1.1-.21-2.45-.21-4.05v-3.01h2.51v2.97c0,2.61.17,4.41.52,5.41.35.99,1.05,1.49,2.11,1.49s1.74-.32,2.03-.96.45-1.42.48-2.33c.03-.91.04-1.89.04-2.93,0-2.15-.85-4.05-2.55-5.71l-1.68-1.6c-1.47-1.44-2.45-2.65-2.95-3.63s-.74-1.98-.74-3,.04-1.88.11-2.59"/> <path fill="#fff" d="M52.42,53.81l2.13-5.85h.87l2.15,5.85h-.79l-1.24-3.47c-.07-.21-.17-.48-.27-.8-.1-.32-.22-.73-.37-1.23h.14c-.14.5-.27.91-.37,1.24s-.19.59-.25.79l-1.21,3.47h-.8ZM53.49,52.18v-.65h3.01v.65h-3.01Z"/> <path fill="#fff" d="M62.6,53.91c-.42,0-.79-.07-1.1-.21s-.55-.33-.73-.57c-.17-.25-.27-.53-.3-.86h.77c.02.22.09.4.22.55.13.14.29.25.49.32s.41.11.64.11c.27,0,.5-.04.71-.13.21-.09.38-.21.5-.37.13-.16.19-.34.19-.55,0-.19-.05-.34-.16-.46s-.25-.21-.42-.29c-.17-.07-.37-.14-.58-.2l-.71-.2c-.47-.13-.84-.33-1.1-.57s-.39-.57-.39-.95c0-.33.09-.62.27-.87.18-.25.42-.44.72-.57.31-.13.65-.21,1.02-.21s.73.07,1.02.21c.29.13.53.32.7.55s.26.5.27.79h-.73c-.03-.29-.17-.51-.41-.66s-.53-.23-.88-.23c-.25,0-.47.04-.66.13-.19.08-.34.19-.44.34s-.16.31-.16.49c0,.21.07.37.19.49.13.13.28.22.45.29.17.07.33.13.47.16l.59.16c.16.04.33.1.52.17s.37.17.55.29.31.27.43.46.17.42.17.69c0,.32-.08.61-.25.87-.17.25-.41.46-.73.61-.31.15-.7.22-1.15.22h.01Z"/> <path fill="#fff" d="M65.81,53.81v-4.39h.69v.98h-.05c.06-.24.15-.43.29-.59s.28-.27.45-.35.35-.12.55-.12c.32,0,.58.1.77.29s.33.45.38.77h-.09c.05-.22.15-.41.29-.57s.31-.28.51-.37c.2-.09.41-.13.65-.13.25,0,.49.05.69.17s.37.27.5.5c.13.22.19.51.19.85v2.96h-.71v-2.94c0-.31-.09-.55-.27-.68s-.39-.21-.62-.21c-.2,0-.37.04-.51.13-.14.08-.25.19-.33.34s-.11.31-.11.49v2.87h-.71v-3.01c0-.25-.08-.44-.25-.59s-.37-.22-.62-.22c-.17,0-.33.04-.48.12-.15.08-.27.2-.36.35s-.14.35-.14.59v2.77h-.71,0Z"/> <path fill="#fff" d="M74.09,53.91c-.28,0-.53-.05-.75-.16s-.41-.26-.54-.46-.2-.45-.2-.73c0-.25.05-.45.15-.61s.23-.28.4-.37.35-.16.55-.2.41-.08.61-.11c.26-.03.47-.06.64-.08s.29-.05.37-.09.12-.12.12-.23v-.03c0-.18-.03-.34-.1-.47-.07-.13-.17-.23-.31-.29s-.31-.1-.51-.1-.39.03-.54.1-.27.15-.36.25-.16.2-.21.3l-.68-.22c.11-.27.27-.47.45-.63s.4-.26.63-.32.46-.09.69-.09c.15,0,.31.02.5.05s.37.11.54.21c.17.11.32.26.43.47s.17.48.17.82v2.89h-.69v-.59h-.05c-.05.1-.13.21-.24.31-.11.11-.25.2-.43.27s-.39.11-.63.11h-.01ZM74.21,53.29c.26,0,.48-.05.67-.15s.32-.23.41-.4.14-.33.14-.51v-.61s-.09.07-.19.09-.21.05-.33.07-.25.04-.36.05c-.11.01-.21.03-.28.03-.17.02-.33.06-.48.11s-.27.13-.35.23-.13.23-.13.4c0,.15.04.28.12.38s.19.18.32.23.29.08.47.08h0Z"/> <path fill="#fff" d="M77.37,53.81v-4.39h.69v.67h.05c.08-.22.23-.4.43-.54.21-.13.45-.2.71-.2h.19c.07,0,.13,0,.17,0v.71s-.07-.01-.16-.03-.17-.01-.27-.01c-.21,0-.4.05-.56.13-.17.09-.3.21-.39.36s-.14.33-.14.53v2.75h-.71Z"/> <path fill="#fff" d="M82.25,49.42v.61h-2.27v-.61h2.27ZM80.65,48.38h.71v4.29c0,.2.04.34.12.43.08.09.21.13.4.13.05,0,.1,0,.17-.01.07-.01.13-.02.19-.03l.15.59c-.07.03-.16.05-.25.06-.09.01-.19.02-.28.02-.38,0-.67-.1-.89-.3s-.32-.48-.32-.84v-4.35h0Z"/> <path fill="#fff" d="M85.11,53.91c-.42,0-.79-.07-1.1-.21s-.55-.33-.73-.57-.27-.53-.3-.86h.77c.02.22.09.4.22.55s.29.25.49.32.41.11.64.11c.27,0,.5-.04.71-.13s.38-.21.5-.37.19-.34.19-.55c0-.19-.05-.34-.16-.46s-.25-.21-.42-.29-.37-.14-.58-.2l-.71-.2c-.47-.13-.84-.33-1.1-.57s-.39-.57-.39-.95c0-.33.09-.62.27-.87.18-.25.42-.44.72-.57s.65-.21,1.02-.21.73.07,1.02.21.53.32.7.55c.17.23.26.5.27.79h-.73c-.03-.29-.17-.51-.41-.66-.24-.15-.53-.23-.88-.23-.25,0-.47.04-.66.13-.19.08-.34.19-.44.34-.11.14-.16.31-.16.49,0,.21.07.37.19.49.13.13.28.22.45.29.17.07.33.13.47.16l.59.16c.16.04.33.1.52.17s.37.17.55.29c.17.12.31.27.43.46s.17.42.17.69c0,.32-.08.61-.25.87s-.41.46-.73.61-.7.22-1.15.22h.01Z"/> <path fill="#fff" d="M90.17,53.91c-.43,0-.79-.09-1.1-.28-.31-.19-.55-.45-.71-.79-.17-.34-.25-.73-.25-1.18s.08-.85.25-1.19.39-.61.69-.81c.3-.19.65-.29,1.04-.29.23,0,.46.04.69.11.23.08.43.2.62.37s.33.4.44.68.17.62.17,1.03v.29h-3.41v-.59h3.03l-.33.22c0-.29-.05-.55-.13-.77-.09-.22-.23-.4-.4-.53-.18-.13-.4-.19-.67-.19s-.49.07-.68.19-.33.3-.43.51-.15.43-.15.67v.39c0,.33.06.6.17.83s.27.4.47.51.44.17.71.17c.17,0,.33-.03.47-.07s.27-.13.37-.23c.1-.1.18-.23.23-.37l.69.19c-.07.22-.18.41-.35.58s-.36.3-.6.39-.51.14-.81.14h0Z"/> <path fill="#fff" d="M94.32,53.91c-.28,0-.53-.05-.75-.16s-.41-.26-.54-.46-.2-.45-.2-.73c0-.25.05-.45.15-.61s.23-.28.4-.37.35-.16.55-.2.41-.08.61-.11c.26-.03.47-.06.64-.08s.29-.05.37-.09.12-.12.12-.23v-.03c0-.18-.03-.34-.1-.47-.07-.13-.17-.23-.31-.29s-.31-.1-.51-.1-.39.03-.54.1-.27.15-.36.25-.16.2-.21.3l-.68-.22c.11-.27.27-.47.45-.63s.4-.26.63-.32.46-.09.69-.09c.15,0,.31.02.5.05s.37.11.54.21c.17.11.32.26.43.47s.17.48.17.82v2.89h-.69v-.59h-.05c-.05.1-.13.21-.24.31-.11.11-.25.2-.43.27s-.39.11-.63.11h-.01ZM94.44,53.29c.26,0,.48-.05.67-.15s.32-.23.41-.4.14-.33.14-.51v-.61s-.09.07-.19.09-.21.05-.33.07-.25.04-.36.05c-.11.01-.21.03-.28.03-.17.02-.33.06-.48.11s-.27.13-.35.23-.13.23-.13.4c0,.15.04.28.12.38s.19.18.32.23.29.08.47.08h0Z"/> <path fill="#fff" d="M97.6,53.81v-4.39h.69v.67h.05c.08-.22.23-.4.43-.54.21-.13.45-.2.71-.2h.19c.07,0,.13,0,.17,0v.71s-.07-.01-.16-.03-.17-.01-.27-.01c-.21,0-.4.05-.56.13-.17.09-.3.21-.39.36s-.14.33-.14.53v2.75h-.71Z"/> <path fill="#fff" d="M102.28,53.91c-.4,0-.75-.09-1.05-.28-.3-.19-.53-.45-.7-.79s-.25-.73-.25-1.19.08-.86.25-1.2.4-.61.7-.79.65-.28,1.05-.28c.21,0,.41.03.6.08s.36.13.51.24c.15.11.29.23.4.38s.2.32.26.51l-.68.19c-.03-.11-.08-.21-.15-.31s-.15-.17-.24-.25c-.09-.07-.2-.13-.32-.16s-.25-.06-.39-.06c-.29,0-.53.07-.72.23-.19.15-.33.35-.42.6s-.14.52-.14.81.05.55.14.8c.09.25.23.45.42.6s.43.23.72.23c.15,0,.28-.02.41-.06s.23-.09.33-.17.17-.16.24-.26.11-.21.15-.33l.67.19c-.06.2-.14.37-.26.53-.11.15-.25.29-.41.39s-.33.19-.52.25c-.19.06-.39.09-.61.09h0Z"/> <path fill="#fff" d="M105.8,51.18v2.63h-.71v-5.85h.71v2.53h-.12c.13-.41.33-.69.57-.87s.54-.25.87-.25c.29,0,.55.06.78.18s.4.31.52.55c.13.25.19.55.19.93v2.79h-.71v-2.73c0-.34-.09-.6-.27-.79-.17-.19-.42-.29-.73-.29-.21,0-.4.05-.57.14s-.3.23-.39.4-.15.39-.15.64h0Z"/> <path fill="#fff" d="M114.57,53.89c-.5,0-.95-.12-1.34-.36s-.7-.59-.92-1.04c-.23-.45-.33-.98-.33-1.6s.11-1.15.33-1.61c.22-.45.53-.79.92-1.04.39-.25.84-.37,1.34-.37.29,0,.57.04.84.13.27.09.5.21.71.38s.39.37.53.61.23.51.29.81h-.75c-.04-.2-.11-.38-.21-.53-.1-.15-.23-.28-.37-.39-.15-.11-.31-.18-.48-.23s-.36-.08-.55-.08c-.35,0-.67.09-.95.27s-.51.44-.67.79-.25.77-.25,1.27.08.92.25,1.26c.17.35.39.61.67.78.28.18.6.27.95.27.19,0,.37-.03.55-.08.17-.05.33-.13.48-.23s.27-.23.37-.39.17-.33.21-.53h.75c-.05.3-.15.57-.29.8s-.31.44-.53.61-.45.29-.71.38c-.27.09-.55.13-.84.13h0Z"/> <path fill="#fff" d="M119.78,53.91c-.4,0-.75-.09-1.05-.28-.3-.19-.53-.45-.7-.79s-.25-.73-.25-1.19.08-.86.25-1.2.4-.61.7-.79.65-.28,1.05-.28.75.09,1.05.28.53.45.7.79.25.74.25,1.2-.08.85-.25,1.19-.4.61-.7.79-.65.28-1.05.28ZM119.78,53.27c.29,0,.54-.07.73-.23s.33-.35.43-.6.14-.51.14-.8-.05-.56-.14-.81c-.09-.25-.23-.45-.43-.61s-.43-.23-.73-.23-.53.07-.72.23c-.19.15-.33.35-.42.6s-.14.52-.14.81.05.55.14.8c.09.25.23.45.42.6s.43.23.72.23h0Z"/> <path fill="#fff" d="M122.81,53.81v-4.39h.69v.98h-.05c.06-.24.15-.43.29-.59.13-.15.28-.27.45-.35.17-.08.35-.12.55-.12.32,0,.58.1.77.29.2.2.33.45.38.77h-.09c.05-.22.15-.41.29-.57s.31-.28.51-.37c.2-.09.41-.13.65-.13.25,0,.49.05.69.17s.37.27.5.5c.13.22.19.51.19.85v2.96h-.71v-2.94c0-.31-.09-.55-.27-.68s-.39-.21-.62-.21c-.2,0-.37.04-.51.13-.14.08-.25.19-.33.34s-.11.31-.11.49v2.87h-.71v-3.01c0-.25-.08-.44-.25-.59s-.37-.22-.62-.22c-.17,0-.33.04-.48.12-.15.08-.27.2-.36.35s-.14.35-.14.59v2.77h-.71,0Z"/> <path fill="#fff" d="M129.86,55.45v-6.03h.69v.7h.08c.05-.08.12-.18.21-.3s.22-.23.39-.32.39-.14.68-.14c.37,0,.69.09.97.27s.5.45.65.79c.16.34.24.74.24,1.21s-.08.87-.23,1.21-.37.6-.65.79-.6.28-.97.28c-.28,0-.5-.05-.67-.14s-.3-.21-.39-.33-.16-.22-.21-.31h-.05v2.32h-.71ZM131.79,53.27c.27,0,.51-.07.69-.22.19-.15.32-.35.41-.59s.14-.53.14-.83-.05-.58-.14-.82c-.09-.25-.23-.44-.41-.59-.19-.15-.41-.21-.69-.21s-.49.07-.68.21-.32.33-.41.57-.14.53-.14.85.05.61.14.86.23.45.42.59.41.21.67.21h0Z"/> <path fill="#fff" d="M136.1,53.91c-.28,0-.53-.05-.75-.16s-.41-.26-.54-.46-.2-.45-.2-.73c0-.25.05-.45.15-.61s.23-.28.4-.37.35-.16.55-.2.41-.08.61-.11c.26-.03.47-.06.64-.08s.29-.05.37-.09.12-.12.12-.23v-.03c0-.18-.03-.34-.1-.47-.07-.13-.17-.23-.31-.29s-.31-.1-.51-.1-.39.03-.54.1-.27.15-.36.25-.16.2-.21.3l-.68-.22c.11-.27.27-.47.45-.63s.4-.26.63-.32.46-.09.69-.09c.15,0,.31.02.5.05s.37.11.54.21c.17.11.32.26.43.47s.17.48.17.82v2.89h-.69v-.59h-.05c-.05.1-.13.21-.24.31-.11.11-.25.2-.43.27s-.39.11-.63.11h-.01ZM136.22,53.29c.26,0,.48-.05.67-.15s.32-.23.41-.4.14-.33.14-.51v-.61s-.09.07-.19.09-.21.05-.33.07-.25.04-.36.05c-.11.01-.21.03-.28.03-.17.02-.33.06-.48.11s-.27.13-.35.23-.13.23-.13.4c0,.15.04.28.12.38s.19.18.32.23.29.08.47.08h0Z"/> <path fill="#fff" d="M140.09,51.18v2.63h-.71v-4.39h.68v1.07h-.09c.13-.41.33-.69.57-.87s.54-.25.87-.25c.29,0,.55.06.78.18.22.12.39.31.52.55.13.25.19.55.19.93v2.79h-.71v-2.73c0-.34-.09-.6-.27-.79-.17-.19-.42-.29-.73-.29-.21,0-.4.05-.57.14s-.3.23-.39.4-.15.39-.15.64h0Z"/> <path fill="#fff" d="M143.95,55.41l.18-.61.07.02c.15.03.27.05.39.03s.22-.07.32-.17.17-.25.25-.46l.13-.37-1.67-4.41h.77l.93,2.61c.1.27.18.54.25.81s.14.53.21.78h-.26c.07-.25.15-.51.22-.78s.15-.54.25-.81l.94-2.61h.77l-1.93,5.05c-.09.23-.19.43-.32.57s-.27.26-.43.33-.35.11-.56.11c-.13,0-.23,0-.33-.03s-.15-.03-.19-.05h0Z"/> </svg></div>
+  <button class="area" id="areaBtn" aria-haspopup="menu" style="border:0;background:none;font:inherit;cursor:pointer;display:flex;align-items:center;gap:4px"><span id="areaTxt">Portal</span> <svg width="11" height="7" viewBox="0 0 11 7" fill="none" stroke="#fff" stroke-width="1.6"><path d="M1 1l4.5 4.5L10 1"/></svg></button><div class="amenu2" id="amenu" role="menu"></div>
+  <nav id="topnav"><span class="on" id="navInd" style="cursor:pointer">Individuals</span><span>Masterlist</span><span>Processes</span><span>eSign</span><span>Companies</span><span id="navSet" style="cursor:pointer" role="link" tabindex="0">Settings</span></nav>
+  <div class="right">
+    <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><circle cx="10" cy="10" r="8.5"/><path d="M10 9v5M10 6v.5" stroke-linecap="round"/></svg>
+    <svg width="18" height="19" viewBox="0 0 19 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M4 14V9a5.5 5.5 0 0 1 11 0v5l1.5 2h-14z"/><path d="M8 18.5h3"/></svg>
+    <span class="avatar">JM</span>
+  </div>
+</header>
+
+<div id="listView" class="lv">
+<div class="bar">
+  <div class="search" id="searchBox">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1E1F2B" stroke-width="1.6"><circle cx="7" cy="7" r="5.5"/><path d="M11 11l4 4" stroke-linecap="round"/></svg>
+    <input id="q" placeholder="Search by name, phone number or email address" aria-label="Search by name, phone number or email address" autocomplete="off">
+    <button class="x" id="qx" aria-label="Clear search">×</button>
+  </div>
+  <div class="fbtn"><button class="chip" data-drop="status" id="btn-status">Status <span class="ct"></span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#1E1F2B" stroke-width="1.4"><path d="M1 1l4 4 4-4"/></svg></button><div class="drop" id="drop-status"></div></div>
+  <div class="fbtn"><button class="chip" data-drop="tags" id="btn-tags">Tags <span class="ct"></span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#1E1F2B" stroke-width="1.4"><path d="M1 1l4 4 4-4"/></svg></button><div class="drop" id="drop-tags"></div></div>
+  <div class="fbtn"><button class="chip" data-drop="idtype" id="btn-idtype">ID type <span class="ct"></span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#1E1F2B" stroke-width="1.4"><path d="M1 1l4 4 4-4"/></svg></button><div class="drop" id="drop-idtype"></div></div>
+  <button class="chip" id="btn-all">All filters <span class="ct"></span><svg width="11" height="8" viewBox="0 0 11 8" fill="#1E1F2B"><circle cx="1.5" cy="1.5" r="1.2"/><circle cx="5.5" cy="1.5" r="1.2"/><circle cx="9.5" cy="1.5" r="1.2"/><circle cx="1.5" cy="6.5" r="1.2"/><circle cx="5.5" cy="6.5" r="1.2"/><circle cx="9.5" cy="6.5" r="1.2"/></svg></button>
+  <button class="add" data-noop><b>+</b> Add new</button>
+  <button class="icon" aria-label="Table settings" data-noop><svg width="13" height="13" viewBox="0 0 24 24" fill="#1E1F2B"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.6 7.6 0 0 0 1.7 1L11 21h4l.4-2.9a7.6 7.6 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg></button>
+  <button class="icon" aria-label="Full screen" data-noop><svg width="11" height="11" viewBox="0 0 13 13" fill="none" stroke="#1E1F2B" stroke-width="1.8"><path d="M1 4V1h3M9 1h3v3M12 9v3H9M4 12H1V9"/></svg></button>
+</div>
+
+<div class="chips" id="chips" aria-label="Applied filters"></div>
+
+<div class="tablewrap">
+  <table>
+    <thead><tr>
+      <th style="width:40px"><input type="checkbox" class="cb" aria-label="Select all"></th>
+      <th>Date of invite <svg width="9" height="10" viewBox="0 0 9 10" fill="none" stroke="#6E717E" stroke-width="1.5"><path d="M4.5 0v9M1 5.5l3.5 3.5L8 5.5"/></svg></th>
+      <th>Name</th><th class="c div">Invite Status</th><th class="c">Completion Status</th><th>Phone number</th><th>Email</th><th>Reg Code</th><th>Invited By</th><th>Reference</th><th>Liveness</th><th class="c">ID Submitted</th><th class="c">Actions</th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+<div class="foot">
+  <span>Items per page: <span class="sel" style="display:inline-flex;margin-left:6px">20 <span>▾</span></span></span>
+  <span id="range">1 – 20 of 658</span>
+  <span class="nav"><span>|‹</span><span>‹</span><span class="on">›</span><span class="on">›|</span></span>
+</div>
+</div>
+<div id="setView" hidden></div>
+<div id="admView" hidden></div>
+</div>
+
+<div class="fpveil" id="fpveil"><div class="fp" role="dialog" aria-modal="true" aria-labelledby="fpTitle">
+  <div class="fph"><span id="fpTitle">Open</span><button class="pclose2" id="fpX" aria-label="Close" style="border:0;background:none;font-size:15px">✕</button></div>
+  <div class="fpb"><div class="side">&#9733; Quick access<br>&#128421; Desktop<br>&#11015; Downloads<br>&#128196; Documents<br>&#128444; Pictures</div><div class="files" id="fpFiles"></div></div>
+  <div class="fpf"><button id="fpCancel">Cancel</button><button class="op" id="fpOpen" disabled>Open</button></div>
+</div></div>
+<div class="irdveil" id="irdveil"><div class="irdlg" role="alertdialog" style="width:min(430px,100%)" aria-modal="true" aria-labelledby="irMsg"><div class="h"><button class="x" id="irX" aria-label="Close">✕</button></div><div class="b"><span class="i" id="irIcon" aria-hidden="true" style="background:none;color:#1EC28B;font:700 26px/1 Inter,sans-serif">✓</span><span id="irMsg">ID check report settings updated</span></div></div></div>
+<div class="auveil" id="auveil"><div class="aumod" role="dialog" aria-modal="true" aria-labelledby="auTitle" id="aumod"></div></div>
+<div class="dveil" id="dveil"></div>
+<aside class="drawer" id="drawer" aria-label="All filters">
+  <div class="dh"><h2>All filters</h2><button class="dclose" id="dclose" aria-label="Close">✕</button></div>
+  <div class="dbody" id="dbody"></div>
+  <div class="dfoot"><button class="pbtn" id="clearAll">Clear All</button><button class="pbtn dark" id="dapply">Apply</button></div>
+</aside>
+
+<section class="coach" id="coach" aria-live="polite">
+  <div class="ch"><span class="count" id="count"></span><span><button id="introBtn">Overview</button><button id="coachMin">Hide</button></span></div>
+  <div class="cbd">
+    <div class="task" id="task"></div>
+    <p class="desc" id="desc"></p>
+    <div class="copyrow" id="copyRow"></div>
+    <div class="bar2"><i id="prog"></i></div>
+    <button class="stoggle" id="stoggle" aria-expanded="false" aria-controls="slist"><span id="stoggleTxt">View all steps</span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg></button>
+    <ol class="slist" id="slist" hidden></ol>
+    <div class="rw"><label><input type="checkbox" id="hints" checked> Show hints</label><button id="restart">Start again</button></div>
+  </div>
+</section>
+
+<div class="doneVeil" id="doneVeil">
+  <div class="done" role="dialog" aria-modal="true" aria-labelledby="doneTitle">
+    <div class="tick"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h2 id="doneTitle">Exercise complete</h2>
+    <p>You created Training User Group, removed its Admin Portal permissions and added Priya Nair from the group's Users tab. Then you added Tom Ashworth to Manchester Branch from his own record.</p>
+    <div id="modules"></div>
+    <a class="hubbtn" href="index.html#admin-portal" target="_self">Back to training area</a>
+  </div>
+</div>
+<div class="introVeil" id="introVeil">
+  <div class="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="ib" id="introBody"></div>
+    <div class="if"><a class="hublink" href="index.html#admin-portal" target="_self">Back to training area</a><button class="mtog" id="musicBtn" aria-pressed="true" title="Background music"><span aria-hidden="true">♪</span> <span id="musicTxt">Music on</span></button><button class="listen" id="listenBtn" hidden aria-live="polite"><span class="lic" aria-hidden="true"></span><span id="listenTxt">Listen to overview</span></button><button class="pbtn dark" id="introStart">Start exercise</button></div>
+  </div>
+</div>
+<div class="regVeil" id="regVeil">
+  <div class="regdlg" role="alertdialog" aria-modal="true" aria-labelledby="regMsg">
+    <div class="regh"><button class="regx" id="regClose" aria-label="Close">✕</button></div>
+    <div class="regb"><span class="regi" aria-hidden="true">i</span><span id="regMsg">The registration code has been copied</span></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- data from the recording ---------- */
+const STATUS=["Active","Expired","Inactive","Invite bounced","Invited","Not invited"];
+const TAGS=[];
+const IDTYPES=["Agents Licence","Driving Licence","Electoral Card","Foreigner ID Card","Health Card","Job Licence","Membership ID Card","Military ID Card","National ID Card","Passport","Proof of Age Card","Travel Permit","Travel Visa","Weapons Licence"];
+const JOURNEYS=["Identity Only","Enhanced AML","Safe Harbour","Right to Rent","Right to Work","Source of Funds"];
+const APPROVAL=["Pending","Approved","Rejected"];
+const FOLDERS=[];
+const INVITERS=["Amelia Brooks","Callum Fraser","Chloe Bennett","Darren Holt","Elena Vasquez","Freya Lawson","Harvey Quinn","Imogen Shaw","Jamal Hussain","Katie Morgan","Liam Doherty","Natalie Cross","Owen Pritchard","Rebecca Lyons","Simon Ashworth","Zara Malik"];
+// [date, name, invite, completion, phone, email, reg, invitedBy, reference, liveness, idSubmitted, idType, journey, approval]
+const ROWS=[
+["30/09/2026 12:54", "Oliver Hartley", "Not invited", "No Process", "", "oliver.hartley@example.com", "RDN-VEP", "Callum Fraser", "CASE-10482", "Not performed", 0, "", "Identity Only", "Pending"],
+["30/09/2026 09:33", "Priya Nair", "Not invited", "No Process", "", "priya.nair@example.com", "9NQ-KHK", "Callum Fraser", "CASE-10479", "Not performed", 0, "", "Enhanced AML", "Pending"],
+["28/09/2026 11:10", "Daniel Okafor", "Not invited", "No Process", "", "daniel.okafor@example.com", "JWK-JGK", "Chloe Bennett", "CASE-10471", "Not performed", 0, "", "Identity Only", "Pending"],
+["25/09/2026 09:41", "Angela Specimen", "Active", "Complete", "", "angela.specimen@example.com", "5PL-G78", "Amelia Brooks", "CASE-10466", "Pass", 1, "Passport", "Safe Harbour", "Approved"],
+["25/09/2026 08:32", "Marcus Bell", "Invite bounced", "No Process", "", "marcus.bell@example.com", "XXT-249", "Amelia Brooks", "CASE-10463", "Not performed", 0, "", "Safe Harbour", "Pending"],
+["24/09/2026 13:10", "Isla Whitmore", "Active", "Complete", "", "isla.whitmore@example.com", "YPP-43V", "Amelia Brooks", "CASE-10458", "Refer", 1, "Passport", "Identity Only", "Approved"],
+["24/09/2026 09:39", "Kieran Doyle", "Invited", "Complete", "", "kieran.doyle@example.com", "R7J-ZMR", "Amelia Brooks", "CASE-10455", "Pass", 1, "Driving Licence", "Right to Rent", "Pending"],
+["22/09/2026 18:06", "Megan Price", "Invited", "Complete", "", "megan.price@example.com", "AP6-LRR", "Chloe Bennett", "CASE-10449", "Fail", 1, "Driving Licence", "Enhanced AML", "Rejected"],
+["18/09/2026 12:05", "Megan Price", "Active", "Complete", "", "megan.price@example.com", "HVG-8Y2", "Chloe Bennett", "CASE-10441", "Pass", 1, "", "Enhanced AML", "Approved"],
+["16/09/2026 14:13", "Thomas Reid", "Active", "Complete", "", "thomas.reid@example.com", "CTZ-LPV", "Amelia Brooks", "CASE-10437", "Pass", 1, "National ID Card", "Right to Work", "Approved"],
+["16/09/2026 13:59", "Thomas Reid", "Active", "Complete", "", "thomas.reid@example.com", "S24-PXJ", "Amelia Brooks", "CASE-10436", "Refer", 1, "", "Right to Work", "Pending"],
+["16/09/2026 09:10", "Sophie Lindqvist", "Invited", "Complete", "", "sophie.lindqvist@example.com", "PCF-8VV", "Jamal Hussain", "CASE-10430", "Pass", 1, "", "Right to Rent", "Pending"],
+["15/09/2026 13:14", "Hannah Morales", "Expired", "No Process", "", "hannah.morales@example.com", "YUZ-N6U", "Chloe Bennett", "CASE-10427", "Not performed", 0, "", "Source of Funds", "Pending"],
+["15/09/2026 11:44", "Sophie Lindqvist", "Invited", "Complete", "", "sophie.lindqvist@example.com", "JRL-TYK", "Jamal Hussain", "CASE-10424", "Fail", 1, "", "Right to Rent", "Pending"],
+["08/09/2026 13:12", "Ethan Clarke-Wood", "Not invited", "No Process", "07700 900123", "ethan.clarkewood@example.com", "5SZ-KE5", "Callum Fraser", "CASE-10418", "Not performed", 0, "", "Source of Funds", "Pending"],
+["05/09/2026 10:22", "Grace Adeyemi", "Not invited", "No Process", "07700 900456", "grace.adeyemi@example.com", "KQ2-7TB", "Freya Lawson", "CASE-10412", "Not performed", 0, "", "Right to Work", "Pending"],
+["03/09/2026 15:47", "Lewis Fairbairn", "Inactive", "Complete", "", "lewis.fairbairn@example.com", "M8P-3XD", "Freya Lawson", "CASE-10409", "Pass", 1, "Passport", "Right to Rent", "Approved"],
+["01/09/2026 09:05", "Ruth Kowalski", "Not invited", "No Process", "", "ruth.kowalski@example.com", "W4N-9QA", "Jamal Hussain", "CASE-10401", "Not performed", 0, "", "Identity Only", "Pending"]
+].map(r=>({date:r[0],name:r[1],invite:r[2],comp:r[3],phone:r[4],email:r[5],reg:r[6],by:r[7],ref:r[8],live:r[9],sub:r[10],idt:r[11],jr:r[12],appr:r[13]}));
+
+/* ---------- filter state ---------- */
+const KEYS=["status","tags","idtype","journey","approval","folders","by"];
+const FIELD={status:"invite",idtype:"idt",journey:"jr",approval:"appr",by:"by"};
+const OPTS={status:STATUS,tags:TAGS,idtype:IDTYPES,journey:JOURNEYS,approval:APPROVAL,folders:FOLDERS,by:[...new Set(INVITERS)]};
+const LABEL={status:"Status",tags:"Tags",idtype:"ID type",journey:"Journey",approval:"Approval Status",folders:"Folders",by:"Invited By"};
+let applied,pending,dateFrom,dateTo,query;
+function blank(){const o={};KEYS.forEach(k=>o[k]=new Set());return o}
+function clone(o){const c={};KEYS.forEach(k=>c[k]=new Set(o[k]));return c}
+const $=id=>document.getElementById(id);
+
+function toISO(d){const [dd,mm,rest]=d.split("/");return `${rest.slice(0,4)}-${mm}-${dd}`}
+function digits(s){return s.replace(/\D/g,"")}
+function normPhone(s){let d=digits(s);if(d.startsWith("44"))d="0"+d.slice(2);return d}
+function matchQuery(r,q){
+  if(!q)return true;const l=q.toLowerCase(),dq=normPhone(q);
+  return r.name.toLowerCase().includes(l)||r.email.toLowerCase().includes(l)||r.reg.toLowerCase().includes(l.replace(/\s/g,""))||(dq.length>=3&&normPhone(r.phone).includes(dq));
+}
+function visible(){
+  return ROWS.filter(r=>{
+    if(!matchQuery(r,query))return false;
+    for(const k of Object.keys(FIELD)){if(applied[k].size&&!applied[k].has(r[FIELD[k]]))return false}
+    if(applied.tags.size||applied.folders.size)return false;
+    const iso=toISO(r.date);
+    if(dateFrom&&iso<dateFrom)return false;if(dateTo&&iso>dateTo)return false;
+    return true;
+  });
+}
+
+/* ---------- table ---------- */
+const INV={"Not invited":"p-dark","Active":"p-green","Invite bounced":"p-red","Expired":"p-grey","Inactive":"p-grey","Invited":"p-out"};
+const COPY='<svg width="10" height="12" viewBox="0 0 10 12" fill="none" stroke="#1E1F2B" stroke-width="1.3"><rect x="3" y="3" width="6" height="8" rx="1"/><path d="M1 9V1h6"/></svg>';
+function liveCell(v){
+  if(v==="Pass")return `<span class="live"><span class="dot" style="background:#1EC28B"><svg width="7" height="6" viewBox="0 0 7 6" fill="none" stroke="#fff" stroke-width="1.6"><path d="M1 3l1.8 1.8L6 1"/></svg></span>Pass</span>`;
+  if(v==="Refer")return `<span class="live"><span class="dot" style="background:#F0A93C"><svg width="2" height="7" viewBox="0 0 2 7"><rect width="2" height="4.4" rx="1" fill="#fff"/><rect y="5.3" width="2" height="1.7" rx=".8" fill="#fff"/></svg></span>Refer</span>`;
+  if(v==="Fail")return `<span class="live"><svg width="12" height="11" viewBox="0 0 12 11"><path d="M6 0l6 11H0z" fill="#E0474C"/><path d="M6 4v3M6 8.5v.5" stroke="#fff" stroke-width="1.3"/></svg>Fail</span>`;
+  return `<span class="live"><span class="dot" style="background:#BFC1C7"><svg width="6" height="2"><rect width="6" height="1.6" fill="#fff"/></svg></span>Not performed</span>`;
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function hl(t){
+  if(!query)return esc(t);const i=t.toLowerCase().indexOf(query.toLowerCase());
+  if(i<0)return esc(t);return esc(t.slice(0,i))+"<mark style='background:#FDE7C2;padding:0'>"+esc(t.slice(i,i+query.length))+"</mark>"+esc(t.slice(i+query.length));
+}
+function render(){
+  const v=visible();
+  $("rows").innerHTML=v.length?v.map(r=>`<tr>
+    <td><input type="checkbox" class="cb" aria-label="Select ${esc(r.name)}"></td>
+    <td style="white-space:nowrap">${r.date}</td><td style="white-space:nowrap">${hl(r.name)}</td>
+    <td class="c div"><span class="pill ${INV[r.invite]}">${r.invite}</span></td>
+    <td class="c"><span class="pill ${r.comp==="Complete"?"p-green":"p-grey"}">${r.comp}</span></td>
+    <td style="white-space:nowrap">${r.phone?hl(r.phone):"-"}</td><td class="em">${r.email?hl(r.email):"-"}</td>
+    <td><span class="reg">${hl(r.reg)} <button class="regcopy" data-reg="${r.reg}" aria-label="Copy reg code ${r.reg}">${COPY}</button></span></td><td style="white-space:nowrap">${r.by}</td><td class="ref">${esc(r.ref)}</td>
+    <td>${liveCell(r.live)}</td>
+    <td class="c">${r.sub?'<svg width="12" height="10" viewBox="0 0 12 10" fill="none" stroke="#1EC28B" stroke-width="1.5"><path d="M1 5l3.5 3.5L11 1"/></svg>':'<svg width="10" height="10" viewBox="0 0 10 10" stroke="#E0474C" stroke-width="1.5"><path d="M1 1l8 8M9 1l-8 8"/></svg>'}</td>
+    <td class="c"><button class="kebab" aria-label="Actions" data-noop><svg width="4" height="13" viewBox="0 0 4 14"><circle cx="2" cy="2" r="1.7" fill="#1E1F2B"/><circle cx="2" cy="7" r="1.7" fill="#1E1F2B"/><circle cx="2" cy="12" r="1.7" fill="#1E1F2B"/></svg></button></td>
+  </tr>`).join(""):`<tr class="emptyrow"><td colspan="13">No individuals match your search or filters.${(KEYS.some(k=>applied[k].size)||dateFrom||dateTo)?"<br>Filters are still applied. Remove them under the search bar, or click Clear all.":""}</td></tr>`;
+  const filtered=query||KEYS.some(k=>applied[k].size)||dateFrom||dateTo;
+  $("range").textContent=filtered?(v.length?`1 – ${v.length} of ${v.length}`:"0 of 0"):"1 – 20 of 658";
+  $("searchBox").classList.toggle("has",!!$("q").value);
+  ["status","tags","idtype"].forEach(k=>{const b=$("btn-"+k);b.classList.toggle("active",applied[k].size>0);b.querySelector(".ct").textContent=applied[k].size});
+  const n=KEYS.reduce((a,k)=>a+applied[k].size,0)+(dateFrom?1:0)+(dateTo?1:0);
+  $("btn-all").classList.toggle("active",n>0);$("btn-all").querySelector(".ct").textContent=n;
+  renderChips();
+  bindNoop();check();
+}
+const X='<svg width="8" height="8" viewBox="0 0 8 8" stroke="#2D2E3F" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l6 6M7 1L1 7"/></svg>';
+/* accepts 15/09/2026, 15/9/26, 15.09.2026, 15-09-2026, 15 09 2026, 15092026 and 2026-09-15 */
+function parseDate(s){
+  s=(s||"").trim();if(!s)return null;let d,m,y,r;
+  if((r=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/)))[,y,m,d]=r;
+  else if((r=s.match(/^(\d{1,2})[\/.\- ](\d{1,2})[\/.\- ](\d{2}|\d{4})$/)))[,d,m,y]=r;
+  else if((r=s.match(/^(\d{2})(\d{2})(\d{4})$/)))[,d,m,y]=r;
+  else return null;
+  d=+d;m=+m;y=+y;if(y<100)y+=2000;
+  const dt=new Date(Date.UTC(y,m-1,d));
+  if(dt.getUTCFullYear()!==y||dt.getUTCMonth()!==m-1||dt.getUTCDate()!==d)return null;
+  return `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+}
+/* ---------- date selector ---------- */
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const TODAY="2026-10-10";
+let calFor=null,calY,calM,calView="days";
+function openCal(id){
+  closeCal();calFor=id;const v=dval(id)||(id==="dto"&&dval("dfrom"))||TODAY;
+  calY=+v.slice(0,4);calM=+v.slice(5,7)-1;calView="days";
+  const pop=document.createElement("div");pop.className="calpop"+(id==="dto"?" right":"");pop.id="calpop";
+  pop.setAttribute("role","dialog");pop.setAttribute("aria-label","Choose date");
+  $(id).parentElement.appendChild(pop);$(id).parentElement.querySelector(".cal").setAttribute("aria-expanded","true");
+  drawCal();coach();
+}
+function closeCal(){const p=$("calpop");if(p){p.parentElement.querySelector(".cal")?.setAttribute("aria-expanded","false");p.remove()}calFor=null}
+function iso(y,m,d){return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`}
+function drawCal(){
+  const pop=$("calpop");if(!pop)return;const sel=dval(calFor);
+  const other=calFor==="dfrom"?dval("dto"):dval("dfrom");
+  let body="";
+  if(calView==="months"){
+    body=`<div class="cgrid m">${MONTHS.map((n,i)=>`<button class="cm ${i===calM?"sel":""}" data-m="${i}">${n.slice(0,3)}</button>`).join("")}</div>`;
+  }else{
+    const first=new Date(Date.UTC(calY,calM,1)),lead=(first.getUTCDay()+6)%7,days=new Date(Date.UTC(calY,calM+1,0)).getUTCDate();
+    let cells="";for(let i=0;i<lead;i++)cells+="<span></span>";
+    for(let d=1;d<=days;d++){
+      const v=iso(calY,calM,d);
+      const inR=sel&&other&&((calFor==="dfrom"&&v>sel&&v<other)||(calFor==="dto"&&v<sel&&v>other));
+      cells+=`<button class="cd${v===sel?" sel":""}${v===TODAY?" today":""}${inR?" inr":""}${v===other?" edge":""}" data-d="${v}" aria-label="${d} ${MONTHS[calM]} ${calY}">${d}</button>`;
+    }
+    body=`<div class="cgrid"><b>Mo</b><b>Tu</b><b>We</b><b>Th</b><b>Fr</b><b>Sa</b><b>Su</b>${cells}</div>`;
+  }
+  pop.innerHTML=`<div class="chead"><button class="cper" data-view>${calView==="months"?calY:MONTHS[calM].slice(0,3).toUpperCase()+" "+calY} <svg width="8" height="5" viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="#1E1F2B"/></svg></button><span><button class="cnav" data-step="-1" aria-label="Previous">‹</button><button class="cnav" data-step="1" aria-label="Next">›</button></span></div>${body}`;
+  const t=pop.querySelector(`[data-d="${iso(2026,8,15)}"]`),t2=pop.querySelector(`[data-d="${iso(2026,8,30)}"]`);
+  coach();
+}
+document.addEventListener("click",e=>{
+  const pop=$("calpop");if(!pop)return;
+  if(!pop.contains(e.target)){if(!e.target.closest(".cal"))closeCal();return}
+  e.stopPropagation();
+  const d=e.target.closest("[data-d]"),st=e.target.closest("[data-step]"),mv=e.target.closest("[data-m]");
+  if(d){const id=calFor;$(id).value=fmtDate(d.dataset.d);$(id).classList.remove("bad");closeCal();check();return}
+  if(e.target.closest("[data-view]")){calView=calView==="days"?"months":"days";drawCal();return}
+  if(mv){calM=+mv.dataset.m;calView="days";drawCal();return}
+  if(st){const n=+st.dataset.step;if(calView==="months")calY+=n;else{calM+=n;if(calM<0){calM=11;calY--}if(calM>11){calM=0;calY++}}drawCal()}
+},true);
+function dval(id){const el=$(id);return el?parseDate(el.value):null}
+function fmtDate(iso){const [y,m,d]=iso.split("-");return `${d}/${m}/${y}`}
+function renderChips(){
+  const c=[];
+  if(query)c.push(["q","",query]);
+  KEYS.forEach(k=>applied[k].forEach(v=>c.push([k,v,v])));
+  if(dateFrom)c.push(["dfrom","","From "+fmtDate(dateFrom)]);
+  if(dateTo)c.push(["dto","","To "+fmtDate(dateTo)]);
+  $("chips").innerHTML=c.map(([k,v,l])=>`<button class="fchip" data-ck="${k}" data-cv="${esc(v)}" aria-label="Remove ${esc(l)}">${esc(l)} ${X}</button>`).join("")+(c.length?'<button class="clearall" id="chipClear">Clear all</button>':"");
+  $("chips").classList.toggle("show",c.length>0);
+}
+$("chips").onclick=e=>{
+  if(e.target.closest("#chipClear")){applied=blank();pending=blank();dateFrom=dateTo=null;query="";$("q").value="";render();return}
+  const b=e.target.closest(".fchip");if(!b)return;
+  const k=b.dataset.ck,v=b.dataset.cv;
+  if(k==="q"){query="";$("q").value=""}
+  else if(k==="dfrom")dateFrom=null;else if(k==="dto")dateTo=null;
+  else applied[k].delete(v);
+  render();
+};
+
+/* ---------- dropdowns ---------- */
+function buildDrop(k){
+  const d=$("drop-"+k);
+  d.innerHTML=(OPTS[k].length?OPTS[k].map(o=>`<label><input type="checkbox" class="cb" data-k="${k}" value="${esc(o)}" ${pending[k].has(o)?"checked":""}> ${esc(o)}</label>`).join(""):"")+`<button class="apply" data-apply="${k}">Apply</button>`;
+}
+function closeDrops(){document.querySelectorAll(".drop.show").forEach(d=>d.classList.remove("show"))}
+document.querySelectorAll("[data-drop]").forEach(b=>b.onclick=e=>{
+  e.stopPropagation();const k=b.dataset.drop,d=$("drop-"+k),open=d.classList.contains("show");
+  closeDrops();if(open){coach();return}
+  pending=clone(applied);buildDrop(k);d.classList.add("show");coach();
+});
+document.addEventListener("change",e=>{
+  const c=e.target;if(!c.dataset||!c.dataset.k)return;
+  c.checked?pending[c.dataset.k].add(c.value):pending[c.dataset.k].delete(c.value);check();
+});
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-apply]");
+  if(a){applied[a.dataset.apply]=new Set(pending[a.dataset.apply]);closeDrops();render();return}
+  if(!e.target.closest(".drop")&&!e.target.closest("[data-drop]")){if(document.querySelector(".drop.show")){closeDrops();coach()}}
+});
+
+/* ---------- drawer ---------- */
+function buildDrawer(){
+  let h=`<div class="sec" data-sec="date"><button><span>Date Range</span><span>—</span></button><div class="items" style="border-top:1px solid #DADBDF"><div class="dates">
+    <div><label for="dfrom">Invited From</label><div class="dwrap"><input id="dfrom" class="dtext" placeholder="Select date" autocomplete="off" value="${dateFrom?fmtDate(dateFrom):""}"><button class="cal" data-for="dfrom" aria-label="Choose Invited From date"><svg width="14" height="15" viewBox="0 0 14 15" fill="#1E1F2B"><path d="M3 0h1.6v1.6h4.8V0H11v1.6h1.4A1.6 1.6 0 0 1 14 3.2v10.2A1.6 1.6 0 0 1 12.4 15H1.6A1.6 1.6 0 0 1 0 13.4V3.2A1.6 1.6 0 0 1 1.6 1.6H3zM1.6 5.6v7.8h10.8V5.6zm1.6 1.6h3.2v3.2H3.2z"/></svg></button><input type="date" class="dpick" id="dfrom-pick" tabindex="-1" aria-hidden="true"></div></div>
+    <div><label for="dto">Invited To</label><div class="dwrap"><input id="dto" class="dtext" placeholder="Select date" autocomplete="off" value="${dateTo?fmtDate(dateTo):""}"><button class="cal" data-for="dto" aria-label="Choose Invited To date"><svg width="14" height="15" viewBox="0 0 14 15" fill="#1E1F2B"><path d="M3 0h1.6v1.6h4.8V0H11v1.6h1.4A1.6 1.6 0 0 1 14 3.2v10.2A1.6 1.6 0 0 1 12.4 15H1.6A1.6 1.6 0 0 1 0 13.4V3.2A1.6 1.6 0 0 1 1.6 1.6H3zM1.6 5.6v7.8h10.8V5.6zm1.6 1.6h3.2v3.2H3.2z"/></svg></button><input type="date" class="dpick" id="dto-pick" tabindex="-1" aria-hidden="true"></div></div></div></div></div>`;
+  KEYS.forEach(k=>{
+    h+=`<div class="sec" data-sec="${k}"><button><span>${LABEL[k]}</span><span>—</span></button><div class="items">${OPTS[k].map(o=>`<label class="row"><input type="checkbox" class="cb lg" data-k="${k}" value="${esc(o)}" ${pending[k].has(o)?"checked":""}> ${esc(o)}</label>`).join("")}</div></div>`;
+  });
+  $("dbody").innerHTML=h;
+  ["dfrom","dto"].forEach(id=>{
+    const t=$(id),pk=$(id+"-pick");
+    t.addEventListener("input",()=>{t.classList.remove("bad");check()});
+    t.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();t.blur()}});
+    t.addEventListener("blur",()=>{const v=parseDate(t.value);if(v)t.value=fmtDate(v);else if(t.value.trim())t.classList.add("bad");check()});
+    pk.addEventListener("change",()=>{if(pk.value){t.value=fmtDate(pk.value);t.classList.remove("bad");check()}});
+  });
+  $("dbody").querySelectorAll(".cal").forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.for;calFor===id?closeCal():openCal(id)});
+  $("dbody").querySelectorAll(".sec>button").forEach(b=>b.onclick=()=>{const s=b.parentElement;s.classList.toggle("closed");b.lastElementChild.textContent=s.classList.contains("closed")?"+":"—"});
+}
+function openDrawer(){closeDrops();pending=clone(applied);buildDrawer();$("dbody").scrollTop=0;$("drawer").classList.add("show");$("dveil").classList.add("show");coach()}
+function closeDrawer(){
+  closeCal();
+  $("drawer").classList.remove("show");$("dveil").classList.remove("show");
+  if(typeof s!=="undefined"&&!finished&&s>=DRAWER_FIRST&&s<=DRAWER_APPLY&&!STEPS[DRAWER_APPLY].ok()){s=DRAWER_FIRST;toast("Those filters weren't applied. Open All filters to try again.")}
+  coach();
+}
+$("btn-all").onclick=e=>{e.stopPropagation();openDrawer()};
+$("dclose").onclick=closeDrawer;$("dveil").onclick=closeDrawer;
+$("dapply").onclick=()=>{applied=clone(pending);dateFrom=dval("dfrom");dateTo=dval("dto");closeDrawer();render()};
+$("clearAll").onclick=()=>{pending=blank();applied=blank();dateFrom=dateTo=null;query="";$("q").value="";buildDrawer();closeDrawer();render();toast("All filters cleared.")};
+
+/* ---------- reg code copy ---------- */
+let copiedReg=null;
+$("rows").addEventListener("click",e=>{
+  const b=e.target.closest(".regcopy");if(!b)return;e.stopPropagation();
+  const v=b.dataset.reg;copiedReg=v;
+  const fb=()=>{const t=document.createElement("textarea");t.value=v;t.style.cssText="position:fixed;left:-9999px";document.body.appendChild(t);t.select();try{document.execCommand("copy")}catch(_){}t.remove()};
+  try{if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(v).catch(fb);else fb()}catch(_){fb()}
+  $("regVeil").classList.add("show");$("regClose").focus();check();
+});
+function closeReg(){$("regVeil").classList.remove("show");check();$("q").focus()}
+$("regClose").onclick=closeReg;
+$("regVeil").onclick=e=>{if(e.target.id==="regVeil")closeReg()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("regVeil").classList.contains("show"))closeReg()});
+
+/* ---------- search ---------- */
+$("q").oninput=()=>{$("searchBox").classList.toggle("has",!!$("q").value)};
+$("q").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();query=$("q").value.trim();render()}};
+$("qx").onclick=()=>{$("q").value="";query="";render();$("q").focus()};
+
+
+/* ---------- Settings: Branding ---------- */
+const ORIG_LOGO=(document.querySelector(".logo svg")||{outerHTML:""}).outerHTML;
+function headerLogo(k){const el=document.querySelector(".logo");if(!el)return;
+  if(!k||k==="credas"){el.innerHTML=ORIG_LOGO;return}
+  el.innerHTML=`<span class="hlogo" title="Uploaded logo">${LOGOS[k]().replace(/width="230" height="62"/,'width="115" height="31"')}</span>`;
+  el.classList.remove("logoflash");void el.offsetWidth;el.classList.add("logoflash")}
+const SB={view:"list",name:"Connect Training",savedName:"Connect Training",logo:"credas",savedLogo:"credas",picker:false,pick:null,saved:false,uploaded:false};
+const LOGOS={
+ credas:()=>ORIG_LOGO.replace(/height="\d+"/,'height="62"').replace(/width="\d+"/,'width="160"'),
+ acme:()=>'<svg width="230" height="62" viewBox="0 0 230 62" role="img" aria-label="Acme Lettings logo"><rect width="230" height="62" fill="#fff"/><path d="M14 34L34 16l20 18v18H14z" fill="#0F6E6E"/><rect x="29" y="38" width="10" height="14" fill="#fff"/><text x="66" y="34" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#0F6E6E">Acme</text><text x="66" y="50" font-family="Arial,sans-serif" font-size="11" letter-spacing="3" fill="#3B3D4A">LETTINGS</text></svg>',
+ acme2:()=>'<svg width="230" height="62" viewBox="0 0 230 62"><rect width="230" height="62" fill="#0F6E6E"/><text x="20" y="38" font-family="Georgia,serif" font-size="20" fill="#fff">Acme Lettings</text></svg>',
+ old:()=>'<svg width="230" height="62" viewBox="0 0 230 62"><rect width="230" height="62" fill="#fff"/><circle cx="31" cy="31" r="16" fill="#C9C9C9"/><text x="58" y="37" font-family="Arial" font-size="15" fill="#888">old-logo-2019</text></svg>'};
+const FILES=[["acme-lettings-logo.png","acme"],["acme-lettings-logo-dark.png","acme2"],["old-logo-2019.png","old"],["holiday-photo.jpg",null]];
+function setView(v){SB.view=v;$("listView").hidden=v!=="list";$("setView").hidden=v==="list";
+  $("navInd").classList.toggle("on",v==="list");$("navSet").classList.toggle("on",v!=="list");drawSet();check()}
+$("navSet").onclick=()=>setView("settings");$("navSet").onkeydown=e=>{if(e.key==="Enter")setView("settings")};
+$("navInd").onclick=()=>setView("list");
+function dirty(){return SB.name.trim()!==SB.savedName||SB.logo!==SB.savedLogo}
+function drawSet(){
+  const v=$("setView");if(SB.view==="list"){v.innerHTML="";return}
+  if(SB.view==="idr"){drawIdr(v);return}
+  if(SB.view==="delete"){drawDelete(v);return}
+  if(SB.view==="monitor"){drawMonitor(v);return}
+  if(SB.view==="invite"){drawInvite(v);return}
+  if(SB.view==="settings"){v.innerHTML=`<div class="sp"><p class="lead2">Manage or update your portal settings</p><div class="scards">${[["Branding","Update your portal name and logo"],["Invite rules","Set reminders and expiry rules for invites"],["Ongoing monitoring","Apply portal-wide watchlist rules for PEPs and Sanctions"],["Deletion rules","Set auto-archive and deletion rules for your customer data"],["ID check report","Configure the sections you would like to see in your ID check report as a default","idr"]].map(([t,d,k])=>`<button class="scard2" ${k?`data-sc="${k}"`:`data-sco="${t}"`}><b>${t}</b><span>${d}</span><i aria-hidden="true">\u2192</i></button>`).join("")}</div></div>`;
+    v.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>setView(b.dataset.sc));
+    v.querySelectorAll("[data-sco]").forEach(b=>b.onclick=()=>toast(b.dataset.sco+" is covered in a later exercise."));return}
+  v.innerHTML=`<div class="bhead"><button id="backSet"><svg width="7" height="11" viewBox="0 0 7 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1L1.5 5.5 6 10"/></svg>Back to Settings</button><h1>Branding</h1></div>
+   <div class="bform"><h2>Portal details</h2><label for="pName">Portal Name</label><input type="text" id="pName" value="${esc(SB.name)}" autocomplete="off">
+     ${SB.name.trim()!==SB.savedName?`<div class="warnbox"><span aria-hidden="true">\u26A0</span><span>If a portal is renamed, Credas needs to know the new name. Otherwise the portal can't easily be found when support is needed.</span></div>`:""}
+     <hr><h2>Logo</h2><label>Brand logo</label><div class="logobox${SB.logo==="credas"?"":" light"}" id="logoBox">${LOGOS[SB.logo]()}</div>
+     <div class="lbtns"><button id="resetLogo">\uD83D\uDDD1 Reset image</button><button id="uploadLogo">\u2B71 Upload</button></div><hr>
+     <div class="savebar"><button id="saveBrand" ${dirty()?"":"disabled"}>Save Changes</button></div></div>`;
+  $("backSet").onclick=()=>{if(dirty()){toast("You have unsaved changes. Click Save Changes first, or they'll be lost.")}setView("settings")};
+  $("pName").oninput=e=>{const had=SB.name.trim()!==SB.savedName;SB.name=e.target.value;const has=SB.name.trim()!==SB.savedName;$("saveBrand").disabled=!dirty();if(had!==has){const pos=e.target.selectionStart;drawSet();const i=$("pName");i.focus();i.setSelectionRange(pos,pos)}check()};
+  $("resetLogo").onclick=()=>{SB.logo="credas";drawSet();check()};
+  $("uploadLogo").onclick=()=>openPicker();
+  $("saveBrand").onclick=()=>{if(!dirty())return;SB.savedName=SB.name.trim();SB.name=SB.savedName;SB.savedLogo=SB.logo;SB.saved=true;drawSet();headerLogo(SB.savedLogo);toast(SB.savedLogo==="credas"?"Changes saved.":"Changes saved. The new logo now shows in the top left of the portal.");check()};
+}
+function openPicker(){SB.picker=true;SB.pick=null;$("fpFiles").innerHTML=FILES.map(([n,k])=>`<button class="fl" data-f="${n}"><span class="th">${k?LOGOS[k]().replace(/width="230" height="62"/,'width="92" height="25"'):'\uD83C\uDFDE'}</span>${n}</button>`).join("");
+  $("fpveil").classList.add("show");$("fpOpen").disabled=true;
+  $("fpFiles").querySelectorAll("[data-f]").forEach(b=>{b.onclick=()=>{SB.pick=b.dataset.f;$("fpFiles").querySelectorAll(".fl").forEach(x=>x.classList.toggle("sel",x===b));$("fpOpen").disabled=false;check()};b.ondblclick=()=>{SB.pick=b.dataset.f;pickOpen()}});check()}
+function closePicker(){SB.picker=false;$("fpveil").classList.remove("show");check()}
+function pickOpen(){const f=FILES.find(x=>x[0]===SB.pick);if(!f)return;if(!f[1]){toast("That's a photo, not a logo. Choose acme-lettings-logo.png.");return}SB.logo=f[1];SB.uploaded=true;closePicker();drawSet();check()}
+$("fpOpen").onclick=pickOpen;$("fpCancel").onclick=closePicker;$("fpX").onclick=closePicker;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&SB.picker)closePicker()});
+
+
+
+
+
+
+/* ---------- Admin Portal: user groups ---------- */
+const AUSERS0=[["Aisha Rahman","MLRO","aisha.rahman@example.com","London Branch",0,1,0,1],["Ben Whitaker","Standard User","ben.whitaker@example.com","Manchester Branch",0,1,1,0],["Carys Morgan","Admin","carys.morgan@example.com","Cardiff Branch",0,1,0,1],["Daniel Brooks","Standard User","daniel.brooks@example.com","Birmingham Branch",0,1,0,0],["Eleanor Shaw","Standard User","eleanor.shaw@example.com","Leeds Branch",0,0,1,0],["Femi Adeyemi","Admin","femi.adeyemi@example.com","London Branch",0,1,0,1],["Grace Lindqvist","Standard User","grace.lindqvist@example.com","Bristol Branch",0,1,1,0],["Hamish Fraser","MLRO","hamish.fraser@example.com","Manchester Branch",0,1,0,0],["Imogen Clarke","Standard User","imogen.clarke@example.com","Cardiff Branch",1,1,0,0],["Kofi Mensah","Standard User","kofi.mensah@example.com","Birmingham Branch",0,0,0,0],["Laura Bennett","Admin","laura.bennett@example.com","Leeds Branch",0,1,0,1],["Marcus Hill","Standard User","marcus.hill@example.com","London Branch",0,1,1,0],["Nadia Kowalski","MLRO","nadia.kowalski@example.com","Bristol Branch",0,1,0,0],["Priya Nair","Standard User","priya.nair@example.com","",0,1,0,0],["Rory Sullivan","Standard User","rory.sullivan@example.com","Manchester Branch",0,1,0,0],["Tom Ashworth","Admin","tom.ashworth@example.com","",0,1,0,1]];
+const AGROUPS0=[["London Branch","london.branch@example.com",1],["Manchester Branch","manchester.branch@example.com",1],["Cardiff Branch","cardiff.branch@example.com",1],["Birmingham Branch","birmingham.branch@example.com",0],["Leeds Branch","leeds.branch@example.com",1],["Bristol Branch","bristol.branch@example.com",0]];
+const NEWG={name:"Training User Group",email:"training.team@example.com"},U1="Priya Nair",U2="Tom Ashworth",G2="Manchester Branch";
+const C=(t,d,k)=>({t,d,k:k||[]});
+const PERMS=[
+ C("Portal","Connect Portal",[
+  C("Individuals","Allows the user to see the list of Processes for the Client",[C("Entities Admin","Allows the user to create Entities"),C("Invite entities to processes","Allows the user to invite entities to a process"),C("Create Entity Folders","Allows the user to create folders for entities"),C("Add Entities to Folders","Allows the user to add entities to folders"),C("Allow Auto-refresh on Entity List","Allows the user to turn on auto-refresh on the Entities list"),C("Allow Export to CSV","Allows the user to export Entities to CSV"),C("Edit entity user details","Allows the user to edit entity user's details"),C("Delete Entities","Allows the user to delete entities"),C("Add Data Checks for Entities","Allows the user to add data checks to entities"),C("Add Entity Notes","Allows the user to add notes to entities"),C("Add Entity Tags","Allows the user to create tags for entities"),C("Add Tags to Entities","Allows the user to add tags to entities"),C("Entity Milestones","Allows the user to view entity milestones"),C("View Entity Processes","Allows the user to view entity processes"),C("View Entity Identity Checks","Allows the user to view entity identity checks"),C("View Entity Documents","Allows the user to view entity documents"),C("View Entity Notes","Allows the user to view entity notes"),C("View Entity PDF Exports","Allows the user to view entity PDF exports"),C("Entity file packs","User can download Entity file packs"),C("Entity Evidence","Allows the user to view and add entity evidence"),C("Entity PDF Export","Allows the user to export an entity to a PDF document"),C("Bulk Invite","Allows the user to bulk invite entities")]),
+  C("Masterlist","Allows the user to view the masterlist of entities."),
+  C("Processes","Allows the user to see the list of Processes for the Client",[C("Create Processes","Allows the user to create Processes"),C("Create Process Folders","Allows the user to create folders for Processes"),C("Add Processes to Folders","Allows the user to add Processes to folders"),C("Allow Auto-refresh on Process List","Allows the user to turn on auto-refresh on the Processes list"),C("Allow Export to CSV","Allows the user to export Processes to CSV"),C("Delete Processes","Allows the user to delete Processes"),C("Lock Processes","Allows the user to lock Processes"),C("Lock Process Questions","Allows the user to lock questions on Processes"),C("Process file packs","User can download Process file packs"),C("Process Export","Allows the user to export Processes"),C("Validation summary","Allows the user to see full validation information, including scoring"),C("Actor information","Allows the user to view all actors on the process"),C("Step validation summary","Allows the user to see validation details at a step level")]),
+  C("eSign","Allows the user to view the document library",[C("Download documents","Allows the user to download documents from the library"),C("Standalone document","Allows the user to send standalone esign document")]),
+  C("Update status of a check","Allows the user to update the status of a check",[C("Liveness","Allows the user to update the status of a Liveness check"),C("ID Document","Allows the user to update the status of an ID Document check"),C("Standard check","Allows the user to update the status of a Standard check"),C("International Sanctions and PEPs","Allows the user to update the status of a Sanctions and PEPs check")]),
+  C("Companies","Allows the user to create and manage companies",[C("Delete Company","Allows the user to delete companies"),C("Refresh business report","Allows user to refresh business reports")]),
+  C("Settings","Allows users to manage portal settings")]),
+ C("Product Updates","Allows the user to view all kinds of info content",[C("Guides","Allows the client to view active guides")]),
+ C("Admin Portal","Connect system administration (super user)",[
+  C("Portal Users","User can administer users",[C("Create Users","Allows the user to create users"),C("Copy reset password links","Allows the user to copy reset password links"),C("Send reset password emails","Allows the user to send reset password emails"),C("Allow setting tempory passwords","Allows the user to set temporary passwords"),C("Allow Re-issuing API Keys","Allows the user to re-issue API keys"),C("Allow Revoking API Keys","Allows the user to revoke API keys"),C("Allow Copying API Keys","Allows the user to copy API keys"),C("Remove Users","Allows the user to remove users"),C("Edit users","Allows the user to edit users")]),
+  C("Portal User groups","User can administer user groups within a client",[C("Remove user groups","Allows the user to remove user groups"),C("Create user groups","Allows the user to create user groups")]),
+  C("Child portals","User can administer reseller clients",[C("Edit data check credentials","User can edit reseller client's data check settings"),C("Edit ID3 Profile mappings","User can edit reseller client's ID3 profile mappings"),C("Add Reseller Clients","User can add reseller clients"),C("Edit Reseller Clients","User can edit reseller clients")]),
+  C("Portal User Roles","")]),
+ C("Legislation","Allows users to administer legislations",[C("Digital Identity Trust Framework","Allows users to activate DITF profiles"),C("Right to Work (RTW)","Allows users to activate the Right to Work card on the Identity checks table cards"),C("Right to Rent (RTR)","Allows users to activate the Right to Rent card on the Identity checks table cards"),C("Safe Harbour","Allows users to activate the Safe Harbour card on the Identity checks table cards"),C("Proof of Ownership","Allows users to activate the Proof of Ownership card on the Identity checks table cards")])];
+const leaves=(n,p)=>n.k.length?n.k.flatMap((c,i)=>leaves(c,p+"."+i)):[p];
+const ALL_LEAVES=PERMS.flatMap((n,i)=>leaves(n,String(i)));
+const AD0=()=>({area:"portal",menu:false,tab:"users",page:"list",group:null,user:null,gtab:"Users",utab:"User Information",modal:false,nf:{name:"",email:""},
+  open:null,pick:[],groups:AGROUPS0.map(g=>g.slice()),users:AUSERS0.map(r=>r.slice()),members:{},full:{},off:{},created:false,dlg:false,closed:false});
+let AD=AD0();
+const KEY='<svg width="16" height="9" viewBox="0 0 16 9" fill="#1E1F2B"><circle cx="4.5" cy="4.5" r="4.5"/><circle cx="4.5" cy="4.5" r="1.8" fill="#fff"/><rect x="8" y="3.4" width="8" height="2.2"/><rect x="12" y="3.4" width="2" height="4.6"/><rect x="14.4" y="3.4" width="1.6" height="3.6"/></svg>';
+const BIN='<svg width="11" height="13" viewBox="0 0 24 26" fill="#1E1F2B"><path d="M6 23a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8H6zM19 3h-3.5l-1-1h-5l-1 1H5v2h14z"/></svg>';
+const userRow=n=>AD.users.find(u=>u[0]===n);
+const groupsOf=n=>{const u=userRow(n);return u&&u[3]?u[3].split(", ").filter(Boolean):[]};
+function setGroupsOf(n,arr){const u=userRow(n);if(u)u[3]=arr.join(", ")}
+function membersOf(g){return AD.users.filter(u=>groupsOf(u[0]).includes(g)).map(u=>u[0])}
+function setArea(a){AD.area=a;AD.menu=false;$("amenu").classList.remove("show");$("areaTxt").textContent=a==="admin"?"Admin Portal":"Portal";
+  const nav=$("topnav");
+  if(a==="admin"){nav.dataset.orig=nav.dataset.orig||nav.innerHTML;$("listView").hidden=true;$("setView").hidden=true;$("admView").hidden=false;drawNav();drawAdm()}
+  else{if(nav.dataset.orig){nav.innerHTML=nav.dataset.orig;delete nav.dataset.orig;$("navSet").onclick=()=>setView("settings");$("navInd").onclick=()=>setView("list")}$("admView").hidden=true;$("listView").hidden=false}
+  check()}
+function drawNav(){const nav=$("topnav"),on=AD.tab==="groups"?"Portal User groups":"Portal Users";
+  nav.innerHTML=["Portal Users","Portal User groups","Child portals","Portal User Roles"].map(n=>`<span class="${n===on?"on":""}" data-anav="${n}" style="cursor:pointer" role="link" tabindex="0">${n}</span>`).join("");
+  nav.querySelectorAll("[data-anav]").forEach(x=>{const go=()=>{const n=x.dataset.anav;if(n==="Portal Users")goTab("users");else if(n==="Portal User groups")goTab("groups");else toast(n+" isn't part of this exercise.")};x.onclick=go;x.onkeydown=e=>{if(e.key==="Enter")go()}})}
+function goTab(t){AD.tab=t;AD.page="list";AD.group=null;AD.user=null;AD.open=null;AD.pick=[];drawNav();drawAdm();check()}
+$("areaBtn").onclick=e=>{e.stopPropagation();AD.menu=!AD.menu;const m=$("amenu");m.innerHTML=["Portal","Branding","Journey Builder","Product Updates","Admin Portal","Back office"].map(x=>`<button role="menuitem" data-am="${x}">${x}</button>`).join("");
+  const r=$("areaBtn").getBoundingClientRect();m.style.left=r.left+"px";m.style.top=(r.bottom+12)+"px";m.classList.toggle("show",AD.menu);
+  m.querySelectorAll("[data-am]").forEach(b=>b.onclick=ev=>{ev.stopPropagation();const x=b.dataset.am;if(x==="Admin Portal")setArea("admin");else if(x==="Portal")setArea("portal");else{AD.menu=false;m.classList.remove("show");toast(x+" isn't part of this exercise.");check()}});check()};
+document.addEventListener("click",e=>{if(AD.menu&&!e.target.closest("#areaBtn,#amenu")){AD.menu=false;$("amenu").classList.remove("show");coach()}
+  if(AD.open&&!e.target.closest(".msel")){AD.open=null;drawAdm();check()}});
+const tc=x=>x?'<span class="tk3">\u2713</span>':'<span class="cr3">\u2715</span>';
+const back=label=>`<button class="ugback" id="ugBack"><svg width="7" height="11" viewBox="0 0 7 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1L1.5 5.5 6 10"/></svg>${label}</button>`;
+function bar(ph){return `<div class="abar"><div class="search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1E1F2B" stroke-width="1.6"><circle cx="7" cy="7" r="5.5"/><path d="M11 11l4 4"/></svg><input placeholder="${ph}" aria-label="Search"></div><button class="add" id="auAdd"><b>+</b> Add new</button><button class="icon" data-noop aria-label="Full screen">\u26F6</button></div>`}
+function drawAdm(){
+  const v=$("admView");
+  if(AD.page==="list"&&AD.tab==="users"){
+    const rows=AD.users.slice().sort((a,b)=>a[0].localeCompare(b[0]));
+    v.innerHTML=bar("Search by name or email address")+`<div class="atw"><table class="atbl"><thead><tr><th style="width:34px"><input type="checkbox" aria-label="Select all"></th><th>Name \u2191</th><th>Role(s)</th><th>Email</th><th>User Groups</th><th class="c">Locked</th><th class="c">Registered?</th><th class="c">Can see own<br>invites only</th><th class="c">API Key</th><th class="c">Actions</th></tr></thead><tbody>
+    ${rows.map(r=>`<tr class="click${r[8]?" newrow":""}" data-user="${esc(r[0])}"><td><input type="checkbox" aria-label="Select ${esc(r[0])}"></td><td><button class="lnk" data-uopen="${esc(r[0])}">${esc(r[0])}</button></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td class="c">${tc(r[4])}</td><td class="c">${tc(r[5])}</td><td class="c">${tc(r[6])}</td><td class="c">${r[7]?KEY:""}</td><td class="c">\u22EE</td></tr>`).join("")}</tbody></table>
+    <div class="pager">Items per page: 20 \u25BE<span>1 \u2013 ${rows.length} of ${rows.length}</span></div></div>`;
+    v.querySelectorAll("[data-uopen]").forEach(b=>b.onclick=()=>{AD.page="user";AD.user=b.dataset.uopen;AD.utab="User Information";drawAdm();check()});
+    $("auAdd").onclick=()=>toast("Adding users is covered in the previous exercise.");bindNoop();return}
+  if(AD.page==="list"&&AD.tab==="groups"){
+    const rows=AD.groups;
+    v.innerHTML=bar("Search by name or email address")+`<div class="atw"><table class="atbl"><thead><tr><th>Name</th><th>Email</th><th class="c">Full Permissions</th><th class="c">Actions</th></tr></thead><tbody>
+    ${rows.map(g=>`<tr class="click${g[3]?" newrow":""}"><td><button class="lnk" data-gopen="${esc(g[0])}">${esc(g[0])}</button></td><td>${esc(g[1])}</td><td class="c">${tc(g[2])}</td><td class="c">\u22EE</td></tr>`).join("")}</tbody></table>
+    <div class="pager">Items per page: 20 \u25BE<span>1 \u2013 ${rows.length} of ${rows.length}</span></div></div>`;
+    v.querySelectorAll("[data-gopen]").forEach(b=>b.onclick=()=>{AD.page="group";AD.group=b.dataset.gopen;AD.gtab="Users";AD.pick=[];drawAdm();check()});
+    $("auAdd").onclick=()=>{if(AD.created){toast("Training User Group has already been created.");return}AD.modal=true;AD.nf={name:"",email:""};$("auveil").classList.add("show");drawNew();setTimeout(()=>$("ngName")&&$("ngName").focus(),40);check()};bindNoop();return}
+  if(AD.page==="group"){
+    const g=AD.group,tabs=["Users","Permissions"];
+    let body="";
+    if(AD.gtab==="Users"){const mem=membersOf(g),opts=AD.users.map(u=>u[0]).filter(n=>!mem.includes(n)).sort();
+      body=`<div class="ugpad"><label class="f2">Add Users</label><div class="ugadd"><div class="msel">${mselBtn("ugUsers",AD.pick)}${AD.open==="ugUsers"?`<div class="opts">${opts.map(o=>`<label><input type="checkbox" data-pick="${esc(o)}" ${AD.pick.includes(o)?"checked":""}>${esc(o)}</label>`).join("")}</div>`:""}</div><button class="ugbtn" id="ugAddBtn" ${AD.pick.length?"":"disabled"}>Add</button></div>
+        <table class="atbl ugt"><thead><tr><th>User Name</th><th class="c" style="width:150px">Can see own invites<br>only</th><th class="c" style="width:60px"></th></tr></thead><tbody>${mem.length?mem.map(n=>`<tr class="${AD.flash===n?"newrow":""}"><td>${esc(n)}</td><td class="c"><input type="checkbox" aria-label="${esc(n)} can see own invites only"></td><td class="c"><button class="ibin" data-rm="${esc(n)}" aria-label="Remove ${esc(n)}">${BIN}</button></td></tr>`).join(""):`<tr><td colspan="3" class="emptyr">No users in this group yet.</td></tr>`}</tbody></table></div>`}
+    else{const full=!!AD.full[g];
+      body=`<div class="ugpad"><label class="ck2 bigck"><input type="checkbox" id="ugFull" ${full?"checked":""}>Assign full permissions</label>${full?"":`<div class="ptree">${PERMS.map((n,i)=>tree(n,String(i),0)).join("")}</div>`}</div>`}
+    v.innerHTML=`<div class="ugpage">${back("Back to Portal User groups")}<div class="ugcard"><div class="ugtabs" role="tablist">${tabs.map(t=>`<button role="tab" aria-selected="${t===AD.gtab}" class="${t===AD.gtab?"on":""}" data-gtab="${t}">${t}</button>`).join("")}<span class="ugname">${esc(g)}</span></div>${body}</div></div>`;
+    bindGroup();return}
+  if(AD.page==="user"){
+    const n=AD.user,u=userRow(n),tabs=["User Information","Permissions","Groups","Activity","Notifications"];let body="";
+    if(AD.utab==="User Information"){const [f,...l]=n.split(" ");
+      body=`<div class="ugpad uinfo"><label class="f2">Email</label><input type="text" value="${esc(u[2])}" readonly><label class="f2">First Name</label><input type="text" value="${esc(f)}" readonly><label class="f2">Surname</label><input type="text" value="${esc(l.join(" "))}" readonly>
+        <label class="f2">Mobile Number</label><div class="mob"><select disabled><option>Dialling code</option></select><input type="text" placeholder="Mobile number" readonly></div><label class="f2">Roles</label><input type="text" value="${esc(u[1])}" readonly>
+        <label class="ck2" style="margin-top:12px"><input type="checkbox" ${u[6]?"checked":""} disabled>Can see own invites only</label><div class="uft"><button class="c1" data-noop>Cancel</button><button class="c2" disabled>Update</button></div></div>`}
+    else if(AD.utab==="Groups"){const gs=groupsOf(n),opts=AD.groups.map(g=>g[0]);
+      body=`<div class="ugpad"><label class="f2">Add User Groups</label><div class="ugadd"><div class="msel">${mselBtn("ugGroups",AD.pick)}${AD.open==="ugGroups"?`<div class="opts">${opts.map(o=>`<label><input type="checkbox" data-gpick="${esc(o)}" ${gs.includes(o)||AD.pick.includes(o)?"checked":""} ${gs.includes(o)?"disabled":""}>${esc(o)}</label>`).join("")}</div>`:""}</div><button class="ugbtn" id="ugAddG" ${AD.pick.length?"":"disabled"}>Add</button></div>
+        <table class="atbl ugt"><thead><tr><th>Group Name</th><th class="c" style="width:150px">Can see own invites<br>only</th><th class="c" style="width:60px"></th></tr></thead><tbody>${gs.length?gs.map(x=>`<tr class="${AD.flash===x?"newrow":""}"><td>${esc(x)}</td><td class="c"><input type="checkbox" aria-label="Can see own invites only in ${esc(x)}"></td><td class="c"><button class="ibin" data-rmg="${esc(x)}" aria-label="Remove from ${esc(x)}">${BIN}</button></td></tr>`).join(""):`<tr><td colspan="3" class="emptyr">This user isn't in any user groups yet.</td></tr>`}</tbody></table></div>`}
+    else body=`<div class="ugpad"><p class="emptyr">The ${esc(AD.utab)} tab isn't part of this exercise.</p></div>`;
+    v.innerHTML=`<div class="ugpage">${back("Back to Portal Users")}<div class="ugcard"><div class="ugtabs" role="tablist">${tabs.map(t=>`<button role="tab" aria-selected="${t===AD.utab}" class="${t===AD.utab?"on":""}" data-utab="${t}">${t}</button>`).join("")}<span class="ugname">${esc(n)}</span></div>${body}</div></div>`;
+    bindUser();bindNoop();return}
+}
+function mselBtn(id,sel){return `<button type="button" class="mselb" id="${id}" aria-haspopup="listbox" aria-expanded="${AD.open===id}">${sel.length?esc(sel.join(", ")):"&nbsp;"}</button>`}
+function nodeState(p){const n=p.split(".").reduce((a,i,k)=>k?a.k[+i]:PERMS[+i],null);const ls=leaves(n,p),off=ls.filter(x=>AD.off[AD.group+"|"+x]).length;return off===0?"on":off===ls.length?"off":"mixed"}
+function tree(n,p,d){const st=nodeState(p),id="pt"+p.replace(/\./g,"_");
+  const row=`<div class="prow d${d}${d===0?" ptop":""}"><label class="pck"><input type="checkbox" id="${id}" data-perm="${p}" ${st!=="off"?"checked":""} ${st==="mixed"?'data-mixed="1"':""}><span>${esc(n.t)}</span></label><span class="pdesc">${esc(n.d)}</span></div>`;
+  return (d===0?'<div class="pgrp">':"")+row+n.k.map((c,i)=>tree(c,p+"."+i,d+1)).join("")+(d===0?"</div>":"")}
+function bindGroup(){
+  const v=$("admView"),g=AD.group;
+  $("ugBack").onclick=()=>goTab("groups");
+  v.querySelectorAll("[data-gtab]").forEach(b=>b.onclick=()=>{AD.gtab=b.dataset.gtab;AD.open=null;AD.pick=[];drawAdm();check()});
+  const ub=$("ugUsers");if(ub)ub.onclick=e=>{e.stopPropagation();AD.open=AD.open==="ugUsers"?null:"ugUsers";drawAdm();check()};
+  v.querySelectorAll(".opts").forEach(o=>o.onclick=e=>e.stopPropagation());
+  v.querySelectorAll("[data-pick]").forEach(x=>x.onchange=()=>{const n=x.dataset.pick,i=AD.pick.indexOf(n);if(x.checked&&i<0)AD.pick.push(n);if(!x.checked&&i>=0)AD.pick.splice(i,1);$("ugUsers").textContent=AD.pick.length?AD.pick.join(", "):"\u00a0";$("ugAddBtn").disabled=!AD.pick.length;check()});
+  const ab=$("ugAddBtn");if(ab)ab.onclick=()=>{if(!AD.pick.length)return;AD.pick.forEach(n=>setGroupsOf(n,[...groupsOf(n),g]));AD.flash=AD.pick[AD.pick.length-1];toast(`${AD.pick.join(", ")} added to ${g}.`);AD.pick=[];AD.open=null;drawAdm();check()};
+  v.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{const n=b.dataset.rm;setGroupsOf(n,groupsOf(n).filter(x=>x!==g));drawAdm();check()});
+  const fb=$("ugFull");if(fb)fb.onchange=()=>{AD.full[g]=fb.checked;const row=AD.groups.find(x=>x[0]===g);if(row)row[2]=fb.checked?1:0;drawAdm();check()};
+  v.querySelectorAll("[data-mixed]").forEach(x=>x.indeterminate=true);
+  v.querySelectorAll("[data-perm]").forEach(x=>x.onchange=()=>{const p=x.dataset.perm,n=p.split(".").reduce((a,i,k)=>k?a.k[+i]:PERMS[+i],null);leaves(n,p).forEach(l=>{if(x.checked)delete AD.off[g+"|"+l];else AD.off[g+"|"+l]=1});const s=$("admView").scrollTop;drawAdm();$("admView").scrollTop=s;check()});
+}
+function bindUser(){
+  const v=$("admView"),n=AD.user;
+  $("ugBack").onclick=()=>goTab("users");
+  v.querySelectorAll("[data-utab]").forEach(b=>b.onclick=()=>{AD.utab=b.dataset.utab;AD.open=null;AD.pick=[];drawAdm();check()});
+  const gb=$("ugGroups");if(gb)gb.onclick=e=>{e.stopPropagation();AD.open=AD.open==="ugGroups"?null:"ugGroups";drawAdm();check()};
+  v.querySelectorAll(".opts").forEach(o=>o.onclick=e=>e.stopPropagation());
+  v.querySelectorAll("[data-gpick]").forEach(x=>x.onchange=()=>{const g=x.dataset.gpick,i=AD.pick.indexOf(g);if(x.checked&&i<0)AD.pick.push(g);if(!x.checked&&i>=0)AD.pick.splice(i,1);$("ugGroups").textContent=AD.pick.length?AD.pick.join(", "):"\u00a0";$("ugAddG").disabled=!AD.pick.length;check()});
+  const ab=$("ugAddG");if(ab)ab.onclick=()=>{if(!AD.pick.length)return;setGroupsOf(n,[...groupsOf(n),...AD.pick]);AD.flash=AD.pick[AD.pick.length-1];toast(`${n} added to ${AD.pick.join(", ")}.`);AD.pick=[];AD.open=null;drawAdm();check()};
+  v.querySelectorAll("[data-rmg]").forEach(b=>b.onclick=()=>{setGroupsOf(n,groupsOf(n).filter(x=>x!==b.dataset.rmg));drawAdm();check()});
+}
+const ngOk=()=>AD.nf.name.trim()&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(AD.nf.email);
+function drawNew(){
+  const m=$("aumod"),f=AD.nf;
+  m.innerHTML=`<h2 id="auTitle">Create user group</h2><div class="b"><label class="f" for="ngName" style="margin-top:0">User Group Name</label><input type="text" id="ngName" value="${esc(f.name)}" autocomplete="off"><label class="f" for="ngEmail">Email Address</label><input type="text" id="ngEmail" value="${esc(f.email)}" autocomplete="off"></div>
+   <div class="ft"><button class="c1" id="ngCancel">Cancel</button><button class="c2" id="ngSave" ${ngOk()?"":"disabled"}>Save</button></div>`;
+  const q=id=>document.getElementById(id);
+  q("ngName").oninput=e=>{f.name=e.target.value;q("ngSave").disabled=!ngOk();check()};q("ngEmail").oninput=e=>{f.email=e.target.value.trim();q("ngSave").disabled=!ngOk();check()};
+  q("ngCancel").onclick=()=>{AD.modal=false;$("auveil").classList.remove("show");check()};
+  q("ngSave").onclick=()=>{if(!ngOk())return;AD.modal=false;$("auveil").classList.remove("show");AD.groups.unshift([f.name.trim(),f.email,1,1]);AD.full[f.name.trim()]=true;AD.created=true;drawAdm();toast(`${f.name.trim()} has been created.`);check()};
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&AD.modal){$("ngCancel")&&$("ngCancel").click()}});
+
+/* ---------- Settings: ID check report ---------- */
+const IDSECS=["Cover page","Overview page","Personal details page","Full profile","Notes","Current PEPs","Former PEPs","PEPs by association","Current sanctions","Former sanctions","Adverse media","Law enforcement","Disqualified director"];
+const ID_OFF0=["Notes","Law enforcement","Disqualified director"];
+const ID0=Object.fromEntries(IDSECS.map(s=>[s,!ID_OFF0.includes(s)]));
+const IDR={cur:{...ID0},saved:{...ID0},done:false,dlg:false,closed:false};
+const idDirty=()=>JSON.stringify(IDR.cur)!==JSON.stringify(IDR.saved);
+function drawIdr(v){
+  const c=IDR.cur;
+  v.innerHTML=`<div class="bhead"><button id="backSet"><svg width="7" height="11" viewBox="0 0 7 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1L1.5 5.5 6 10"/></svg>Back to Settings</button><h1>ID Check Report Settings</h1></div>
+  <div class="irf"><div class="irs"><h2>Sanction and PEP information to include</h2><p>The information that will be included in the Sanctions and PEPs section of the ID Check Report when exported from the individual's profile.</p></div>
+   <div class="dnote" style="margin-top:-6px"><b>Note</b>Your portal is configured to use a Sanction and PEP provider. The options below are applicable to those which are available from that provider.</div>
+   <div class="irs" style="border-top:1px solid #DADBDF;padding-top:14px"><p class="rtype" style="font-weight:400">Include the following sections:</p><div class="idrl">${IDSECS.map(s=>`<label class="ck2"><input type="checkbox" data-ids="${s}" ${c[s]?"checked":""}>${s}</label>`).join("")}</div></div>
+   <div class="irsave"><button id="idSave" ${idDirty()?"":"disabled"}>Save Changes</button></div></div>`;
+  const q=id=>document.getElementById(id);
+  q("backSet").onclick=()=>{if(idDirty())toast("You have unsaved changes. Click Save Changes first, or they'll be lost.");IDR.cur={...IDR.saved};setView("settings")};
+  v.querySelectorAll("[data-ids]").forEach(x=>x.onchange=()=>{c[x.dataset.ids]=x.checked;q("idSave").disabled=!idDirty();check()});
+  q("idSave").onclick=()=>{if(!idDirty())return;IDR.saved={...c};IDR.done=true;IDR.dlg=true;IDR.closed=false;q("idSave").disabled=true;$("irdveil").classList.add("show");$("irX").focus();check()};
+}
+
+/* ---------- Settings: Deletion rules ---------- */
+const DSEC=[
+ {k:"arcComp",t:"Auto Archive On Completion",d:"This setting will automatically archive any completed journeys after the configured period has elapsed.",note:"This setting will automatically archive any completed journeys after the configured period has elapsed.",target:["1","Weeks"]},
+ {k:"arcInact",t:"Auto Archive On Inactivity",d:"This setting will automatically archive a journey if there has been no activity for it for the configured period.",note:"An archived journey can be viewed via the 'Invites' module if the correct filters are applied.",target:["1","Months"]},
+ {k:"delComp",t:"Auto Delete On Completion",d:"This setting will automatically soft delete the end-user and all associated data after the configured period has elapsed since they completed any action requests.",note:"You cannot view or retrieve the end-users details once deleted from your portal.",target:["7","Days"],del:1},
+ {k:"delInact",t:"Auto Delete On Inactivity",d:"This setting will automatically soft delete any end-users who have been inactive for the configured period and any associated data.",note:"You cannot view or retrieve the end-users details once deleted from your portal.",target:["1","Years"],del:1}];
+const DR0=Object.fromEntries(DSEC.map(s=>[s.k,{on:false,time:"",freq:""}]));
+const DR={cur:JSON.parse(JSON.stringify(DR0)),saved:JSON.parse(JSON.stringify(DR0)),done:false,dlg:false,closed:false,tried:false};
+const drDirty=()=>JSON.stringify(DR.cur)!==JSON.stringify(DR.saved);
+const secOk=s=>!s.on||(/^\d+$/.test(s.time)&&+s.time>0&&!!s.freq);
+const secTarget=k=>{const S=DSEC.find(x=>x.k===k),c=DR.cur[k];return c.on&&c.time===S.target[0]&&c.freq===S.target[1]};
+function drawDelete(v){
+  const C=DR.cur;
+  v.innerHTML=`<div class="bhead"><button id="backSet"><svg width="7" height="11" viewBox="0 0 7 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1L1.5 5.5 6 10"/></svg>Back to Settings</button><h1>Deletion Rules</h1></div>
+  <div class="irf">${DSEC.map(S=>{const c=C[S.k];return `<div class="irs dsec${S.del?" del":""}" id="sec-${S.k}"><h2>${S.t}</h2><p>${S.d}</p><div class="dnote"><b>Note</b>${S.note}</div>
+    <label class="ck2"><input type="checkbox" data-don="${S.k}" ${c.on?"checked":""}>Enable</label>
+    ${c.on?`<div class="drow"><input type="text" inputmode="numeric" placeholder="Time" aria-label="${S.t} time" data-dt="${S.k}" value="${esc(c.time)}" class="${DR.tried&&!/^\d+$/.test(c.time)?"bad":""}"><select data-df="${S.k}" aria-label="${S.t} frequency"><option value="" ${c.freq?"":"selected"}>Frequency</option>${["Days","Weeks","Months","Years"].map(f=>`<option ${f===c.freq?"selected":""}>${f}</option>`).join("")}</select></div>`:""}</div>`}).join("")}
+    <div class="irsave"><button id="drSave" ${drDirty()?"":"disabled"}>Save Changes</button></div></div>`;
+  const q=id=>document.getElementById(id);
+  q("backSet").onclick=()=>{if(drDirty())toast("You have unsaved changes. Click Save Changes first, or they'll be lost.");DR.cur=JSON.parse(JSON.stringify(DR.saved));setView("settings")};
+  v.querySelectorAll("[data-don]").forEach(x=>x.onchange=()=>{const k=x.dataset.don;C[k].on=x.checked;if(!x.checked){C[k].time="";C[k].freq=""}const y=v.querySelector(".bform,.irf")?v.scrollTop:0;drawDelete(v);v.scrollTop=y;check()});
+  v.querySelectorAll("[data-dt]").forEach(x=>x.oninput=()=>{C[x.dataset.dt].time=x.value.trim();x.classList.remove("bad");q("drSave").disabled=!drDirty();check()});
+  v.querySelectorAll("[data-df]").forEach(x=>x.onchange=()=>{C[x.dataset.df].freq=x.value;q("drSave").disabled=!drDirty();check()});
+  q("drSave").onclick=()=>{if(!drDirty())return;const bad=DSEC.find(S=>!secOk(C[S.k]));if(bad){DR.tried=true;const y=v.scrollTop;drawDelete(v);v.scrollTop=y;toast(`Please fill in the time and frequency for ${bad.t}.`);return}
+    DR.saved=JSON.parse(JSON.stringify(C));DR.done=true;DR.dlg=true;DR.closed=false;{const y=v.scrollTop;drawDelete(v);v.scrollTop=y}$("irdveil").classList.add("show");$("irX").focus();check()};
+}
+
+/* ---------- Settings: Ongoing monitoring ---------- */
+const MO0={on:false,amount:"2",unit:"Weeks"};
+const MO={cur:{...MO0},saved:{...MO0},done:false,dlg:false,closed:false};
+const moDirty=()=>JSON.stringify(MO.cur)!==JSON.stringify(MO.saved);
+function moSummary(c){return c.unit==="Until cancelled"?"Sanctions and PEPs on-going monitoring will run until cancelled":`Sanctions and PEPs on-going monitoring will run for ${c.amount} ${c.unit}`}
+function drawMonitor(v){
+  const c=MO.cur;
+  v.innerHTML=`<div class="bhead"><button id="backSet"><svg width="7" height="11" viewBox="0 0 7 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1L1.5 5.5 6 10"/></svg>Back to Settings</button><h1>Ongoing monitoring</h1></div>
+  <div class="irf"><div class="irs"><h2>International Sanctions and PEP\u2019s</h2><p>Allows you to automate ongoing International Sanctions and PEP\u2019s against multiple sanctions and enforcements lists as well as against the Politically Exposed Persons lists, globally.</p>
+    <label class="ck2"><input type="checkbox" id="moOn" ${c.on?"checked":""}>Enable</label>
+    ${c.on?`<div class="monrow${c.unit==="Until cancelled"?" one":""}">${c.unit==="Until cancelled"?"":`<select id="moAmt" aria-label="Monitoring length">${Array.from({length:30},(_,i)=>String(i+1)).map(n=>`<option ${n===c.amount?"selected":""}>${n}</option>`).join("")}</select>`}
+      <select id="moUnit" aria-label="Monitoring period">${["Days","Weeks","Months","Years","Until cancelled"].map(u=>`<option ${u===c.unit?"selected":""}>${u}</option>`).join("")}</select></div>
+      <div class="monsum"><i><svg width="12" height="10" viewBox="0 0 12 10" fill="none" stroke="#fff" stroke-width="2"><path d="M1 5l3.5 3.5L11 1"/></svg></i><span id="moSum">${moSummary(c)}</span></div>`:""}</div>
+    <div class="irsave"><button id="moSave" ${moDirty()?"":"disabled"}>Save Changes</button></div></div>`;
+  const q=id=>document.getElementById(id);
+  q("backSet").onclick=()=>{if(moDirty())toast("You have unsaved changes. Click Save Changes first, or they'll be lost.");MO.cur={...MO.saved};setView("settings")};
+  q("moOn").onchange=e=>{c.on=e.target.checked;drawMonitor(v);check()};
+  if(q("moAmt"))q("moAmt").onchange=e=>{c.amount=e.target.value;q("moSum").textContent=moSummary(c);q("moSave").disabled=!moDirty();check()};
+  if(q("moUnit"))q("moUnit").onchange=e=>{const was=c.unit==="Until cancelled";c.unit=e.target.value;if(was!==(c.unit==="Until cancelled"))drawMonitor(v);else{q("moSum").textContent=moSummary(c);q("moSave").disabled=!moDirty()}check()};
+  q("moSave").onclick=()=>{if(!moDirty())return;MO.saved={...c};MO.done=true;MO.dlg=true;MO.closed=false;$("irdveil").classList.add("show");$("irX").focus();drawMonitor(v);check()};
+}
+
+/* ---------- Settings: Invite rules ---------- */
+const IR0={amount:"1",unit:"Months",lock:false,rule:false,email:true,sms:false,r:["5","7","8"]};
+const IR={cur:JSON.parse(JSON.stringify(IR0)),saved:JSON.parse(JSON.stringify(IR0)),done:false,dlg:false,closed:false};
+const irDirty=()=>JSON.stringify(IR.cur)!==JSON.stringify(IR.saved);
+const irValid=()=>/^\d+$/.test(IR.cur.amount)&&+IR.cur.amount>0&&IR.cur.r.every(x=>x===""||/^\d+$/.test(x));
+function drawInvite(v){
+  const c=IR.cur;
+  v.innerHTML=`<div class="bhead"><button id="backSet"><svg width="7" height="11" viewBox="0 0 7 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1L1.5 5.5 6 10"/></svg>Back to Settings</button><h1>Invite Rules</h1></div>
+  <div class="irf">
+   <div class="irs"><h2>Expire invites</h2><p>The end user will no longer be able to access their invite request after:</p>
+     <div class="irrow"><input type="text" id="irAmt" inputmode="numeric" placeholder="Amount" value="${esc(c.amount)}" aria-label="Expire after amount"><select id="irUnit" aria-label="Expire after unit">${["Days","Weeks","Months","Years"].map(u=>`<option ${u===c.unit?"selected":""}>${u}</option>`).join("")}</select></div>
+     <div class="err4" id="irAmtErr" ${/^\d+$/.test(c.amount)&&+c.amount>0?"hidden":""}>Enter a whole number.</div></div>
+   <div class="irs"><h2>Automatically lock process after it's completed</h2><p>The end user will not be able to edit any of the information after it has been submitted.</p><label class="ck2"><input type="checkbox" id="irLock" ${c.lock?"checked":""}>Enable</label></div>
+   <div class="irs"><h2>Invite rule</h2><p>Any changes made will apply to all invites and will be irreversible. You will be required to save any settings before they will take effect.</p><label class="ck2"><input type="checkbox" id="irRule" ${c.rule?"checked":""}>Enable</label></div>
+   <div class="irs"><h2>Incomplete invite reminder</h2><p>Automatically send reminder messages for any invites that haven't been completed after the configured time period.</p>
+     <p class="rtype">Reminder type:</p><label class="ck2"><input type="checkbox" id="irEmail" ${c.email?"checked":""}>Email</label><label class="ck2"><input type="checkbox" id="irSms" ${c.sms?"checked":""}>SMS</label>
+     <div class="rems">${["First","Second","Third"].map((n,i)=>`<div class="fld2"><label for="irR${i}">${n} reminder (days)</label><input type="text" id="irR${i}" inputmode="numeric" placeholder="${n} reminder (days)" value="${esc(c.r[i])}"></div>`).join("")}</div></div>
+   <div class="irsave"><button id="irSave" ${irDirty()&&irValid()?"":"disabled"}>Save Changes</button></div></div>`;
+  const q=id=>document.getElementById(id);
+  const upd=()=>{q("irSave").disabled=!(irDirty()&&irValid());check()};
+  q("backSet").onclick=()=>{if(irDirty())toast("You have unsaved changes. Click Save Changes first, or they'll be lost.");IR.cur=JSON.parse(JSON.stringify(IR.saved));setView("settings")};
+  q("irAmt").oninput=e=>{c.amount=e.target.value.trim();q("irAmtErr").hidden=/^\d+$/.test(c.amount)&&+c.amount>0;upd()};
+  q("irUnit").onchange=e=>{c.unit=e.target.value;upd()};
+  [["irLock","lock"],["irRule","rule"],["irEmail","email"],["irSms","sms"]].forEach(([id,k])=>q(id).onchange=e=>{c[k]=e.target.checked;upd()});
+  [0,1,2].forEach(i=>q("irR"+i).oninput=e=>{c.r[i]=e.target.value.trim();upd()});
+  q("irSave").onclick=()=>{if(!(irDirty()&&irValid()))return;IR.saved=JSON.parse(JSON.stringify(c));IR.done=true;IR.dlg=true;IR.closed=false;$("irdveil").classList.add("show");$("irX").focus();drawInvite(v);check()};
+}
+function closeIrDlg(){if(AD.dlg){AD.dlg=false;AD.closed=true}IDR.dlg=false;if(IDR.done)IDR.closed=true;DR.dlg=false;if(DR.done)DR.closed=true;MO.dlg=false;if(MO.done)MO.closed=true;IR.dlg=false;IR.closed=true;$("irdveil").classList.remove("show");check()}
+$("irX").onclick=closeIrDlg;$("irdveil").onclick=e=>{if(e.target.id==="irdveil")closeIrDlg()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&(IR.dlg||MO.dlg||DR.dlg||IDR.dlg||AD.dlg))closeIrDlg()});
+
+/* ---------- exercise ---------- */
+const drawerOpen=()=>$("drawer").classList.contains("show");
+const rowOf=(k,v)=>document.querySelector(`#dbody input[data-k="${k}"][value="${v}"]`)?.parentElement;
+const firstMissing=(k,vals)=>{const v=vals.find(x=>!pending[k].has(x));return v?rowOf(k,v):null};
+const hasAll=(set,vals)=>vals.every(v=>set.has(v));
+const D_FROM="2026-09-15",D_TO="2026-09-30";
+const T={status:["Active","Invited"],idtype:["Passport"],journey:["Identity Only","Safe Harbour"],approval:["Approved"],by:["Amelia Brooks"]};
+const inDrawer=f=>()=>drawerOpen()?f():$("btn-all");
+const inAdmin=f=>()=>AD.modal?f():AD.area!=="admin"?(AD.menu?document.querySelector('[data-am="Admin Portal"]'):$("areaBtn")):f();
+const navT=t=>document.querySelector(`#topnav [data-anav="${t}"]`);
+const gNew=()=>!!AD.groups.find(g=>g[0].toLowerCase()===NEWG.name.toLowerCase());
+const permOffAdmin=()=>{const i=PERMS.findIndex(n=>n.t==="Admin Portal");return leaves(PERMS[i],String(i)).every(l=>AD.off[NEWG.name+"|"+l])};
+const inG=f=>inAdmin(()=>AD.page==="group"&&AD.group===NEWG.name?f():AD.tab!=="groups"||AD.page!=="list"?navT("Portal User groups"):document.querySelector(`[data-gopen="${NEWG.name}"]`));
+const inU=f=>inAdmin(()=>AD.page==="user"&&AD.user===U2?f():AD.tab!=="users"||AD.page!=="list"?navT("Portal Users"):document.querySelector(`[data-uopen="${U2}"]`));
+const optEl=(attr,v)=>{const x=document.querySelector(`[${attr}="${v}"]`);return x?x.parentElement:null};
+const STEPS=[
+ {t:"Open the Portal menu",d:"User groups are managed in the Admin Portal. Click <b>Portal</b> at the top left.",el:()=>AD.area==="admin"||AD.menu?null:$("areaBtn"),ok:()=>AD.menu||AD.area==="admin"},
+ {t:"Go to Admin Portal",d:"Choose <b>Admin Portal</b>.",el:()=>AD.menu?document.querySelector('[data-am="Admin Portal"]'):AD.area==="admin"?null:$("areaBtn"),ok:()=>AD.area==="admin"},
+ {t:"Open Portal User groups",d:"Click <b>Portal User groups</b> in the top bar. It lists every group, its email address and whether it has full permissions.",el:inAdmin(()=>AD.tab==="groups"?null:navT("Portal User groups")),ok:()=>AD.tab==="groups"||gNew()},
+ {t:"Add a new group",d:"Click <b>+ Add new</b> to open Create user group.",el:inAdmin(()=>AD.modal?null:AD.tab!=="groups"?navT("Portal User groups"):$("auAdd")),ok:()=>AD.modal||gNew()},
+ {t:"Name the group",copy:NEWG.name,d:"Type or paste <b>Training User Group</b> into User Group Name.",el:inAdmin(()=>AD.modal?$("ngName"):null),ok:()=>AD.nf.name.trim().toLowerCase()===NEWG.name.toLowerCase()||gNew()},
+ {t:"Add the group's email",copy:NEWG.email,d:"Type or paste <b>training.team@example.com</b> into Email Address.",el:inAdmin(()=>AD.modal?$("ngEmail"):null),ok:()=>AD.nf.email.toLowerCase()===NEWG.email||gNew()},
+ {t:"Save the group",d:"Click <b>Save</b>. Training User Group appears at the top of the list, with full permissions.",el:inAdmin(()=>AD.modal?$("ngSave"):null),ok:()=>gNew()},
+ {t:"Open the new group",d:"Click <b>Training User Group</b> to open it.",el:inG(()=>null),ok:()=>(AD.page==="group"&&AD.group===NEWG.name)||permOffAdmin()},
+ {t:"Open its permissions",d:"Click the <b>Permissions</b> tab.",el:inG(()=>AD.gtab==="Permissions"?null:document.querySelector('[data-gtab="Permissions"]')),ok:()=>(AD.page==="group"&&AD.gtab==="Permissions")||permOffAdmin()},
+ {t:"Turn off full permissions",d:"Untick <b>Assign full permissions</b>. Every permission is listed underneath, so you can choose exactly what the group can do.",el:inG(()=>AD.gtab!=="Permissions"?document.querySelector('[data-gtab="Permissions"]'):$("ugFull").parentElement),ok:()=>AD.full[NEWG.name]===false||permOffAdmin()},
+ {t:"Remove Admin Portal access",d:"Scroll down to <b>Admin Portal</b> and untick it. Everything under it unticks too, so members of this group can't manage users, groups or child portals.",el:inG(()=>AD.gtab!=="Permissions"?document.querySelector('[data-gtab="Permissions"]'):AD.full[NEWG.name]?$("ugFull").parentElement:$("pt"+PERMS.findIndex(n=>n.t==="Admin Portal")).parentElement),ok:()=>permOffAdmin()},
+ {t:"Open the Users tab",d:"Now add someone to the group. Click the <b>Users</b> tab.",el:inG(()=>AD.gtab==="Users"?null:document.querySelector('[data-gtab="Users"]')),ok:()=>(AD.page==="group"&&AD.gtab==="Users"&&permOffAdmin())||groupsOf(U1).includes(NEWG.name)},
+ {t:"Choose a user",d:"Open <b>Add Users</b> and tick <b>Priya Nair</b>. She isn't in any user group yet.",el:inG(()=>AD.gtab!=="Users"?document.querySelector('[data-gtab="Users"]'):AD.open==="ugUsers"?optEl("data-pick",U1):$("ugUsers")),ok:()=>AD.pick.includes(U1)||groupsOf(U1).includes(NEWG.name)},
+ {t:"Add her to the group",d:"Click <b>Add</b>. Priya appears in the group's user list.",el:inG(()=>$("ugAddBtn")),ok:()=>groupsOf(U1).includes(NEWG.name)},
+ {t:"Go to Portal Users",d:"There's a second way to add someone to a group: from their own record. Click <b>Portal Users</b> in the top bar. Priya now shows Training User Group.",el:inAdmin(()=>AD.tab==="users"&&AD.page==="list"?null:navT("Portal Users")),ok:()=>AD.tab==="users"||groupsOf(U2).includes(G2)},
+ {t:"Open Tom's record",d:"Tom Ashworth isn't in any user group either. Click <b>Tom Ashworth</b> to open his record.",el:inU(()=>null),ok:()=>(AD.page==="user"&&AD.user===U2)||groupsOf(U2).includes(G2)},
+ {t:"Open his Groups tab",d:"Click the <b>Groups</b> tab. It shows the groups he belongs to: none yet.",el:inU(()=>AD.utab==="Groups"?null:document.querySelector('[data-utab="Groups"]')),ok:()=>(AD.page==="user"&&AD.user===U2&&AD.utab==="Groups")||groupsOf(U2).includes(G2)},
+ {t:"Choose a group",d:"Open <b>Add User Groups</b> and tick <b>Manchester Branch</b>, an existing group.",el:inU(()=>AD.utab!=="Groups"?document.querySelector('[data-utab="Groups"]'):AD.open==="ugGroups"?optEl("data-gpick",G2):$("ugGroups")),ok:()=>AD.pick.includes(G2)||groupsOf(U2).includes(G2)},
+ {t:"Add him to the group",d:"Click <b>Add</b>. Manchester Branch appears in Tom's list of groups.",el:inU(()=>$("ugAddG")),ok:()=>groupsOf(U2).includes(G2)}
+];
+const DRAWER_FIRST=-1,DRAWER_APPLY=-1;
+const GROUPS=[["Create a user group",0],["Set its permissions",7],["Add a user to the group",11],["From a user's record",14]];
+function renderList(){
+  const tick='<svg width="8" height="7" viewBox="0 0 8 7" fill="none" stroke="#fff" stroke-width="1.8"><path d="M1 3.5l2 2L7 1"/></svg>';
+  let out="";
+  STEPS.forEach((st,i)=>{
+    const g=GROUPS.find(x=>x[1]===i);if(g)out+=`<li class="g">${g[0]}</li>`;
+    const cls=finished||i<s?"isdone":i===s?"now":"";
+    out+=`<li class="it ${cls}"${i===s&&!finished?' aria-current="step"':""}><i>${cls==="isdone"?tick:""}</i>${st.t.replace(/^All filters: (.)/,(m,c)=>c.toUpperCase())}</li>`;
+  });
+  $("slist").innerHTML=out;
+  $("stoggleTxt").textContent=$("slist").hidden?`View all ${STEPS.length} steps`:"Hide steps";
+  const cur=$("slist").querySelector(".now");if(cur&&!$("slist").hidden)cur.scrollIntoView({block:"nearest"});
+}
+$("stoggle").onclick=()=>{const l=$("slist");l.hidden=!l.hidden;$("stoggle").setAttribute("aria-expanded",String(!l.hidden));renderList()};
+let s=0,finished=false;
+function check(){
+  if(finished)return;
+  let moved=false;
+  while(s<STEPS.length&&STEPS[s].ok()){s++;moved=true}
+  if(s>=STEPS.length){finished=true;coach();setTimeout(showDone,2200);return}
+  if(moved&&s>0)toast("Nice. Next step: "+STEPS[s].t+".");
+  coach();
+}
+function coach(){
+  document.querySelectorAll(".hint").forEach(e=>e.classList.remove("hint"));
+  if(typeof renderList==="function")renderList();
+  if(finished){renderCopy(null);$("count").textContent="Complete";$("task").textContent="All done";$("desc").textContent="Try it again with hints turned off.";$("prog").style.width="100%";return}
+  const st=STEPS[s];
+  $("count").textContent=`Step ${s+1} of ${STEPS.length}`;$("task").textContent=st.t;$("desc").innerHTML=st.d;renderCopy(st.copy);$("prog").style.width=(s/STEPS.length*100)+"%";
+  if(!$("hints").checked)return;
+  const el=st.el();if(el){el.classList.add("hint");if(el.id==="q")$("searchBox").classList.add("hint"),el.classList.remove("hint");el.scrollIntoView?.({block:"nearest",inline:"nearest"});keepClearOfCoach(el)}
+}
+function keepClearOfCoach(el){const c=$("coach");if(!c||!el.getBoundingClientRect)return;requestAnimationFrame(()=>{const r=el.getBoundingClientRect(),k=c.getBoundingClientRect();if(r.bottom>k.top-12&&r.left<k.right+12){el.scrollIntoView({block:"center",behavior:"smooth"})}})}
+const COPYICON='<svg width="11" height="12" viewBox="0 0 10 12" fill="none" stroke="#fff" stroke-width="1.4"><rect x="3" y="3" width="6" height="8" rx="1"/><path d="M1 9V1h6"/></svg>';
+function renderCopy(v){
+  const r=$("copyRow");
+  if(!v){r.classList.remove("show");r.innerHTML="";r.dataset.v="";return}
+  if(r.dataset.v===v)return;
+  r.dataset.v=v;r.innerHTML=`<code>${esc(v)}</code><button id="copyBtn" aria-label="Copy ${esc(v)}">${COPYICON}Copy</button>`;r.classList.add("show");
+  $("copyBtn").onclick=()=>copyText(v);
+}
+function copyText(v){
+  const ok=()=>{const b=$("copyBtn");if(!b)return;b.classList.add("done");b.innerHTML="Copied";toast("Copied. Paste it into the search box and press Enter.");setTimeout(()=>{if($("copyBtn")){b.classList.remove("done");b.innerHTML=COPYICON+"Copy"}},1600)};
+  const fallback=()=>{const t=document.createElement("textarea");t.value=v;t.setAttribute("readonly","");t.style.cssText="position:fixed;left:-9999px;top:0";document.body.appendChild(t);t.select();let done=false;try{done=document.execCommand("copy")}catch(e){}t.remove();done?ok():toast("Copy isn't available here. Type it instead.")};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(v).then(ok,fallback);else fallback();
+}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2400)}
+function bindNoop(){document.querySelectorAll("[data-noop]").forEach(b=>b.onclick=e=>{e.stopPropagation();toast("Not part of this exercise.")})}
+
+/* modules and exercises shown in the completion popup */
+const MODULES=[
+ {
+  "name": "Individuals",
+  "items": [
+   {
+    "name": "Search and filter the list",
+    "desc": "Search by name, phone number, email address or reg code, filter from the toolbar, combine…",
+    "id": "individuals-search-filter",
+    "url": "individuals-search-filter.html"
+   },
+   {
+    "name": "Configure the table",
+    "desc": "Use Table Configuration to choose which details, documents and data checks appear as columns",
+    "id": "individuals-table-config",
+    "url": "individuals-table-config.html"
+   },
+   {
+    "name": "Review an individual's results",
+    "desc": "Open a record and review the Liveness, ID verification, Address and Mortality, and…",
+    "id": "individuals-review-results",
+    "url": "individuals-review-results.html"
+   },
+   {
+    "name": "Explore an individual's record",
+    "desc": "Walk through every tab of a record: User Details, the contact summary, Quick Actions, each…",
+    "id": "individuals-record-tour",
+    "url": "individuals-record-tour.html"
+   },
+   {
+    "name": "Approve or reject an individual",
+    "desc": "Add the Approval Status column, then approve Angela Specimen, reject her and reset her to…",
+    "id": "individuals-approve-reject",
+    "url": "individuals-approve-reject.html"
+   }
+  ]
+ },
+ {
+  "name": "Sending journeys",
+  "items": [
+   {
+    "name": "Send a journey to an existing individual",
+    "desc": "Use Quick Actions on Angela Specimen's record to send an Identity Only journey, choose how…",
+    "id": "send-journey-existing",
+    "url": "send-journey-existing.html"
+   },
+   {
+    "name": "Add a new individual and send a journey",
+    "desc": "Add Jordan Specimen from the Individuals tab, create their profile, send them an Identity…",
+    "id": "send-journey-new-individual",
+    "url": "send-journey-new-individual.html"
+   }
+  ]
+ },
+ {
+  "name": "Reports",
+  "items": [
+   {
+    "name": "Generate a PDF report",
+    "desc": "Use Quick Actions on Angela Specimen's record to export a report of her process, choose…",
+    "id": "reports-pdf",
+    "url": "reports-pdf.html"
+   }
+  ]
+ },
+ {
+  "name": "Data checks",
+  "items": [
+   {
+    "name": "Run a stand-alone data check",
+    "desc": "Run an Address and Mortality check, with a postcode lookup, and a Sanctions and PEPs check…",
+    "id": "data-check-standalone",
+    "url": "data-check-standalone.html"
+   }
+  ]
+ },
+ {
+  "name": "Remediation",
+  "items": [
+   {
+    "name": "Remediate checks",
+    "desc": "Remediate Angela Specimen's Address and Mortality, Sanctions and PEPs and failed ID…",
+    "id": "remediate-checks",
+    "url": "remediate-checks.html"
+   }
+  ]
+ },
+ {
+  "name": "Form Builder",
+  "items": [
+   {
+    "name": "Build a Personal Details and Address form",
+    "desc": "Create a form with headings and questions, link each answer to its Data Connector Source…",
+    "id": "form-builder-personal-details",
+    "url": "form-builder-personal-details.html"
+   }
+  ]
+ },
+ {
+  "name": "Journey Builder",
+  "items": [
+   {
+    "name": "Create a new journey",
+    "desc": "Create the Enhanced AML journey from scratch: fill in its settings, add the Personal…",
+    "id": "journey-builder-create",
+    "url": "journey-builder-create.html"
+   }
+  ]
+ },
+ {
+  "name": "Settings",
+  "items": [
+   {
+    "name": "Change a portal's name and logo",
+    "desc": "Rename a portal and change its logo. Full branding is done in the Branding module",
+    "id": "settings-branding",
+    "url": "settings-branding.html"
+   },
+   {
+    "name": "Set invite rules",
+    "desc": "Set when invites expire, lock completed processes and send email and SMS reminders",
+    "id": "settings-invite-rules",
+    "url": "settings-invite-rules.html"
+   },
+   {
+    "name": "Set up ongoing monitoring",
+    "desc": "Switch on automatic Sanctions and PEPs monitoring and choose how long it runs",
+    "id": "settings-ongoing-monitoring",
+    "url": "settings-ongoing-monitoring.html"
+   },
+   {
+    "name": "Set deletion rules",
+    "desc": "Automatically archive journeys and delete records after set periods",
+    "id": "settings-deletion-rules",
+    "url": "settings-deletion-rules.html"
+   },
+   {
+    "name": "Choose what the ID check report includes",
+    "desc": "Pick the Sanctions and PEPs sections every exported ID Check Report includes",
+    "id": "settings-id-check-report",
+    "url": "settings-id-check-report.html"
+   }
+  ]
+ },
+ {
+  "name": "Admin Portal",
+  "items": [
+   {
+    "name": "Add a portal user",
+    "desc": "Add a user in the Admin Portal and choose their role, user groups and options",
+    "id": "admin-add-user",
+    "url": "admin-add-user.html"
+   },
+   {
+    "name": "Create a user group and assign users",
+    "desc": "Create a group, set its permissions and add users, from the group or the user's record",
+    "id": "admin-user-groups",
+    "current": true
+   },
+   {
+    "name": "Create a user role and apply it",
+    "desc": "Create a permissions template, switch it on and give a user that one role",
+    "id": "admin-user-roles",
+    "url": "admin-user-roles.html"
+   },
+   {
+    "name": "Set up a child portal",
+    "desc": "Create a child portal from a Reseller portal, then tour its settings tabs",
+    "id": "admin-child-portals",
+    "url": "admin-child-portals.html"
+   }
+  ]
+ }
+];
+const PAGE_ID="admin-user-groups";
+const PROG_KEY="credas-connect-training:progress";
+function progGet(){try{return JSON.parse(localStorage.getItem(PROG_KEY)||"{}")||{}}catch(e){return {}}}
+function progMark(id){try{const p=progGet(),now=new Date().toISOString();p[id]=Object.assign({first:now},p[id]||{},{last:now});localStorage.setItem(PROG_KEY,JSON.stringify(p))}catch(e){}}
+function showDone(){
+  progMark(PAGE_ID);const P=progGet();
+  const all=MODULES.flatMap(m=>m.items).filter(e=>e.id),done=all.filter(e=>P[e.id]).length;
+  $("modules").innerHTML=`<div class="progsum"><b>${done} of ${all.length}</b> exercises completed<span class="pbar"><i style="width:${Math.round(done/all.length*100)}%"></i></span></div>`+MODULES.map(m=>`<h3>${m.name}</h3><div class="exlist">${m.items.map(e=>{
+    const right=e.current?'<span class="tag ok">Completed</span><button class="mini" data-again>Start again</button>':e.url?(P[e.id]?`<span class="tag ok">Completed</span><a class="mini lt" href="${e.url}" target="_self">Open</a>`:`<a class="mini lt" href="${e.url}" target="_self">Open</a>`):'<span class="tag soon">Coming soon</span>';
+    return `<div class="ex" ${e.current||e.url?"":'aria-disabled="true"'}><span class="n"><b>${e.name}</b><small>${e.desc}</small></span>${right}</div>`}).join("")}</div>`).join("");
+  $("doneVeil").classList.add("show");document.querySelector("[data-again]")?.focus();
+}
+$("modules").onclick=e=>{if(e.target.closest("[data-again]")){$("doneVeil").classList.remove("show");reset()}};
+
+function reset(){
+  applied=blank();pending=blank();dateFrom=dateTo=null;query="";$("q").value="";s=0;finished=false;
+  Object.assign(SB,{name:"Connect Training",savedName:"Connect Training",logo:"credas",savedLogo:"credas",picker:false,pick:null,saved:false,uploaded:false});if(typeof headerLogo==="function")headerLogo("credas");if(typeof AD!=="undefined"){AD=AD0();AD.flash=null;$("auveil").classList.remove("show");$("amenu").classList.remove("show");$("areaTxt").textContent="Portal";const nav=$("topnav");if(nav.dataset.orig){nav.innerHTML=nav.dataset.orig;delete nav.dataset.orig;$("navSet").onclick=()=>setView("settings");$("navInd").onclick=()=>setView("list")}$("admView").hidden=true}if(typeof IDR!=="undefined"){IDR.cur={...ID0};IDR.saved={...ID0};IDR.done=false;IDR.dlg=false;IDR.closed=false}if(typeof DR!=="undefined"){DR.cur=JSON.parse(JSON.stringify(DR0));DR.saved=JSON.parse(JSON.stringify(DR0));DR.done=false;DR.dlg=false;DR.closed=false;DR.tried=false}if(typeof MO!=="undefined"){MO.cur={...MO0};MO.saved={...MO0};MO.done=false;MO.dlg=false;MO.closed=false}if(typeof IR!=="undefined"){IR.cur=JSON.parse(JSON.stringify(IR0));IR.saved=JSON.parse(JSON.stringify(IR0));IR.done=false;IR.dlg=false;IR.closed=false;$("irdveil").classList.remove("show")}$("fpveil").classList.remove("show");if($("setView")){SB.view="list";$("listView").hidden=false;$("setView").hidden=true;$("navInd").classList.add("on");$("navSet").classList.remove("on")}
+  closeDrops();closeDrawer();$("doneVeil").classList.remove("show");render();coach();
+}
+$("restart").onclick=reset;$("hints").onchange=coach;
+$("coachMin").onclick=()=>{const c=$("coach");c.classList.toggle("min");$("coachMin").textContent=c.classList.contains("min")?"Show":"Hide"};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if($("calpop")){closeCal();coach();return}closeDrops();if($("drawer").classList.contains("show"))closeDrawer()}});
+const INTRO={
+  kicker:"Admin Portal module \u00b7 Exercise 2",
+  title:"Create a user group and assign users",
+  paras:["User groups organise the people in a portal, usually by location, such as a branch. Each group has its own set of permissions, which control what its members can do, and a user can belong to more than one group.",
+         "In the first part, you'll create a new group, turn off full permissions and remove its access to the Admin Portal, then add an existing user to it from the group's Users tab.",
+         "In the second part, you'll use the other route: adding someone to an existing group from the Groups tab on their own record. Both routes give the same result, so use whichever suits the task."],
+  tips:[["\u2630","User groups are in the Admin Portal, under <b>Portal User groups</b>."],["\u{1F512}","Untick <b>Assign full permissions</b> to choose exactly what a group can do."],["\u21C4","Add users from the <b>group's Users tab</b>, or groups from the <b>user's Groups tab</b>."],["\u{1F465}","A user can belong to <b>more than one</b> group."]]
+};
+function showIntro(){
+  const groups=GROUPS.map((g,i)=>{const end=i<GROUPS.length-1?GROUPS[i+1][1]:STEPS.length;
+    return `<div class="grp"><b>${g[0]}</b><ol start="${g[1]+1}">${STEPS.slice(g[1],end).map(st=>`<li>${st.t.replace(/^All filters: (.)/,(m,c)=>c.toUpperCase())}</li>`).join("")}</ol></div>`}).join("");
+  $("introBody").innerHTML=`<p class="kicker">${INTRO.kicker}</p><h2 id="introTitle">${INTRO.title}</h2><p class="meta">${STEPS.length} steps \u00b7 about ${Math.max(3,Math.round(STEPS.length/3))} minutes</p>
+    ${INTRO.paras.map(t=>`<p>${t.replace(/&(?!amp;)/g,"&amp;")}</p>`).join("")}
+    <h3>What you'll practise</h3><div class="groups">${groups}</div>
+    <h3>Good to know</h3><ul class="tips">${INTRO.tips.map(([i,t])=>`<li><i aria-hidden="true">${i}</i><span>${t}</span></li>`).join("")}
+      <li><i aria-hidden="true">\u2139</i><span>The coach card in the bottom-left corner guides you through each step, and orange highlights show where to click. Untick <b>Show hints</b> for more of a challenge.</span></li>
+      <li><i aria-hidden="true">\u2713</i><span>This is a practice copy with made-up records, so nothing you do here affects the live system.</span></li></ul>`;
+  $("introVeil").classList.add("show");$("introBody").scrollTop=0;$("introStart").focus();
+}
+
+/* ---------- background music (composed in the browser with Web Audio) ---------- */
+const Music=(()=>{
+  const BPM=92,BEAT=60/BPM,BAR=BEAT*4,SIX=BEAT/4,BASE=0.22,DUCK=0.08,LEVEL=3.2,SWING=0.16;
+  const hz=n=>440*Math.pow(2,(n-69)/12);
+  /* D major, modern pop/corporate feel: Gmaj7 – A6 – F#m7 – Bm7, one bar each */
+  const PROG=[{root:31,keys:[54,59,62,66]},{root:33,keys:[54,57,61,64]},{root:30,keys:[52,57,61,64]},{root:35,keys:[54,57,62,66]}];
+  /* 16-step patterns (1 = hit) */
+  const KICK =[1,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0];
+  const SNARE=[0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0];
+  const HAT  =[1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,1];
+  const STAB =[1,0,0,1, 0,0,1,0, 0,0,1,0, 0,1,0,0];   /* syncopated chord stabs */
+  const BASSP=[1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,1];
+  let ctx=null,master=null,musicBus=null,drumBus=null,pump=null,rev=null,noise=null,timer=null,next=0,step=0,on=true,playing=false;
+  try{on=localStorage.getItem("credas-connect-training:music")!=="off"}catch(e){}
+  function impulse(sec,decay){const r=ctx.sampleRate,len=r*sec,b=ctx.createBuffer(2,len,r);for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay)}return b}
+  function init(){
+    if(ctx)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    ctx=new AC();master=ctx.createGain();master.gain.value=0;
+    const comp=ctx.createDynamicsCompressor();comp.threshold.value=-16;comp.ratio.value=3;comp.attack.value=.01;comp.release.value=.2;
+    const tone=ctx.createBiquadFilter();tone.type="lowpass";tone.frequency.value=9000;
+    musicBus=ctx.createGain();musicBus.gain.value=BASE;
+    pump=ctx.createGain();pump.gain.value=1;            /* gentle "breathing" on each kick */
+    drumBus=ctx.createGain();drumBus.gain.value=.5;
+    rev=ctx.createConvolver();rev.buffer=impulse(2.4,3);const wet=ctx.createGain();wet.gain.value=.22;const dry=ctx.createGain();dry.gain.value=.9;
+    pump.connect(dry);pump.connect(rev);rev.connect(wet);
+    const inst=ctx.createGain();inst.connect(pump);musicBus._inst=inst;
+    drumBus.connect(dry);const dsend=ctx.createGain();dsend.gain.value=.08;drumBus.connect(dsend);dsend.connect(rev);
+    dry.connect(musicBus);wet.connect(musicBus);musicBus.connect(master);master.connect(tone);tone.connect(comp);comp.connect(ctx.destination);
+    const len=ctx.sampleRate;noise=ctx.createBuffer(1,len,ctx.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+  }
+  const IN=()=>musicBus._inst;
+  function kick(t,v){const o=ctx.createOscillator(),g=ctx.createGain();o.type="sine";o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(48,t+.11);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.95*v,t+.004);g.gain.exponentialRampToValueAtTime(.001,t+.42);o.connect(g);g.connect(drumBus);o.start(t);o.stop(t+.45);
+    pump.gain.cancelScheduledValues(t);pump.gain.setValueAtTime(.62,t);pump.gain.linearRampToValueAtTime(1,t+BEAT*.8)}
+  function nz(t,dur,type,freq,q,amp,dest){const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=noise;s.playbackRate.value=.9+Math.random()*.2;
+    f.type=type;f.frequency.value=freq;f.Q.value=q;g.gain.setValueAtTime(amp,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(f);f.connect(g);g.connect(dest||drumBus);s.start(t,Math.random()*.5);s.stop(t+dur+.02)}
+  function snare(t){nz(t,.22,"bandpass",1900,.8,.32);nz(t+.012,.12,"highpass",3500,.5,.12);
+    const o=ctx.createOscillator(),g=ctx.createGain();o.type="triangle";o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(160,t+.08);g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.12);o.connect(g);g.connect(drumBus);o.start(t);o.stop(t+.14)}
+  function hat(t,v,open){nz(t,open?.22:.045,"highpass",7600,.7,(open?.07:.06)*v)}
+  function shaker(t,v){nz(t,.07,"bandpass",5200,1.2,.035*v)}
+  function bass(t,n,dur){const o=ctx.createOscillator(),o2=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type="sine";o2.type="triangle";o.frequency.value=hz(n);o2.frequency.value=hz(n);
+    f.type="lowpass";f.frequency.value=420;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.24,t+.012);g.gain.exponentialRampToValueAtTime(.12,t+dur*.6);g.gain.linearRampToValueAtTime(0,t+dur);
+    const g2=ctx.createGain();g2.gain.value=.25;o.connect(g);o2.connect(g2);g2.connect(f);f.connect(g);g.connect(IN());o.start(t);o2.start(t);o.stop(t+dur+.02);o2.stop(t+dur+.02)}
+  function keys(t,notes,dur,v){/* warm electric-piano chord: rounded body, soft tine, slow tremolo */
+    notes.forEach((n,i)=>{const o=ctx.createOscillator(),o2=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain(),g2=ctx.createGain();
+      o.type="triangle";o2.type="sine";o.frequency.value=hz(n);o2.frequency.value=hz(n)*2;o.detune.value=(i%2?4:-4);
+      f.type="lowpass";f.frequency.setValueAtTime(2600,t);f.frequency.exponentialRampToValueAtTime(900,t+dur);
+      const a=.038*v/(1+i*.1);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(a,t+.006);g.gain.exponentialRampToValueAtTime(a*.4,t+.25);g.gain.exponentialRampToValueAtTime(.0005,t+dur);
+      g2.gain.setValueAtTime(a*.18,t);g2.gain.exponentialRampToValueAtTime(.0005,t+.3);
+      o.connect(f);f.connect(g);o2.connect(g2);g2.connect(g);g.connect(IN());o.start(t);o2.start(t);o.stop(t+dur+.05);o2.stop(t+dur+.05)})}
+  function pad(t,notes,dur){notes.forEach(n=>{[-7,7].forEach(det=>{const o=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type="sawtooth";o.frequency.value=hz(n+12);o.detune.value=det;
+    f.type="lowpass";f.frequency.value=1500;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.006,t+.8);g.gain.setValueAtTime(.006,t+dur-.3);g.gain.linearRampToValueAtTime(0,t+dur+.6);
+    o.connect(f);f.connect(g);g.connect(IN());o.start(t);o.stop(t+dur+.7)})})}
+  function schedule(){
+    while(next<ctx.currentTime+.35){
+      const bar=Math.floor(step/16),i=step%16,ch=PROG[bar%PROG.length],sw=(i%2)?SIX*SWING:0,t=next+sw;
+      const intro=bar<2,full=bar>=4;
+      if(i===0)pad(t,ch.keys,BAR);
+      if(STAB[i])keys(t,ch.keys,i===0?BEAT*1.6:BEAT*.7,i===0?1:.75);
+      if(!intro){
+        if(BASSP[i])bass(t,i===15?ch.root+12:ch.root,i===0?BEAT*1.4:BEAT*.6);
+        if(KICK[i]&&!(bar%8===7&&i>=8))kick(t,i===0?1:.8);
+        if(SNARE[i])snare(t);
+        if(HAT[i])hat(t,i%4===0?1:.75,i===15&&bar%2===1);
+        if(full&&i%2===1)shaker(t,.8+Math.random()*.4);
+        if(bar%8===7&&i>=12)snare(t);  /* small fill every 8 bars */
+      }else if(i%4===2)hat(t,.6);
+      next+=SIX;step++;
+    }
+  }
+  function start(){if(!on)return;init();if(!ctx)return;if(ctx.state==="suspended")ctx.resume();if(playing)return;playing=true;
+    step=0;next=ctx.currentTime+.08;master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setValueAtTime(master.gain.value,ctx.currentTime);master.gain.linearRampToValueAtTime(LEVEL,ctx.currentTime+2);
+    schedule();timer=setInterval(schedule,80)}
+  function stop(fade){if(!ctx||!playing)return;playing=false;const t=ctx.currentTime,f=fade==null?2.5:fade;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(0,t+f);
+    const tm=timer;timer=null;setTimeout(()=>clearInterval(tm),f*1000+50)}
+  function duck(d){if(!ctx||!playing)return;const t=ctx.currentTime;musicBus.gain.cancelScheduledValues(t);musicBus.gain.setValueAtTime(musicBus.gain.value,t);musicBus.gain.linearRampToValueAtTime(d?DUCK:BASE,t+(d?.35:.9))}
+  function pause(){if(ctx&&playing)ctx.suspend()} function resume(){if(ctx&&playing)ctx.resume()}
+  function setOn(v){on=v;try{localStorage.setItem("credas-connect-training:music",v?"on":"off")}catch(e){}if(!v)stop(.6)}
+  return {start,stop,duck,pause,resume,setOn,get on(){return on},get playing(){return playing}};
+})();
+
+/* ---------- spoken overview (browser voice) ---------- */
+const SPOKEN=[["Welcome back to the Admin Portal module.", 500], ["User groups organise the people in a portal, usually by location, such as a branch.", 400], ["Each group has its own permissions, which control what its members can do.", 600], ["First, you'll create a new group, change its permissions, and add a user to it.", 500], ["Then you'll see the second route: adding someone to an existing group, from their own record.", 700], ["The coach card, in the bottom left, will guide you as you go.", 700, "coach"], ["When you're ready, click Start exercise.", 0]];
+const TTS=window.speechSynthesis;let ttsVoice=null,ttsQueue=[],ttsState="idle";
+function pickVoice(){
+  if(!TTS)return null;const vs=TTS.getVoices();if(!vs.length)return null;
+  const prefer=[/(Ryan|Thomas|Alfie|Oliver|Elliot|Noah|Ethan).*(Natural|Neural)/i,/(Natural|Neural).*(Ryan|Thomas|Alfie|Oliver)/i,/Daniel \((Premium|Enhanced)\)/i,/Arthur \((Premium|Enhanced)\)/i,/Google UK English Male/i,/Ryan.*United Kingdom/i,/Thomas.*United Kingdom/i,/George/i,/Daniel/i,/Arthur/i,/Oliver/i,/Alfie/i,/Harry/i,/Male.*(UK|GB|United Kingdom)/i];
+  const gb=vs.filter(v=>/en[-_]GB/i.test(v.lang));
+  for(const r of prefer){const v=gb.find(x=>r.test(x.name))||vs.find(x=>r.test(x.name)&&/^en/i.test(x.lang));if(v)return v}
+  return gb.find(v=>!/female|woman|susan|hazel|libby|sonia|kate|serena|martha|fiona|moira|tessa|karen|samantha/i.test(v.name))||gb[0]||vs.find(v=>/^en/i.test(v.lang))||null;
+}
+function overviewText(){
+  const parts=[INTRO.title+"."].concat(INTRO.paras);
+  parts.push("In this exercise, you'll work through "+STEPS.length+" steps, in these stages: "+GROUPS.map(g=>g[0]).join(", ").replace(/, ([^,]*)$/," and $1")+".");
+  parts.push("A coach card in the bottom-left corner guides you through each step. Click Start exercise when you're ready.");
+  return parts.join(" ").replace(/&amp;/g,"and").replace(/&/g,"and");
+}
+function setListen(state){ttsState=state;const b=$("listenBtn");b.classList.toggle("playing",state==="playing");$("listenTxt").textContent=state==="playing"?"Pause":state==="paused"?"Resume":"Listen to overview"}
+let ttsTimer=null,ttsGen=0;
+function spotCoach(on){$("coach").classList.toggle("spot",!!on)}
+function speakNext(){
+  if(!ttsQueue.length){spotCoach(false);setListen("idle");Music.stop(3);return}
+  const [text,pause,cue]=ttsQueue.shift(),gen=ttsGen;
+  spotCoach(cue==="coach");
+  const u=new SpeechSynthesisUtterance(text);
+  if(ttsVoice){u.voice=ttsVoice;u.lang=ttsVoice.lang}else u.lang="en-GB";
+  const natural=ttsVoice&&/natural|neural|premium|enhanced/i.test(ttsVoice.name);
+  /* a slightly slower, warmer delivery; short lines and exclamations a touch brighter */
+  u.rate=natural?0.97:0.92;
+  u.pitch=(/[!]$/.test(text)?1.06:text.length<40?1.02:0.97)*(ttsVoice&&!/male|daniel|arthur|ryan|thomas|george|oliver/i.test(ttsVoice.name)?0.9:1);
+  u.onstart=()=>{if(gen===ttsGen)Music.duck(true)};
+  u.onend=()=>{if(gen!==ttsGen)return;Music.duck(false);if(ttsState==="playing")ttsTimer=setTimeout(()=>{if(gen===ttsGen&&ttsState==="playing")speakNext()},pause||150);else if(ttsState==="paused")ttsQueue.unshift(["",pause]) };
+  u.onerror=()=>{if(gen===ttsGen&&ttsState!=="idle")speakNext()};
+  TTS.speak(u);
+}
+function stopSpeech(){spotCoach(false);Music.stop(1.2);if(!TTS)return;ttsGen++;clearTimeout(ttsTimer);ttsQueue=[];setListen("idle");TTS.cancel()}
+if(TTS){
+  $("listenBtn").hidden=false;ttsVoice=pickVoice();
+  TTS.onvoiceschanged=()=>{ttsVoice=pickVoice()};
+  $("listenBtn").onclick=()=>{
+    if(ttsState==="playing"){TTS.pause();Music.pause();setListen("paused");return}
+    if(ttsState==="paused"){Music.resume();setListen("playing");if(TTS.speaking&&TTS.paused){TTS.resume()}else{ttsQueue=ttsQueue.filter(q=>q[0]);speakNext()}return}
+    ttsGen++;clearTimeout(ttsTimer);TTS.cancel();ttsVoice=pickVoice()||ttsVoice;Music.start();
+    ttsQueue=SPOKEN.map(x=>[x[0],x[1],x[2]]);
+    setListen("playing");speakNext();
+  };
+}
+(function(){const b=$("musicBtn");if(!b)return;const sync=()=>{b.setAttribute("aria-pressed",String(Music.on));$("musicTxt").textContent=Music.on?"Music on":"Music off"};sync();
+  b.onclick=()=>{Music.setOn(!Music.on);sync();if(Music.on&&ttsState==="playing")Music.start()};if(!window.speechSynthesis)b.hidden=true})();
+function closeIntro(){stopSpeech();$("introVeil").classList.remove("show");coach()}
+$("introStart").onclick=closeIntro;
+$("introBtn").onclick=showIntro;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("introVeil").classList.contains("show"))closeIntro()});
+reset();
+showIntro();
+</script>
+<style id="spotCss">
+#spotlight{position:fixed;z-index:66;pointer-events:none;border-radius:10px;opacity:0;left:50%;top:50%;width:0;height:0;
+  box-shadow:0 0 0 3px #F0A93C,0 0 18px 4px #F0A93C66,0 0 0 200vmax rgba(16,17,26,.52);
+  transition:left .38s cubic-bezier(.3,.7,.2,1),top .38s cubic-bezier(.3,.7,.2,1),width .38s cubic-bezier(.3,.7,.2,1),height .38s cubic-bezier(.3,.7,.2,1),opacity .25s ease}
+#spotlight.on{opacity:1}
+.coach,#coach{z-index:68!important}
+@media (prefers-reduced-motion:reduce){#spotlight{transition:opacity .2s ease}}
+</style>
+<div id="spotlight" aria-hidden="true"></div>
+<script>
+/* Spotlight: dims the screen apart from the coach card and the item to use next, and glides between steps */
+(function(){
+  var sp=document.getElementById("spotlight"),PAD=6,last="";
+  function shown(id){var e=document.getElementById(id);if(!e)return false;var cs=getComputedStyle(e);return cs.display!=="none"&&cs.visibility!=="hidden"&&parseFloat(cs.opacity)>0.05}
+  function target(){
+    var hs=document.getElementById("hints");if(hs&&!hs.checked)return null;
+    if(shown("introVeil")||shown("doneVeil"))return null;
+    var els=document.querySelectorAll(".hint"),best=null,area=0;
+    for(var i=0;i<els.length;i++){var e=els[i];if(e.closest("#coach,.coach,#spotlight"))continue;var r=e.getBoundingClientRect();if(r.width<2||r.height<2)continue;
+      var cs=getComputedStyle(e);if(cs.visibility==="hidden")continue;var a=r.width*r.height;if(!best||a>area){best=r;area=a}}
+    return best}
+  function tick(){
+    var r=target();
+    if(!r){if(sp.classList.contains("on"))sp.classList.remove("on");last=""}
+    else{var vw=innerWidth,vh=innerHeight,l=Math.max(-PAD,r.left-PAD),t=Math.max(-PAD,r.top-PAD),w=Math.min(r.right+PAD,vw+PAD)-l,h=Math.min(r.bottom+PAD,vh+PAD)-t;
+      if(w<4||h<4||r.bottom<0||r.top>vh){sp.classList.remove("on")}
+      else{var k=Math.round(l)+","+Math.round(t)+","+Math.round(w)+","+Math.round(h);if(k!==last){last=k;sp.style.left=l+"px";sp.style.top=t+"px";sp.style.width=w+"px";sp.style.height=h+"px"}
+        if(!sp.classList.contains("on"))sp.classList.add("on")}}
+    requestAnimationFrame(tick)}
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

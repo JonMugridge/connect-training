@@ -12,7 +12,7 @@ remediate-checks.html               Remediation module
 form-builder-personal-details.html  Form Builder module
 journey-builder-create.html         Journey Builder module
 settings-*.html                     Settings module (5 exercises)
-admin-add-user.html                 Admin Portal module
+admin-*.html                        Admin Portal module (4 exercises)
 
 Every page is a single self-contained file (images included). The pages
 link to each other by file name, so keep all the files together in one
@@ -28,7 +28,7 @@ Progress tracking
 -----------------
 When an exercise is finished, it is recorded in the learner's browser
 (localStorage, key "credas-connect-training:progress"). The training area
-then shows "X of 18 exercises complete", a tick on each finished
+then shows "X of 21 exercises complete", a tick on each finished
 exercise and a count on each folder, and every "Exercise complete" screen
 marks all finished exercises. Learners can reset it with
 "Clear my progress" in the training area.
