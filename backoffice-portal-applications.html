@@ -603,7 +603,7 @@ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.c
   <div class="done" role="dialog" aria-modal="true" aria-labelledby="doneTitle">
     <div class="tick"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
     <h2 id="doneTitle">Exercise complete</h2>
-    <p>You turned off Delete Entities, hid the eSign module, confirmed Branding and Journey Builder are off, and updated Hartwell Solicitors' applications.</p>
+    <p>You turned off Delete Entities, hid the eSign module, removed Branding, which must never be included in a client's portal, and updated Hartwell Solicitors' applications.</p>
     <div id="modules"></div>
     <a class="hubbtn" href="index.html#back-office" target="_self">Back to training area</a>
   </div>
@@ -1363,7 +1363,7 @@ const APPS0=()=>[
   N("Dashboard","Allows the user to view the Dashboard",0),N("Lookup","Allows the user to view the Lookup module",0),N("Folders","Allows the user to create and manage folders",0),
   N("Companies","Allows the user to create and manage companies",1,[N("Delete Company","Allows the user to delete companies"),N("Refresh business report","Allows user to refresh business reports")]),
   N("Settings","Allows users to manage portal settings"),N("Imports","Allows the user to use the import functionality",0)]),
- N("Branding","Allows the user to view the branding application",0),
+ N("Branding","Allows the user to view the branding application",1),
  N("Journey Builder","User can view the customisation centre app",0),
  N("Product Updates","Allows the user to view all kinds of info content",1,[N("Feature requests","Allows the client to view feature requests",0),N("Roadmaps","Allows the client to view active roadmaps",0),N("Release notes","Allows the client to view active release notes",0),N("Glossary","Allows the client to view active glossary",0),N("Guides","Allows the client to view active guides")]),
  N("Admin Portal","Connect system administration (super user)",1,[
@@ -1377,7 +1377,7 @@ const appFind=(tree,t)=>{let r=null;const w=(ns,p)=>ns.forEach((n,i)=>{const q=p
 function appRows(nodes,p,d){return nodes.map((n,i)=>{const q=p?p+"."+i:String(i);return `<div class="rorow${d===0?" g0":""}" id="ar-${q.replace(/\./g,"_")}"><span class="rol" style="padding-left:${d*18}px"><b class="${d===0?"rtop":d===1?"mid":""}">${esc(n.t)}</b><button class="ico" data-aedit aria-label="Edit ${esc(n.t)}">${PEN}</button><button class="ico" data-ahist aria-label="${esc(n.t)} history">${HIS}</button></span><span class="ror"><input type="checkbox" data-ap="${q}" ${n.on?"checked":""} aria-label="${esc(n.t)}"><span>${esc(n.d)}</span></span></div>${appRows(n.k,q,d+1)}`}).join("")}
 function appsHTML(tree,dirty){return `<div class="rotree apptree">${appRows(tree,"",0)}</div><div class="cupd"><button id="aUpd" class="${dirty?"go":""}" ${dirty?"":"disabled"}>Update</button></div>`}
 function bindApps(v,tree,changed){
-  v.querySelectorAll("[data-ap]").forEach(x=>x.onchange=()=>{const n=appNode(tree,x.dataset.ap),set=(m,val)=>{m.on=val;m.k.forEach(c=>set(c,val))};set(n,x.checked);changed()});
+  v.querySelectorAll("[data-ap]").forEach(x=>x.onchange=()=>{const n=appNode(tree,x.dataset.ap);if(x.checked&&(n.t==="Branding"||n.t==="Journey Builder")){x.checked=false;toast(`${n.t} must stay unticked. It should never be included in a client's portal.`);return}const set=(m,val)=>{m.on=val;m.k.forEach(c=>set(c,val))};set(n,x.checked);changed()});
   v.querySelectorAll("[data-aedit]").forEach(b=>b.onclick=()=>toast("Editing a permission's description isn't part of this exercise."));
   v.querySelectorAll("[data-ahist]").forEach(b=>b.onclick=()=>toast("The history shows past changes to this permission. It isn't part of this exercise."));
 }
@@ -1497,7 +1497,7 @@ const A=()=>CL.apps||APPS0();const on=t=>{const tr=A(),p=appFind(tr,t);return ap
 const box=t=>{const p=appFind(A(),t);const x=document.querySelector(`[data-ap="${p}"]`);return x?x.closest(".rorow"):null};
 let sawBJ=false;
 function bjVisible(){const r1=box("Branding"),r2=box("Journey Builder");if(!r1||!r2)return false;const a=r1.getBoundingClientRect(),b=r2.getBoundingClientRect();return a.top>=0&&b.bottom<=innerHeight-10}
-let bjT=0;setInterval(()=>{if(sawBJ||finished||s!==8||CL.page!=="open"||CL.tab!=="Applications"){bjT=0;return}if(bjVisible()){bjT++;if(bjT>=5){sawBJ=true;check()}}else bjT=0},500);
+let bjT=0;setInterval(()=>{if(true||sawBJ||finished||s!==8||CL.page!=="open"||CL.tab!=="Applications"){bjT=0;return}if(bjVisible()){bjT++;if(bjT>=5){sawBJ=true;check()}}else bjT=0},500);
 const savedOK=()=>{const s=CL.appsSaved;if(!s)return false;const g=t=>appNode(s,appFind(s,t)).on;return !g("Delete Entities")&&!g("eSign")&&!g("Branding")&&!g("Journey Builder")};
 const STEPS=[
  {t:"Open the Portal menu",d:"Click <b>Portal</b> at the top left.",el:()=>AD.area==="bo"||AD.menu?null:$("areaBtn"),ok:()=>AD.menu||AD.area==="bo"},
@@ -1508,7 +1508,7 @@ const STEPS=[
  {t:"Open Applications",d:"Click the <b>Applications</b> tab. Every switch here either allows a feature, such as deleting an entity, or shows or hides a whole module, such as eSign.",el:inApp(()=>null),ok:()=>(CL.page==="open"&&CL.tab==="Applications")||savedOK()},
  {t:"Turn off a feature",d:"Under <b>Portal</b>, then <b>Individuals</b>, untick <b>Delete Entities</b>. Users in this portal will no longer be able to delete an entity.",el:inApp(()=>box("Delete Entities")),ok:()=>!on("Delete Entities")||savedOK()},
  {t:"Hide a module",d:"Scroll down and untick <b>eSign</b>. Everything under it unticks too, and the eSign module disappears from the portal.",el:inApp(()=>box("eSign")),ok:()=>(!on("eSign")&&!on("Delete Entities"))||savedOK()},
- {t:"Check Branding and Journey Builder",d:"Scroll down until you can see <b>Branding</b> and <b>Journey Builder</b>. Both are left unticked on purpose, so clients don't have access to these areas. Leave them off.",el:inApp(()=>box("Branding")),ok:()=>(sawBJ&&!on("eSign"))||savedOK()},
+ {t:"Remove Branding",d:"Scroll down to <b>Branding</b>. It's been ticked, but Branding must <b>never be included in a client's portal</b>. Untick it. (Journey Builder, just below, must stay unticked too.)",el:inApp(()=>box("Branding")),ok:()=>(!on("Branding")&&!on("eSign")&&!on("Delete Entities"))||savedOK()},
  {t:"Update the portal",d:"Scroll to the bottom and click <b>Update</b>.",el:inApp(()=>$("aUpd")),ok:()=>savedOK()}
 ];
 const DRAWER_FIRST=-1,DRAWER_APPLY=-1;
@@ -1808,8 +1808,8 @@ const INTRO={
   kicker:"Back Office module \u00b7 Exercise 6",
   title:"Choose a portal's applications",
   paras:["The <b>Applications</b> tab controls what a portal's users can see and do. Every switch either allows a particular feature, such as deleting an entity or exporting to CSV, or shows or hides a whole module, such as eSign, Dashboard or Companies.",
-         "Unticking a module unticks everything under it. Two areas, <b>Branding</b> and <b>Journey Builder</b>, are always left unticked, so clients don't have access to them.",
-         "In this exercise, you'll turn off one feature and hide one module for Hartwell Solicitors, check that Branding and Journey Builder are off, and save the changes."],
+         "Unticking a module unticks everything under it. Two areas, <b>Branding</b> and <b>Journey Builder</b>, must never be included in a client's portal, so they should always be unticked.",
+         "In this exercise, you'll turn off one feature and hide one module for Hartwell Solicitors, then remove Branding, which has been ticked by mistake, and save the changes."],
   tips:[["\u2611","Each switch allows a <b>feature</b> or shows a <b>module</b>."],["\u21B3","Unticking a module unticks <b>everything under it</b>."],["!","Leave <b>Branding</b> and <b>Journey Builder</b> unticked."],["\u2714","Changes are saved when you click <b>Update</b>."]]
 };
 function showIntro(){
@@ -1906,7 +1906,7 @@ const Music=(()=>{
 })();
 
 /* ---------- spoken overview (browser voice) ---------- */
-const SPOKEN=[["Welcome back to the Back Office module.", 500], ["The Applications tab controls what a portal's users can see and do.", 400], ["Every switch either allows a feature, like deleting an entity, or shows or hides a whole module, like eSign.", 600], ["Branding and Journey Builder are always left unticked, so clients don't have access to them.", 700], ["In this exercise, you'll turn off a feature, hide a module, and save the changes.", 500], ["The coach card, in the bottom left, will guide you as you go.", 700, "coach"], ["When you're ready, click Start exercise.", 0]];
+const SPOKEN=[["Welcome back to the Back Office module.", 500], ["The Applications tab controls what a portal's users can see and do.", 400], ["Every switch either allows a feature, like deleting an entity, or shows or hides a whole module, like eSign.", 600], ["Branding and Journey Builder must never be included in a client's portal.", 700], ["In this exercise, you'll turn off a feature, hide a module, remove Branding, and save the changes.", 500], ["The coach card, in the bottom left, will guide you as you go.", 700, "coach"], ["When you're ready, click Start exercise.", 0]];
 const TTS=window.speechSynthesis;let ttsVoice=null,ttsQueue=[],ttsState="idle";
 function pickVoice(){
   if(!TTS)return null;const vs=TTS.getVoices();if(!vs.length)return null;
