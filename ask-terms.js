@@ -29,6 +29,7 @@ window.ASK_TERMS = {
   "id&v": "identity verification",
   "proof of address": "address",
   "poa": "address",
+  "entity": "individual",
   "proof of id": "identity",
   "customer": "individual",
   "applicant": "individual",
