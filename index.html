@@ -251,6 +251,14 @@ html.intro body{overscroll-behavior:none}
 @media (prefers-reduced-motion:reduce){.sp-enter{animation:none}}
 .splash.gated .sp-stage,.splash.gated .sp-sub{visibility:hidden}
 .splash.out{animation:spout .6s ease-in forwards}
+.splash{background:none!important}
+.splash::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,#34364a 0%,var(--navy,#262735) 60%);transition:opacity .9s ease;z-index:0}
+.splash>*:not(.sp-gate){position:relative;z-index:1}
+.splash>.sp-gate{z-index:2}
+.splash.fly::before{opacity:0}
+.splash.fly .sp-gate{display:none}
+html.intro .top .brand svg,html.intro .top .brand span{opacity:0}
+
 /* the C flies in from behind the viewer, spinning in 3D, away into the screen, goes slightly too far, then lands */
 @keyframes cfly{
   0%{transform:translate3d(var(--cx,58%),18%,860px) rotateY(-760deg) rotateX(-30deg) rotateZ(35deg) scaleZ(1);animation-timing-function:cubic-bezier(.5,0,.7,.4)}
@@ -336,7 +344,18 @@ c.innerHTML=html;c.querySelectorAll('img').forEach(function(im){if(im.decode)im.
   }
   function play(withSound){sp.classList.remove("play");void sp.offsetWidth;place();sp.classList.add("play");var sw=document.getElementById("cgSweep");if(sw&&sw.beginElement){setTimeout(function(){try{sw.beginElement()}catch(e){}},1450);setTimeout(function(){try{sw.beginElement()}catch(e){}},2600)}
     if(withSound&&ctx&&ctx.state==="running")sounds(ctx.currentTime+.05)}
-  var done=false,t;function finish(){if(done)return;done=true;sp.classList.add("out");setTimeout(function(){html.classList.remove("intro");sp.remove();if(ctx)try{ctx.close()}catch(e){}},600)}
+  var done=false,t;function cleanup(){html.classList.remove("intro");sp.remove();if(ctx)try{ctx.close()}catch(e){}}
+  function finish(){if(done)return;done=true;
+    var bsvg=document.querySelector(".top .brand svg"),btxt=document.querySelector(".top .brand span"),lg=sp.querySelector(".sp-logo"),sub=sp.querySelector(".sp-sub");
+    var T=bsvg&&bsvg.getBoundingClientRect(),L=lg&&lg.getBoundingClientRect();
+    if(!T||!L||!T.height||!L.height){sp.classList.add("out");setTimeout(cleanup,600);return}
+    /* glide the logo onto the header logo, and "Connect training" onto the header text */
+    var k=T.height/L.height,tx=T.left+1.2*T.height/60-L.left,ty=T.top-L.top,D=".95s cubic-bezier(.65,0,.25,1)";
+    lg.style.transformOrigin="0 0";lg.style.transition="transform "+D;
+    if(sub&&btxt){var S=sub.getBoundingClientRect(),B=btxt.getBoundingClientRect(),ks=B.height/S.height;sub.style.animation="none";sub.style.opacity="1";sub.style.transform="none";sub.style.transformOrigin="0 0";void sub.offsetWidth;S=sub.getBoundingClientRect();sub.style.transition="transform "+D+",color "+D;void sub.offsetWidth;
+      requestAnimationFrame(function(){sub.style.transform="translate("+(B.left-S.left)+"px,"+(B.top-S.top)+"px) scale("+ks+")";sub.style.color=getComputedStyle(btxt).color})}
+    requestAnimationFrame(function(){lg.style.transform="translate("+tx+"px,"+ty+"px) scale("+k+")";sp.classList.add("fly")});
+    setTimeout(cleanup,1000)}
   function arm(ms){clearTimeout(t);t=setTimeout(finish,ms)}
   if(AC&&!muted){try{ctx=new AC()}catch(e){ctx=null}}
   var gate=document.getElementById("spGate");
