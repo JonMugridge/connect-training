@@ -3,7 +3,8 @@ Credas Connect training – practice exercises
 
 What's in this folder
 ---------------------
-index.html                          Training area (start here)
+index.html
+ask-terms.js                        Extra words and phrases for the Ask the training box (edit on GitHub)                          Training area (start here)
 individuals-*.html                  Individuals module (5 exercises)
 send-journey-*.html                 Sending journeys module (2 exercises)
 reports-pdf.html                    Reports module
@@ -13,6 +14,7 @@ form-builder-personal-details.html  Form Builder module
 journey-builder-create.html         Journey Builder module
 settings-*.html                     Settings module (5 exercises)
 admin-*.html                        Admin Portal module (4 exercises)
+backoffice-*.html                   Back Office module (7 exercises)
 
 Every page is a single self-contained file (images included). The pages
 link to each other by file name, so keep all the files together in one
@@ -28,7 +30,7 @@ Progress tracking
 -----------------
 When an exercise is finished, it is recorded in the learner's browser
 (localStorage, key "credas-connect-training:progress"). The training area
-then shows "X of 21 exercises complete", a tick on each finished
+then shows "X of 28 exercises complete", a tick on each finished
 exercise and a count on each folder, and every "Exercise complete" screen
 marks all finished exercises. Learners can reset it with
 "Clear my progress" in the training area.

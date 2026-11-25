@@ -30,6 +30,7 @@ window.ASK_TERMS = {
   "proof of address": "address",
   "poa": "address",
   "entity": "individual",
+  "entities": "individual",
   "proof of id": "identity",
   "customer": "individual",
   "applicant": "individual",
